@@ -225,26 +225,6 @@ const AcademyDetail = () => {
   );
   const loginUrl = `/login?returnTo=${returnTo}`;
 
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    mobile: "",
-  });
-
-  // Populate form data when userData is available
-  useEffect(() => {
-    if (userData?.user) {
-      setFormData({
-        fullName:
-          userData.user.firstName && userData.user.lastName
-            ? `${userData.user.firstName} ${userData.user.lastName}`
-            : userData.user.firstName || "",
-        email: userData.user.email || "",
-        mobile: userData.user.mobile || "",
-      });
-    }
-  }, [userData]);
-
   // Get mode text
   const getModeText = () => {
     if (!course?.type) return "Hybrid";
@@ -295,10 +275,6 @@ const AcademyDetail = () => {
     "Industry best practices and case studies",
   ];
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
   // Handle payment with full error handling and email
   const handlePayment = useCallback(async () => {
     try {
@@ -322,11 +298,11 @@ const AcademyDetail = () => {
         image: `${window.location.origin}/logo-01.png`,
         order_id: order.orderId,
         prefill: {
-          name:
-            formData.fullName ||
-            userData?.user?.firstName + " " + (userData?.user?.lastName || ""),
-          email: formData.email || userData?.user?.email,
-          contact: formData.mobile || userData?.user?.mobile,
+          name: [userData?.user?.firstName, userData?.user?.lastName]
+            .filter(Boolean)
+            .join(" "),
+          email: userData?.user?.email,
+          contact: userData?.user?.mobile,
         },
         async handler(response) {
           try {
@@ -371,8 +347,8 @@ const AcademyDetail = () => {
             // Send course registration email
             try {
               await api().post("/email/send-course-registration", {
-                userEmail: formData.email || userData?.user?.email,
-                userName: formData.fullName || userData?.user?.firstName,
+                userEmail: userData?.user?.email,
+                userName: userData?.user?.firstName,
                 courseName: course?.title || "Course",
                 amount: Number(order.amount),
                 currency: "INR",
@@ -382,7 +358,7 @@ const AcademyDetail = () => {
                   course?.endDate || "",
                 ),
                 startDate: formatDate(course?.startDate || ""),
-                phoneNumber: formData.mobile || userData?.user?.mobile,
+                phoneNumber: userData?.user?.mobile,
               });
             } catch (emailError) {
               console.error(
@@ -438,16 +414,10 @@ const AcademyDetail = () => {
       console.error("Payment error:", error);
       toast.error("Something went wrong in the payment process");
     }
-  }, [mutateAsync, userData, courseId, course, formData]);
+  }, [mutateAsync, userData, courseId, course]);
 
   // Handle registration
   const handleContinue = async () => {
-    // Validate form data
-    if (!formData.fullName || !formData.email || !formData.mobile) {
-      toast.error("Please fill in all personal details");
-      return;
-    }
-
     // A signed-out visitor opens the same dialog, which asks them to sign in
     // rather than bouncing them away the moment they show interest.
     if (!userData) {

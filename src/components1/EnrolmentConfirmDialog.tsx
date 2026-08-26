@@ -1,6 +1,7 @@
-import { Modal } from "@mantine/core";
+import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components1/ui/button";
-import { Calendar, Mail, Phone, User as UserIcon } from "lucide-react";
+import { Calendar, Mail, Phone, User as UserIcon, X } from "lucide-react";
 import { Link } from "react-router-dom";
 
 /**
@@ -73,19 +74,57 @@ export default function EnrolmentConfirmDialog({
   const isFree = !Number.isFinite(amount) || amount <= 0;
   const fullName = [user?.firstName, user?.lastName].filter(Boolean).join(" ").trim();
 
-  return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      centered
-      radius="lg"
-      title={
-        <span className="text-lg font-semibold text-gray-900">
-          {user ? "Confirm your enrolment" : "Sign in to enrol"}
-        </span>
-      }
-    >
-      <div className="space-y-4">
+  // Escape closes, and the page behind must not scroll while this is up.
+  useEffect(() => {
+    if (!opened) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKey);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [opened, onClose]);
+
+  if (!opened) return null;
+
+  /**
+   * Rendered with createPortal over a fixed overlay, matching EnquiryPopup.
+   * A Mantine <Modal> was tried first and mounted its root but never its
+   * content on these pages, so this follows the pattern the app already proves.
+   */
+  return createPortal(
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label={user ? "Confirm your enrolment" : "Sign in to enrol"}
+        className="relative z-10 w-full max-w-md rounded-2xl bg-white p-5 shadow-xl
+                   max-h-[90vh] overflow-y-auto"
+      >
+        <div className="flex items-start justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {user ? "Confirm your enrolment" : "Sign in to enrol"}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="rounded-full p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
         <div className="rounded-xl border border-gray-200 p-4">
           <div className="text-xs text-gray-500 mb-1">Course</div>
           <div className="font-medium text-gray-900">{courseTitle}</div>
@@ -164,7 +203,9 @@ export default function EnrolmentConfirmDialog({
             </div>
           </>
         )}
+        </div>
       </div>
-    </Modal>
+    </div>,
+    document.body,
   );
 }
