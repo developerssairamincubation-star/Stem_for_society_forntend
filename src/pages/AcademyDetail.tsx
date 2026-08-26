@@ -37,6 +37,7 @@ import Errorbox from "@/components/Errorbox";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useUser } from "@/lib/hooks";
+import EnrolmentConfirmDialog from "@/components1/EnrolmentConfirmDialog";
 import { RZPY_KEYID } from "@/Constants";
 import { Rating, Textarea } from "@mantine/core";
 import { FaLinkedin } from "react-icons/fa";
@@ -266,6 +267,8 @@ const AcademyDetail = () => {
   };
 
   // Check if user is enrolled
+  const [confirmOpen, setConfirmOpen] = useState(false);
+
   const isEnrolled = () => {
     if (!course) return false;
     if (course.isEnrolled) return true;
@@ -353,6 +356,8 @@ const AcademyDetail = () => {
             });
 
             toast.success("Payment successful - you are now enrolled.");
+            // Straight to My Courses: that is where the purchase now lives.
+            navigate("/courses");
 
             // Force immediate refresh
             await queryClient.invalidateQueries({ queryKey: ["trainings"] });
@@ -443,32 +448,38 @@ const AcademyDetail = () => {
       return;
     }
 
-    // Check if user is logged in
+    // A signed-out visitor opens the same dialog, which asks them to sign in
+    // rather than bouncing them away the moment they show interest.
     if (!userData) {
-      toast.error("Please login to continue with enrollment");
-      navigate(loginUrl);
+      setConfirmOpen(true);
       return;
     }
 
-    // Check if already enrolled
     if (isEnrolled()) {
       toast.info("You are already enrolled in this course");
       return;
     }
 
-    // If course is free
+    // Nothing is charged or created until the dialog is confirmed.
+    setConfirmOpen(true);
+  };
+
+  /** Runs only after the visitor confirms in the dialog. */
+  const handleConfirmEnrolment = async () => {
+    setConfirmOpen(false);
+
     if (course?.cost === "0" || course?.cost === "free") {
       try {
         await api().post(`/trainings/${courseId}/enroll`);
-        queryClient.invalidateQueries({ queryKey: ["trainings", courseId] });
-        toast.success("Successfully enrolled!");
+        await queryClient.invalidateQueries({ queryKey: ["trainings", courseId] });
+        toast.success("You are enrolled. Find it under My Courses.");
+        navigate("/courses");
       } catch (err) {
         toast.error("Failed to enroll");
       }
       return;
     }
 
-    // Paid course - use handlePayment
     await handlePayment();
   };
 
@@ -612,127 +623,32 @@ const AcademyDetail = () => {
 
           {/* Right Column - Booking Form / Enrollment Status */}
           <div className=" lg:top-6 pb-6 h-fit space-y-3 md:space-y-4">
-            {!userData ? (
-              <>
-                <div className="bg-gradient-to-br from-[#0D9488] to-[#0389FF] rounded-2xl p-4 md:p-6 lg:p-8 text-white shadow-xl">
-                  <div className="text-center mb-4 md:mb-6">
-                    <p className="text-sm md:text-base opacity-90 mb-2">
-                      Begin learning with
-                    </p>
-                    <p className="text-3xl md:text-4xl font-bold">
-                      ₹{Number(course.cost || 0).toLocaleString()}
-                    </p>
-                    <p className="text-sm md:text-base opacity-90 mt-2">today</p>
-                  </div>
-
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-6 mb-4 md:mb-6">
-                    <div className="flex items-center justify-between mb-3 md:mb-4">
-                      <span className="flex items-center gap-2 text-sm md:text-base">
-                        Personal details
-                      </span>
-                    </div>
-
-                    <div className="space-y-3 md:space-y-4">
-                      <Input
-                        placeholder="Full Name"
-                        value={formData.fullName}
-                        onChange={(e) =>
-                          handleInputChange("fullName", e.target.value)
-                        }
-                        className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
-                      />
-                      <Input
-                        type="email"
-                        autoComplete="email"
-                        inputMode="email"
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        placeholder="Email"
-                        value={formData.email}
-                        onChange={(e) =>
-                          handleInputChange("email", e.target.value)
-                        }
-                        className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
-                      />
-                      <PhoneInput
-                        value={formData.mobile}
-                        onChange={(mobile) =>
-                          handleInputChange("mobile", mobile)
-                        }
-                        className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={() => navigate(loginUrl)}
-                    className="w-full h-10 md:h-12 bg-white text-[#0D9488] hover:bg-gray-100 rounded-xl font-semibold md:font-bold text-sm md:text-base shadow-lg"
-                  >
-                    Login to Continue
-                  </Button>
+            {!isEnrolled() ? (
+              <div className="bg-gradient-to-br from-[#0D9488] to-[#0389FF] rounded-2xl p-4 md:p-6 lg:p-8 text-white shadow-xl">
+                <div className="text-center mb-4 md:mb-6">
+                  <p className="text-lg md:text-xl font-medium mb-2">
+                    Interested in this course?
+                  </p>
+                  <p className="text-3xl md:text-4xl font-bold">
+                    {Number(course.cost || 0) > 0
+                      ? `₹${Number(course.cost || 0).toLocaleString()}`
+                      : "Free"}
+                  </p>
                 </div>
-              </>
-            ) : !isEnrolled() ? (
-              <>
-                <div className="bg-gradient-to-br from-[#0D9488] to-[#0389FF] rounded-2xl p-4 md:p-6 lg:p-8 text-white shadow-xl">
-                  <div className="text-center mb-4 md:mb-6">
-                    <p className="text-sm md:text-base opacity-90 mb-2">
-                      Begin learning with
-                    </p>
-                    <p className="text-3xl md:text-4xl font-bold">
-                      ₹{Number(course.cost || 0).toLocaleString()}
-                    </p>
-                    <p className="text-sm md:text-base opacity-90 mt-2">today</p>
-                  </div>
 
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 md:p-6 mb-4 md:mb-6">
-                    <div className="flex items-center justify-between mb-3 md:mb-4">
-                      <span className="flex items-center gap-2 text-sm md:text-base">
-                        Personal details
-                      </span>
-                    </div>
-
-                    <div className="space-y-3 md:space-y-4">
-                      <Input
-                        placeholder="Full Name"
-                        value={formData.fullName}
-                        onChange={(e) =>
-                          handleInputChange("fullName", e.target.value)
-                        }
-                        className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
-                      />
-                      <Input
-                        type="email"
-                        autoComplete="email"
-                        inputMode="email"
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        placeholder="Email"
-                        value={formData.email}
-                        onChange={(e) =>
-                          handleInputChange("email", e.target.value)
-                        }
-                        className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
-                      />
-                      <PhoneInput
-                        value={formData.mobile}
-                        onChange={(mobile) =>
-                          handleInputChange("mobile", mobile)
-                        }
-                        className="h-10 md:h-12 bg-white text-gray-900 rounded-xl text-sm"
-                      />
-                    </div>
-                  </div>
-
-                  <Button
-                    onClick={handleContinue}
-                    disabled={isPending}
-                    className="w-full h-10 md:h-12 bg-white text-[#0D9488] hover:bg-gray-100 rounded-xl font-semibold md:font-bold text-sm md:text-base shadow-lg"
-                  >
-                    {isPending ? "Processing..." : "Continue"}
-                  </Button>
-                </div>
-              </>
+                {/* The personal-details form that used to sit here asked a
+                    signed-in visitor to retype the name, email and phone the
+                    account already holds, and none of it was ever sent - the
+                    enrolment endpoints read the session. The confirmation
+                    dialog shows those details instead. */}
+                <Button
+                  onClick={handleContinue}
+                  disabled={isPending}
+                  className="w-full h-10 md:h-12 bg-white text-[#0D9488] hover:bg-gray-100 rounded-xl font-semibold md:font-bold text-sm md:text-base shadow-lg"
+                >
+                  {isPending ? "Processing..." : "Enroll Now"}
+                </Button>
+              </div>
             ) : (
               <div className="space-y-3 md:space-y-4">
                 {/* Already Enrolled Card */}
@@ -974,6 +890,17 @@ const AcademyDetail = () => {
         </div>
       </div>
 
+      <EnrolmentConfirmDialog
+        opened={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmEnrolment}
+        user={userData?.user ?? null}
+        courseTitle={course.title}
+        cost={course.cost}
+        startDate={course.startDate ? formatDate(course.startDate) : null}
+        isProcessing={isPending}
+        loginUrl={loginUrl}
+      />
       <Footer />
     </div>
   );

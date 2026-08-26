@@ -17,6 +17,7 @@ import Loading from "../components/Loading";
 import { RZPY_KEYID } from "../Constants";
 import { api, queryClient } from "../lib/api";
 import { useUser } from "../lib/hooks";
+import EnrolmentConfirmDialog from "@/components1/EnrolmentConfirmDialog";
 import RazorpayInstance, {
   GenericError,
   GenericResponse,
@@ -101,6 +102,7 @@ function TrainingSpotlight() {
   const { data, isLoading, error } = useTraining(id);
   const { user } = useUser();
   const { mutateAsync, isPending } = useEnroll(id);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   const loginUrl = `/login?returnTo=${encodeURIComponent(
     `${routerLocation.pathname}${routerLocation.search}${routerLocation.hash}`
   )}`;
@@ -157,6 +159,9 @@ function TrainingSpotlight() {
 
             await queryClient.invalidateQueries({ queryKey: ["trainings"] });
             await queryClient.invalidateQueries({ queryKey: ["trainings", id] });
+
+            // Straight to My Courses: that is where the purchase now lives.
+            navigate("/courses");
           } catch (error) {
             console.error("Payment verification failed:", error);
             toast.error(
@@ -334,11 +339,11 @@ function TrainingSpotlight() {
                   radius={999}
                   variant="filled"
                   leftSection={<NotepadText size={14} />}
-                  onClick={handlePayment}
+                  onClick={() => setConfirmOpen(true)}
                   disabled={isPending}
                   px={20}
                 >
-                  {isPending ? "Please wait..." : "Proceed to register"}
+                  {isPending ? "Please wait..." : "Enroll Now"}
                 </Button>
               ) : (
                 <div className="space-y-2">
@@ -360,6 +365,20 @@ function TrainingSpotlight() {
                   )}
                 </div>
               )}
+              <EnrolmentConfirmDialog
+                opened={confirmOpen}
+                onClose={() => setConfirmOpen(false)}
+                onConfirm={() => {
+                  setConfirmOpen(false);
+                  void handlePayment();
+                }}
+                user={user?.user ?? null}
+                courseTitle={event.title}
+                cost={event.cost}
+                startDate={event.startDate ? formatDate(event.startDate) : null}
+                isProcessing={isPending}
+                loginUrl={loginUrl}
+              />
               {event.lessons && event.lessons.length > 0 && (
                 <div className="grid gap-3 mt-8">
                   <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base">

@@ -27,13 +27,33 @@ const toAuthUser = (user: {
   };
 };
 
+/**
+ * Starts the Google redirect.
+ *
+ * `mode` is accepted for call-site compatibility but no longer changes what
+ * happens: the server decides whether this is a sign-in or a first-time
+ * sign-up, because only it knows whether the address already has an account.
+ * Splitting that decision across two buttons meant signing up with an existing
+ * account failed, and signing in without one reported a password error.
+ *
+ * `returnTo` travels in sessionStorage rather than the redirect URL: Supabase
+ * requires redirect targets to be pre-registered, so appending app state to the
+ * callback URL is fragile.
+ */
 export const signInWithGoogle = async (
-  mode: "signin" | "signup" = "signin",
+  _mode: "signin" | "signup" = "signin",
+  returnTo?: string,
 ): Promise<void> => {
-  const redirectTo = `${window.location.origin}/auth/callback?mode=${mode}`;
+  try {
+    if (returnTo) sessionStorage.setItem("postLoginRedirect", returnTo);
+    else sessionStorage.removeItem("postLoginRedirect");
+  } catch {
+    /* storage unavailable; the callback falls back to the homepage */
+  }
+
   const { error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo },
+    options: { redirectTo: `${window.location.origin}/auth/callback` },
   });
 
   if (error) {

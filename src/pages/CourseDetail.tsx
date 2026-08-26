@@ -23,6 +23,7 @@ import { useUser } from "@/lib/hooks";
 import { Rating, Textarea } from "@mantine/core";
 import { RZPY_KEYID } from "@/Constants";
 import type { StudentTraining } from "./Courses";
+import EnrolmentConfirmDialog from "@/components1/EnrolmentConfirmDialog";
 import { FaLinkedin } from "react-icons/fa";
 
 // Hook to fetch single training
@@ -97,6 +98,7 @@ const CourseDetails = () => {
   
   const { data: trainingData, isLoading, error } = useTraining(id);
   const { mutateAsync, isPending } = useEnroll(id);
+  const [confirmOpen, setConfirmOpen] = useState(false);
   
   const training = trainingData?.data;
   const loginUrl = `/login?returnTo=${encodeURIComponent(
@@ -239,11 +241,14 @@ function RatingAndFeedback({
             });
 
             toast.success("Payment successful - you are now enrolled.");
-            
+
             // Force immediate refresh
             await queryClient.invalidateQueries({ queryKey: ["trainings"] });
             await queryClient.invalidateQueries({ queryKey: ["trainings", id] });
             await queryClient.refetchQueries({ queryKey: ["trainings", id] });
+
+            // Straight to My Courses: that is where the purchase now lives.
+            navigate("/courses");
             
             // Send course registration email
             try {
@@ -311,8 +316,13 @@ function RatingAndFeedback({
 
   // Handle registration
   const handleRegister = async () => {
+    /**
+     * A signed-out visitor opens the same dialog, which asks them to sign in
+     * rather than bouncing them to /login the instant they show interest. They
+     * get to see the course and price first, and land back here afterwards.
+     */
     if (!userData) {
-      navigate(loginUrl);
+      setConfirmOpen(true);
       return;
     }
 
@@ -321,19 +331,26 @@ function RatingAndFeedback({
       return;
     }
 
-    // If course is free
+    // Nothing is charged or created until the dialog is confirmed.
+    setConfirmOpen(true);
+  };
+
+  /** Runs only after the visitor confirms in the dialog. */
+  const handleConfirmEnrolment = async () => {
+    setConfirmOpen(false);
+
     if (training?.cost === "0" || training?.cost === "free") {
       try {
         await api().post(`/trainings/${id}/enroll`);
-        queryClient.invalidateQueries({ queryKey: ["trainings", id] });
-        toast.success("Successfully enrolled!");
+        await queryClient.invalidateQueries({ queryKey: ["trainings", id] });
+        toast.success("You are enrolled. Find it under My Courses.");
+        navigate("/courses");
       } catch (err) {
         toast.error("Failed to enroll");
       }
       return;
     }
 
-    // Paid course - use handlePayment
     handlePayment();
   };
 
@@ -454,24 +471,16 @@ function RatingAndFeedback({
           {/* Right Sidebar */}
           <div className="lg:col-span-1 space-y-3 md:space-y-4">
             {/* Registration Section */}
-            {!userData ? (
-              <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm text-center sticky top-4 lg:top-6">
-                <p className="text-gray-600 mb-4 text-sm md:text-base">Sign in to enroll in this course</p>
-                <Button
-                  onClick={() => navigate(loginUrl)}
-                  className="w-full bg-[#0D9488] text-white hover:bg-teal-600 rounded-xl h-10 md:h-12 font-semibold text-sm md:text-base"
-                >
-                  Sign In
-                </Button>
-              </div>
-            ) : !isEnrolled() ? (
+            {!isEnrolled() ? (
               <div className="bg-gradient-to-br from-[#0D9488] to-[#0389FF] rounded-2xl p-4 md:p-6 text-white shadow-sm sticky top-4 lg:top-6">
-                <div className="mb-4">
-                  <p className="text-sm md:text-base opacity-90 mb-1">Price</p>
-                  <p className="text-2xl md:text-3xl font-bold">
-                    ₹{Number(training.cost || 0).toLocaleString()}
-                  </p>
-                </div>
+                <p className="text-base md:text-lg font-medium mb-1">
+                  Interested in this course?
+                </p>
+                <p className="text-sm opacity-90 mb-4">
+                  {Number(training.cost || 0) > 0
+                    ? `₹${Number(training.cost || 0).toLocaleString()}`
+                    : "Free to join"}
+                </p>
                 <Button
                   onClick={handleRegister}
                   disabled={isPending}
@@ -550,6 +559,18 @@ function RatingAndFeedback({
       </div>
 
       <Footer />
+
+      <EnrolmentConfirmDialog
+        opened={confirmOpen}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmEnrolment}
+        user={userData?.user ?? null}
+        courseTitle={training.title}
+        cost={training.cost}
+        startDate={training.startDate ? formatDate(training.startDate) : null}
+        isProcessing={isPending}
+        loginUrl={loginUrl}
+      />
     </div>
   );
 };

@@ -1,249 +1,171 @@
 import { toastError } from "@/lib/utils";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { API_URL } from "../Constants";
 import { api, queryClient } from "../lib/api";
 import { supabase } from "../lib/supabase";
 import PhoneVerificationModal from "@/components1/PhoneVerificationModal";
 
-type PendingGoogleAuth = {
-  email: string;
-  firstName: string;
-  lastName: string;
-  password: string;
-  fullName: string;
-  userId: string;
-  photoURL: string | null;
-};
+/**
+ * Completes a Google sign-in.
+ *
+ * The whole exchange is one call to /auth/google carrying the Supabase access
+ * token. The server verifies that token with Supabase and decides whether this
+ * is a sign-in or a first-time sign-up.
+ *
+ * This replaces a scheme that derived a password from the Supabase user id
+ * ("Google" + six characters of the uuid + "123!") and drove /auth/register and
+ * /auth/sign-in with it. Besides making every Google account's password
+ * guessable from a public identifier, it could not sign in an address that
+ * already had a password account, it broke on names shorter than three
+ * characters, and it matched on backend error strings that no longer existed -
+ * so a user who had not signed up was told "Invalid email or password".
+ */
 
-const buildGooglePassword = (userId: string) => {
-  const rawId = userId.replace(/[^a-zA-Z0-9]/g, "");
-  const idPart = rawId.length >= 6 ? rawId.slice(0, 6) : rawId.padEnd(6, "0");
-  let password = `Google${idPart}123!`;
-
-  const hasLetter = /[a-zA-Z]/.test(password);
-  const hasNumber = /\d/.test(password);
-  if (!hasLetter) {
-    password = `G${password}`;
-  }
-  if (!hasNumber) {
-    password = `${password}1`;
-  }
-  if (password.length < 8) {
-    password = password.padEnd(8, "0");
-  }
-
-  return password;
+type GoogleAuthResponse = {
+  data: {
+    token: string;
+    user: Record<string, unknown>;
+  };
 };
 
 const AuthCallback = () => {
   const navigate = useNavigate();
-  const [pendingAuth, setPendingAuth] = useState<PendingGoogleAuth | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [showPhoneVerification, setShowPhoneVerification] = useState(false);
+  const [pendingEmail, setPendingEmail] = useState("");
+  /** Guards against the effect running twice under React 18 strict mode. */
+  const startedRef = useRef(false);
+
+  /** Stores the session this app issues, and sends the visitor on their way. */
+  const completeSignIn = useCallback(
+    (payload: GoogleAuthResponse) => {
+      queryClient.setQueryData(["auth"], payload.data);
+      localStorage.setItem(
+        "studentAuth",
+        JSON.stringify({ ...payload.data, timestamp: Date.now() }),
+      );
+      toast.success("Signed in successfully.");
+
+      /**
+       * Return the visitor to whatever sent them to sign in. The Google button
+       * preserves it across the OAuth round trip in sessionStorage, because the
+       * redirect back from Google cannot carry app state in the URL.
+       */
+      let returnTo = "/";
+      try {
+        returnTo = sessionStorage.getItem("postLoginRedirect") || "/";
+        sessionStorage.removeItem("postLoginRedirect");
+      } catch {
+        /* storage unavailable; the default is fine */
+      }
+      navigate(returnTo, { replace: true });
+    },
+    [navigate],
+  );
 
   useEffect(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+
     let isMounted = true;
 
-        const finishAuth = async () => {
+    const finishAuth = async () => {
       try {
         const params = new URLSearchParams(window.location.search);
         const code = params.get("code");
-        const mode = params.get("mode");
+
+        // Surface Google's own refusal rather than reporting "no session".
+        const oauthError = params.get("error_description") || params.get("error");
+        if (oauthError) {
+          throw new Error(oauthError);
+        }
+
         if (code) {
           const { error } = await supabase.auth.exchangeCodeForSession(code);
-          if (error) {
-            throw error;
-          }
+          if (error) throw error;
         }
 
         const { data: sessionData, error: sessionError } =
           await supabase.auth.getSession();
         let session = sessionData.session;
 
+        // Implicit-flow fallback: the tokens arrive in the URL fragment.
         if (!session && window.location.hash.includes("access_token")) {
           const hashParams = new URLSearchParams(window.location.hash.slice(1));
-          const accessToken = hashParams.get("access_token");
-          const refreshToken = hashParams.get("refresh_token");
-          if (accessToken && refreshToken) {
-            const { data: setSessionData, error: setSessionError } =
-              await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken,
-              });
-            if (setSessionError) {
-              throw setSessionError;
-            }
-            session = setSessionData.session ?? null;
-          }
-        }
-
-        const user = session?.user ?? null;
-
-        if (sessionError || !user) {
-          throw new Error(sessionError?.message || "No Supabase session found");
-        }
-        const email = user.email ?? "";
-        const fullName =
-          (typeof user.user_metadata?.full_name === "string" &&
-            user.user_metadata.full_name) ||
-          (typeof user.user_metadata?.name === "string" &&
-            user.user_metadata.name) ||
-          "User";
-        const nameParts = fullName.trim().split(" ");
-        const firstName = nameParts[0] || "User";
-        const lastName = nameParts.slice(1).join(" ");
-        const password = buildGooglePassword(user.id);
-
-        if (mode === "signup") {
-          if (isMounted) {
-            setPendingAuth({
-              email,
-              firstName,
-              lastName,
-              password,
-              fullName,
-              userId: user.id,
-              photoURL: (user.user_metadata?.avatar_url as string | undefined) ?? null,
+          const access_token = hashParams.get("access_token");
+          const refresh_token = hashParams.get("refresh_token");
+          if (access_token && refresh_token) {
+            const { data, error } = await supabase.auth.setSession({
+              access_token,
+              refresh_token,
             });
-            setShowPhoneVerification(true);
+            if (error) throw error;
+            session = data.session ?? null;
           }
-
-          return;
         }
 
-        queryClient.clear();
-        localStorage.removeItem("studentAuth");
-
-        try {
-          const response = await api().post(`${API_URL}/auth/sign-in`, {
-            email,
-            password,
-            isGoogleAuth: true,
-            googleData: {
-              name: fullName,
-              googleId: user.id,
-              photoURL: user.user_metadata?.avatar_url ?? null,
-            },
-          });
-
-          const authData = {
-            ...response.data.data,
-            timestamp: Date.now(),
-          };
-          queryClient.setQueryData(["auth"], response.data.data);
-          localStorage.setItem("studentAuth", JSON.stringify(authData));
-          toast.success("Login was successful!");
-        } catch (signInError: any) {
-          // If sign-in fails and we are not in signup mode, do NOT auto-register.
-          // Throw an error so the user is informed they need to sign up first.
-          const rawError =
-            signInError?.response?.data?.error ||
-            signInError?.response?.data?.message ||
-            "";
-          const normalizedError = rawError.trim().toLowerCase();
-
-          if (normalizedError === "invalid credentials") {
-            throw new Error("Invalid credentials.");
-          }
-
-          if (normalizedError === "user not found") {
-            throw new Error("User not Found! Please sign up first");
-          }
-
+        if (sessionError || !session?.access_token) {
           throw new Error(
-            rawError || "User not Found! Please sign up first",
+            sessionError?.message || "Google did not return a session.",
           );
         }
 
-        if (isMounted) {
-          navigate("/");
+        if (!isMounted) return;
+        setAccessToken(session.access_token);
+
+        try {
+          const response = await api().post<GoogleAuthResponse>("/auth/google", {
+            accessToken: session.access_token,
+          });
+          if (isMounted) completeSignIn(response.data);
+        } catch (error: any) {
+          /**
+           * The one expected failure: there is no account yet and the server
+           * needs a mobile number before it can create one. Everything else is
+           * a real error.
+           */
+          if (error?.response?.data?.code === "PHONE_REQUIRED") {
+            if (isMounted) {
+              setPendingEmail(session.user?.email ?? "");
+              setShowPhoneVerification(true);
+            }
+            return;
+          }
+          throw error;
         }
       } catch (error: any) {
-        console.error("Supabase OAuth callback failed:", error);
-        toastError(error, "Authentication failed");
-        if (isMounted) {
-          navigate("/login");
-        }
+        console.error("Google sign-in failed:", error);
+        toastError(error, "Google sign-in failed");
+        if (isMounted) navigate("/login", { replace: true });
       }
     };
 
     void finishAuth();
-
     return () => {
       isMounted = false;
     };
-  }, [navigate]);
+  }, [navigate, completeSignIn]);
 
-  const handlePhoneVerificationSuccess = async (phoneNumber: string) => {
-    if (!pendingAuth) {
-      toast.error("Missing Google sign-up details. Please try again.");
-      navigate("/login");
+  const handlePhoneVerificationSuccess = async (mobile: string) => {
+    if (!accessToken) {
+      toast.error("Your Google session expired. Please try again.");
+      navigate("/login", { replace: true });
       return;
     }
 
     try {
-      queryClient.clear();
-      localStorage.removeItem("studentAuth");
-
-      try {
-        const response = await api().post(`${API_URL}/auth/sign-in`, {
-          email: pendingAuth.email,
-          password: pendingAuth.password,
-          isGoogleAuth: true,
-          googleData: {
-            name: pendingAuth.fullName,
-            googleId: pendingAuth.userId,
-            photoURL: pendingAuth.photoURL,
-          },
-        });
-
-        const authData = {
-          ...response.data.data,
-          timestamp: Date.now(),
-        };
-        queryClient.setQueryData(["auth"], response.data.data);
-        localStorage.setItem("studentAuth", JSON.stringify(authData));
-        toast.success("Login was successful!");
-      } catch (signInError) {
-        await api().post(`${API_URL}/auth/register`, {
-          email: pendingAuth.email,
-          firstName: pendingAuth.firstName,
-          lastName: pendingAuth.lastName,
-          password: pendingAuth.password,
-          confirmPassword: pendingAuth.password,
-          mobile: phoneNumber,
-          isGoogleAuth: true,
-          googleId: pendingAuth.userId,
-        });
-
-        const response = await api().post(`${API_URL}/auth/sign-in`, {
-          email: pendingAuth.email,
-          password: pendingAuth.password,
-          isGoogleAuth: true,
-          googleData: {
-            name: pendingAuth.fullName,
-            googleId: pendingAuth.userId,
-            photoURL: pendingAuth.photoURL,
-          },
-        });
-
-        const authData = {
-          ...response.data.data,
-          timestamp: Date.now(),
-        };
-        queryClient.setQueryData(["auth"], response.data.data);
-        localStorage.setItem("studentAuth", JSON.stringify(authData));
-        toast.success("Login was successful!");
-      }
-
+      const response = await api().post<GoogleAuthResponse>("/auth/google", {
+        accessToken,
+        mobile,
+      });
       setShowPhoneVerification(false);
-      navigate("/");
+      completeSignIn(response.data);
     } catch (error: any) {
-      console.error("Supabase OAuth phone verification failed:", error);
-      toastError(error, "Authentication failed");
-      setShowPhoneVerification(false);
-      navigate("/login");
+      console.error("Google sign-up failed:", error);
+      // Kept open so a duplicate mobile number can be corrected in place
+      // instead of restarting the whole OAuth round trip.
+      toastError(error, "Could not finish creating your account");
     }
   };
 
@@ -251,14 +173,19 @@ const AuthCallback = () => {
     <div className="min-h-screen flex items-center justify-center">
       <PhoneVerificationModal
         isOpen={showPhoneVerification}
-        onClose={() => setShowPhoneVerification(false)}
+        onClose={() => {
+          setShowPhoneVerification(false);
+          navigate("/login", { replace: true });
+        }}
         onSuccess={handlePhoneVerificationSuccess}
-        userEmail={pendingAuth?.email ?? ""}
+        userEmail={pendingEmail}
       />
-      <div className="text-center">
-        <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
-        <p className="mt-4 text-gray-700">Completing sign-in...</p>
-      </div>
+      {!showPhoneVerification && (
+        <div className="text-center">
+          <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
+          <p className="mt-4 text-gray-700">Completing sign-in...</p>
+        </div>
+      )}
     </div>
   );
 };
