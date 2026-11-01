@@ -349,3 +349,68 @@ body:has(.sfs-page) {
   min-height: 100%;
   overflow-y: visible;
 }
+
+/* ---- Login page ---------------------------------------------------------- */
+@keyframes sfs-gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes sfs-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -16px, 0);
+  }
+}
+@keyframes sfs-glow {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+@keyframes sfs-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+:where(.sfs-ui) .login-gradient {
+  background: linear-gradient(120deg, #00549f 0%, #0389ff 45%, #22c4ee 75%, #0389ff 100%);
+  background-size: 240% 240%;
+  animation: sfs-gradient 20s ease-in-out infinite;
+}
+:where(.sfs-ui) .login-float {
+  animation: sfs-float 9s ease-in-out infinite;
+  will-change: transform;
+}
+:where(.sfs-ui) .login-glow {
+  animation: sfs-glow 6s ease-in-out infinite;
+}
+:where(.sfs-ui) .login-spinner {
+  animation: sfs-spin 0.8s linear infinite;
+}
+/* Simpler on phones: no moving gradient, no decorative shapes. */
+@media (max-width: 767px) {
+  :where(.sfs-ui) .login-gradient {
+    animation: none;
+  }
+  :where(.sfs-ui) .login-decor {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.sfs-ui) .login-gradient,
+  :where(.sfs-ui) .login-float,
+  :where(.sfs-ui) .login-glow {
+    animation: none;
+  }
+}
