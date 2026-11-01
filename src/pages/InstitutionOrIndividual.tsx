@@ -27,7 +27,6 @@ import InstitutionalCTA from "@/components1/NewUI/institutional/InstitutionalCTA
 // Enquiry Popup
 import EnquiryPopup, { EnquiryMode } from "@/components1/NewUI/EnquiryPopup";
 import Header from "@/components1/Header";
-import Footer from "@/components1/Footer";
 
 export type Mode = "individual" | "institution";
 
@@ -182,7 +181,6 @@ const Index = () => {
               {/* <IndividualPricing /> */}
               <IndividualFAQ />
               <IndividualCTA />
-              <Footer />
             </div>
           ) : (
             // Institutional View
@@ -192,7 +190,6 @@ const Index = () => {
               {/* <HowWePartner /> */}
               <InstitutionalFAQ />
               <InstitutionalCTA />
-              <Footer />
             </div>
           )}
         </main>

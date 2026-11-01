@@ -723,26 +723,6 @@ const BlogCreateContent = () => {
         className="relative overflow-hidden min-h-screen"
         style={{ height: "100%", minHeight: "100%" }}
       >
-        {/* Grid background */}
-        <div
-          className="absolute inset-0 opacity-50 pointer-events-none z-0"
-          style={{
-            minHeight: "100vh",
-            backgroundImage: `
-              linear-gradient(rgba(107,114,128,0.5) 2px, transparent 2px),
-              linear-gradient(90deg, rgba(107,114,128,0.5) 2px, transparent 2px)
-            `,
-            backgroundSize: "100px 100px",
-            WebkitMaskImage:
-              "linear-gradient(to bottom, black 0%, transparent 35%, transparent 100%)",
-            maskImage:
-              "linear-gradient(to bottom, black 0%, transparent 35%, transparent 100%)",
-            WebkitMaskRepeat: "no-repeat",
-            maskRepeat: "no-repeat",
-            WebkitMaskSize: "100% 100%",
-            maskSize: "100% 100%",
-          }}
-        />
 
         {/* Content above grid */}
         <div className="relative z-10">
@@ -879,28 +859,6 @@ const BlogCreateContent = () => {
         </div>
       </div>
 
-      {/* Footer */}
-      <footer className="bg-blue-900 text-white py-8 mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center">
-            <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3">
-              <span className="text-blue-900 font-bold text-lg">
-                <img
-                  src="/lovable-uploads/FooterLogo.png"
-                  alt="STEM for Society Logo"
-                  className="w-full h-full object-contain"
-                />
-              </span>
-            </div>
-            <div>
-              <h4 className="text-xl font-bold">STEM FOR SOCIETY</h4>
-              <p className="text-blue-200 text-sm">
-                Let's innovate, incubate and impact the world together!
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 };

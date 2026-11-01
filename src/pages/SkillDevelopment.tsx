@@ -11,7 +11,6 @@ import {
 } from "@/components1/ui/select";
 import { Search, SlidersHorizontal, RotateCcw } from "lucide-react";
 import Header from "@/components1/Header";
-import Footer from "@/components1/Footer";
 import GridBackground from "@/components1/GridBackground";
 import FinishingSchoolCard from "@/components1/FinishingSchoolCard";
 import { useQuery } from "@tanstack/react-query";
@@ -336,7 +335,6 @@ const SkillDevelopment = () => {
         </section>
       </GridBackground>
 
-      <Footer />
     </div>
   );
 };

@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Compass, Home, Search } from "lucide-react";
 import Header from "@/components1/Header";
-import Footer from "@/components1/Footer";
 import logo from "@/assets/logo.webp";
 
 /**
@@ -126,7 +125,6 @@ export function NotFound({ variant = "site" }: NotFoundProps) {
         </div>
       </main>
 
-      {!bare && <Footer />}
     </div>
   );
 }

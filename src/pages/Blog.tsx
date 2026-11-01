@@ -5,7 +5,6 @@ import { Input } from '@/components1/ui/input';
 import { Search, Plus, ArrowLeft, Share2, FileText, PenTool, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import Header from '@/components1/Header';
-import Footer from '@/components1/Footer';
 import { AxiosError } from "axios";
 import Errorbox from "../components/Errorbox";
 import { api } from "../lib/api";
@@ -119,23 +118,6 @@ const Blog = () => {
     return (
       <div className="min-h-screen bg-white">
         <div className="relative overflow-hidden min-h-[180px] md:min-h-[280px]">
-          {/* Grid background */}
-          <div 
-            className="absolute inset-0 opacity-50 pointer-events-none z-0"
-            style={{
-              backgroundImage: `
-                linear-gradient(rgba(107,114,128,0.5) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(107,114,128,0.5) 2px, transparent 2px)
-              `,
-              backgroundSize: '100px 100px',
-              WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
-              maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
-              WebkitMaskRepeat: 'no-repeat',
-              maskRepeat: 'no-repeat',
-              WebkitMaskSize: '100% 100%',
-              maskSize: '100% 100%',
-            }}
-          />
 
           {/* Content above grid */}
           <div className="relative z-10">
@@ -186,7 +168,6 @@ const Blog = () => {
             ))}
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -194,23 +175,6 @@ const Blog = () => {
   return (
     <div className="min-h-screen bg-white">
       <div className="relative overflow-hidden min-h-[180px] md:min-h-[280px]">
-        {/* Grid background */}
-        <div 
-          className="absolute inset-0 opacity-50 pointer-events-none z-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(107,114,128,0.5) 2px, transparent 2px),
-              linear-gradient(90deg, rgba(107,114,128,0.5) 2px, transparent 2px)
-            `,
-            backgroundSize: '100px 100px',
-            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
-            maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
-            WebkitMaskRepeat: 'no-repeat',
-            maskRepeat: 'no-repeat',
-            WebkitMaskSize: '100% 100%',
-            maskSize: '100% 100%',
-          }}
-        />
 
         {/* Content above grid */}
         <div className="relative z-10">
@@ -416,7 +380,6 @@ const Blog = () => {
         )}
       </div>
 
-      <Footer />
       <SharePopup isVisible={isShowing} />
     </div>
   );

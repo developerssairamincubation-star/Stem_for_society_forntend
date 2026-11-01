@@ -7,6 +7,7 @@ import { Outlet, Route, Routes } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ErrorBoundary from "./components/ErrorBoundary";
+import Footer from "./components1/Footer";
 import ConnectionBanner from "./components/error/ConnectionBanner";
 import RouteErrorBoundary from "./components/error/RouteErrorBoundary";
 import { lazyWithRetry } from "./lib/lazyWithRetry";
@@ -159,12 +160,18 @@ import ScrollToTop from "./components/ScrollToTop";
 function AppLayout() {
   return (
     <>
-      <div className="min-h-screen flex flex-col">
+      {/* `relative` keeps absolutely positioned descendants (e.g. screen-reader-only text in the footer) inside the
+          <body> scroll container instead of stretching the page behind it. */}
+      <div className="relative min-h-screen flex flex-col">
         {/* Inside the layout on purpose: if a page crashes, only the content
             region is replaced - the site around it keeps working. */}
-        <RouteErrorBoundary>
-          <Outlet />
-        </RouteErrorBoundary>
+        <div className="flex-1">
+          <RouteErrorBoundary>
+            <Outlet />
+          </RouteErrorBoundary>
+        </div>
+        {/* One shared footer for every public page. flex-1 above keeps it at the bottom of short pages. */}
+        <Footer />
       </div>
     </>
   );

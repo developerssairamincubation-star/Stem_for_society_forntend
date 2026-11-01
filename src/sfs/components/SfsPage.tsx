@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
-import { Footer } from './Footer'
 import { Navbar } from './Navbar'
 
-/** Full-page frame for the redesigned pages: navigation, content, footer. `sfs-page` switches the document back to window scrolling. */
+/** Frame for the redesigned pages: navigation and content (the shared footer comes from the application layout). `sfs-page` switches the document back to window scrolling. */
 export function SfsPage({ children }: { children: ReactNode }) {
   return (
     <div className="sfs-ui sfs-page bg-white">
@@ -11,7 +10,6 @@ export function SfsPage({ children }: { children: ReactNode }) {
       </a>
       <Navbar />
       <main id="main">{children}</main>
-      <Footer />
     </div>
   )
 }

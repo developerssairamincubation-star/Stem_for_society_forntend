@@ -15,7 +15,6 @@ import {
   MapPin,
 } from "lucide-react";
 import Header from "@/components1/Header";
-import Footer from "@/components1/Footer";
 import { toast } from "react-toastify";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -871,7 +870,6 @@ const AcademyDetail = () => {
         isProcessing={isPending}
         loginUrl={loginUrl}
       />
-      <Footer />
     </div>
   );
 };

@@ -1,7 +1,6 @@
 
 import React from 'react';
 import Header from '@/components1/Header';
-import Footer from '@/components1/Footer';
 import GridBackground from '@/components1/GridBackground';
 import { Button } from '@/components1/ui/button';
 import { ArrowLeft, Share2, Check } from 'lucide-react';
@@ -15,26 +14,6 @@ const InstitutionPricing = () => {
     <div className="min-h-screen bg-gray-50">
        <div className="relative overflow-hidden min-h-screen"style={{ height: '100%', minHeight: '100%' }}
 >
-  {/* Grid background */}
-  <div 
-    className="absolute inset-0 opacity-50 pointer-events-none z-0"
-    style={{
-      minHeight: '100vh',
-      backgroundImage: `
-        linear-gradient(rgba(107,114,128,0.5) 2px, transparent 2px),
-        linear-gradient(90deg, rgba(107,114,128,0.5) 2px, transparent 2px)
-      `,
-      backgroundSize: '100px 100px',
-     WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 35%, transparent 100%)',
-maskImage: 'linear-gradient(to bottom, black 0%, transparent 35%, transparent 100%)',
-
-
-      WebkitMaskRepeat: 'no-repeat',
-      maskRepeat: 'no-repeat',
-      WebkitMaskSize: '100% 100%',
-      maskSize: '100% 100%',
-    }}
-  />
 
   {/* Content above grid */}
   <div className="relative z-10">
@@ -180,7 +159,6 @@ maskImage: 'linear-gradient(to bottom, black 0%, transparent 35%, transparent 10
         </div>
       </div>
 
-      <Footer />
       <SharePopup isVisible={isShowing} />
     </div>
   );

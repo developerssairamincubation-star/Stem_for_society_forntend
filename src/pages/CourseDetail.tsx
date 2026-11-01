@@ -4,7 +4,6 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components1/ui/button";
 import { ArrowLeft, CheckCircle, Award, ExternalLink, Calendar, MapPin, User } from "lucide-react";
 import Header from "@/components1/Header";
-import Footer from "@/components1/Footer";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -558,7 +557,6 @@ function RatingAndFeedback({
         </div>
       </div>
 
-      <Footer />
 
       <EnrolmentConfirmDialog
         opened={confirmOpen}

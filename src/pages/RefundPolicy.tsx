@@ -1,4 +1,3 @@
-import Footer from "../components1/Footer";
 
 export default function RefundPolicy() {
   return (
@@ -184,7 +183,6 @@ export default function RefundPolicy() {
           </ul>
         </div>
       </div>
-      <Footer />
     </>
   );
 }

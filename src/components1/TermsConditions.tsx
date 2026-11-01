@@ -1,6 +1,5 @@
 import React from "react";
 import Header from "./Header";
-import Footer from "./Footer";
 
 const TermsConditions: React.FC = () => {
   return (
@@ -186,7 +185,6 @@ const TermsConditions: React.FC = () => {
 
       </div>
     </div>
-      <Footer />
     </>
   );
 };

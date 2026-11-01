@@ -1,6 +1,5 @@
 import React from "react";
 import Header from "./Header";
-import Footer from "./Footer";
 
 const PrivacyPolicy: React.FC = () => {
   
@@ -170,7 +169,6 @@ const PrivacyPolicy: React.FC = () => {
 
       </div>
     </div>
-     <Footer />
     </>
   );
 };

@@ -18,7 +18,6 @@ export const InstitutionalCTA = () => {
         {/* Background Effects */}
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-emerald-600/20 rounded-full blur-[120px]" />
         <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-500/10 rounded-full blur-[100px]" />
-        <div className="absolute inset-0 bg-[radial-gradient(#ffffff33_1px,transparent_1px)] [background-size:20px_20px] opacity-20" />
 
         <div className="container mx-auto px-6 md:px-8 lg:px-12 relative z-10 max-w-4xl">
           <h2 className="text-4xl md:text-6xl font-extrabold mb-8 tracking-tight leading-tight font-[Poppins]">

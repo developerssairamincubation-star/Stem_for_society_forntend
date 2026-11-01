@@ -1,6 +1,5 @@
 import React from "react";
 import Header from "./Header";
-import Footer from "./Footer";  
 const RefundPolicy: React.FC = () => {
   return (
     <>
@@ -156,7 +155,6 @@ const RefundPolicy: React.FC = () => {
 
       </div>
     </div>
-      <Footer />
     </>
   );
 };

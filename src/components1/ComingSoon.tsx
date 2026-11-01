@@ -1,6 +1,5 @@
 import React from "react";
 import Header from "./Header";
-import Footer from "./Footer";
 import comingSoonImg from "../assets/coming-soon.webp"; // adjust path
 
 const ComingSoon: React.FC = () => {
@@ -54,7 +53,6 @@ const ComingSoon: React.FC = () => {
       </style>
 
     </div>
-      <Footer />
     </> 
   );
 };

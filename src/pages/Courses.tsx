@@ -2,7 +2,6 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search } from "lucide-react";
 import Header from "@/components1/Header";
-import Footer from "@/components1/Footer";
 import CourseCard from "@/components1/CourseCard";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -236,7 +235,6 @@ const Courses = () => {
           )}
         </div>
       </div>
-      <Footer />
     </div>
   );
 };

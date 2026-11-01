@@ -1,6 +1,5 @@
 import React from 'react';
 import Header from '@/components1/Header';
-import Footer from '@/components1/Footer';
 import { ArrowLeft, Share2, Calendar, User, Clock, ExternalLink } from 'lucide-react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components1/ui/button';
@@ -70,23 +69,6 @@ const BlogPost = () => {
     <div className="min-h-screen bg-white">
       {/* Header Section with Grid Background */}
       <div className="relative overflow-hidden min-h-[120px] md:min-h-[180px]">
-        {/* Grid background */}
-        <div 
-          className="absolute inset-0 opacity-50 pointer-events-none z-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(107,114,128,0.5) 2px, transparent 2px),
-              linear-gradient(90deg, rgba(107,114,128,0.5) 2px, transparent 2px)
-            `,
-            backgroundSize: '100px 100px',
-            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
-            maskImage: 'linear-gradient(to bottom, black 0%, transparent 100%)',
-            WebkitMaskRepeat: 'no-repeat',
-            maskRepeat: 'no-repeat',
-            WebkitMaskSize: '100% 100%',
-            maskSize: '100% 100%',
-          }}
-        />
 
         {/* Content above grid */}
         <div className="relative z-10">
@@ -193,7 +175,6 @@ const BlogPost = () => {
         )}
       </div>
 
-      <Footer />
       <SharePopup isVisible={isShowing} />
     </div>
   );
