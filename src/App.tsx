@@ -59,6 +59,7 @@ const CampusAmbassadorBooking = lazyWithRetry(() => import("./pages/CampusAmbass
 const PartnerRole = lazyWithRetry(() => import("./pages/PartnerRole"));
 const CampusAmbassadorSignup = lazyWithRetry(() => import("./pages/CampusAmbassadorSignup"));
 const InstitutionPortal = lazyWithRetry(() => import("./pages/PartnerInstitutionPortal"));
+const Institutions = lazyWithRetry(() => import("./pages/Institutions"));
 const InstitutionLogin = lazyWithRetry(() => import("./pages/InstitutionLogin"));
 const Courses = lazyWithRetry(() => import("./pages/Courses"));
 const CourseDetail = lazyWithRetry(() => import("./pages/CourseDetail"));
@@ -224,6 +225,7 @@ function App() {
                   path="/explore-program-dashboard"
                   element={<ExploreProgramDashboard />}
                 />
+                <Route path="/institutions" element={<Institutions />} />
                 <Route path="/training" element={<Training />} />
                 <Route path="/training/:id" element={<TrainingSpotlight />} />
                 <Route path="/blogs" element={<BlogListing />} />
