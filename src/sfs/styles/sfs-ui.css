@@ -1,0 +1,351 @@
+/*
+ * SFS UI (migrated from the redesigned site).
+ *
+ * Everything is scoped under `.sfs-ui` with :where(), so it adds no specificity (Tailwind utilities still win)
+ * and cannot leak into the old pages. Import this file BEFORE index.css so utilities come later in the cascade.
+ * Design tokens (brand, deep, tint, ink, surface, radii, shadows) live in tailwind.config.js.
+ */
+
+.sfs-ui {
+  --gutter: 1rem;
+  --page: 1240px;
+  --gx: max(var(--gutter), calc((100vw - var(--page)) / 2));
+  --color-white: #ffffff;
+  --color-brand: #0389ff;
+  --color-deep: #00549f;
+  --color-tint: #c0e1ff;
+  --color-ink: #111827;
+  --color-surface: #f2f8ff;
+  --radius-control: 0.5rem;
+  --radius-card: 1rem;
+  --radius-panel: 1.5rem;
+  --radius-full: 9999px;
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  color: #111827;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+@media (min-width: 640px) {
+  .sfs-ui {
+    --gutter: 1.5rem;
+  }
+}
+.sfs-ui h1,
+.sfs-ui h2,
+.sfs-ui h3 {
+  margin: 0;
+  color: #111827;
+  font-weight: 600;
+}
+.sfs-ui p {
+  margin: 0;
+}
+.sfs-ui :focus-visible {
+  outline: 2px solid #0389ff;
+  outline-offset: 3px;
+  border-radius: 0.5rem;
+}
+.sfs-ui .on-dark :focus-visible,
+.sfs-ui .on-dark:focus-visible {
+  outline-color: #c0e1ff;
+}
+/* Anchors sit under the fixed navigation bar. */
+.sfs-ui [id] {
+  scroll-margin-top: 6rem;
+}
+
+/* ---- Layout ------------------------------------------------------------ */
+:where(.sfs-ui) .container-x {
+  width: min(var(--page), 100% - 2 * var(--gutter));
+  margin-inline: auto;
+} /* Vertical rhythm: sections 64 / 80 / 96px, heading-to-content 40 / 48px. */
+:where(.sfs-ui) .section {
+  padding-block: 4rem;
+}
+:where(.sfs-ui) .section-head {
+  margin-bottom: 2.5rem;
+}
+@media (min-width: 640px) {
+  :where(.sfs-ui) .section {
+    padding-block: 5rem;
+  }
+  :where(.sfs-ui) .section-head {
+    margin-bottom: 3rem;
+  }
+}
+@media (min-width: 1024px) {
+  :where(.sfs-ui) .section {
+    padding-block: 6rem;
+  }
+}
+:where(.sfs-ui) .panel-pad {
+  padding: 2rem;
+}
+@media (min-width: 640px) {
+  :where(.sfs-ui) .panel-pad {
+    padding: 3rem;
+  }
+}
+@media (min-width: 1024px) {
+  :where(.sfs-ui) .panel-pad {
+    padding: 4rem;
+  }
+} /* ---- Type scale (weights: 400 body, 500 UI, 600 headings) ---------------- */
+:where(.sfs-ui) .t-display {
+  font-size: clamp(2.25rem, 1.5rem + 3.2vw, 3.75rem);
+  line-height: 1.1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+:where(.sfs-ui) .t-title {
+  font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.5rem);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+:where(.sfs-ui) .t-heading {
+  font-size: 1.25rem;
+  line-height: 1.35;
+  font-weight: 600;
+  text-wrap: balance;
+}
+:where(.sfs-ui) .t-lead {
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+:where(.sfs-ui) .t-body {
+  font-size: 1rem;
+  line-height: 1.65;
+  text-wrap: pretty;
+}
+:where(.sfs-ui) .t-small {
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+:where(.sfs-ui) .t-label {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  font-weight: 500;
+} /* ---- Buttons: one height, one radius, one weight ---------------------- */
+:where(.sfs-ui) .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.75rem;
+  padding-inline: 1.25rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+:where(.sfs-ui) .btn:active {
+  transform: translateY(1px);
+}
+:where(.sfs-ui) .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+:where(.sfs-ui) .btn-sm {
+  height: 2.5rem;
+  padding-inline: 1rem;
+  font-size: 0.875rem;
+}
+:where(.sfs-ui) .btn-primary {
+  background: var(--color-deep);
+  color: var(--color-white);
+}
+:where(.sfs-ui) .btn-primary:hover {
+  background: color-mix(in oklab, var(--color-deep) 82%, black);
+}
+:where(.sfs-ui) .btn-secondary {
+  background: var(--color-white);
+  border-color: var(--color-deep);
+  color: var(--color-deep);
+}
+:where(.sfs-ui) .btn-secondary:hover {
+  background: var(--color-surface);
+}
+:where(.sfs-ui) .btn-inverse {
+  background: var(--color-white);
+  color: var(--color-deep);
+}
+:where(.sfs-ui) .btn-inverse:hover {
+  background: var(--color-tint);
+} /* ---- Surfaces and controls ------------------------------------------- */
+:where(.sfs-ui) .card {
+  background: var(--color-white);
+  border: 1px solid var(--color-tint);
+  border-radius: var(--radius-card);
+}
+:where(.sfs-ui) .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--color-tint);
+  border-radius: var(--radius-full);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+:where(.sfs-ui) .field {
+  width: 100%;
+  height: 2.75rem;
+  padding-inline: 1rem;
+  border: 1px solid var(--color-tint);
+  border-radius: var(--radius-control);
+  background: var(--color-white);
+  color: var(--color-ink);
+  font-size: 0.9375rem;
+  transition: border-color 0.2s ease;
+}
+:where(.sfs-ui) .field::placeholder {
+  color: color-mix(in oklab, var(--color-ink) 45%, transparent);
+}
+:where(.sfs-ui) .field:focus {
+  border-color: var(--color-brand);
+  outline: none;
+}
+:where(.sfs-ui) textarea.field {
+  height: auto;
+  padding-block: 0.75rem;
+  resize: vertical;
+}
+:where(.sfs-ui) .icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color-tint);
+  border-radius: var(--radius-full);
+  background: var(--color-white);
+  color: var(--color-deep);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+:where(.sfs-ui) .icon-btn:hover {
+  background: var(--color-deep);
+  border-color: var(--color-deep);
+  color: var(--color-white);
+} /* Logo marquee: no boxes, edges fade out, pauses on hover/focus, still for reduced motion. */
+:where(.sfs-ui) .marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 8%,
+    #000 92%,
+    transparent
+  );
+}
+:where(.sfs-ui) .marquee-track {
+  display: flex;
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: marquee 40s linear infinite;
+}
+:where(.sfs-ui) .marquee:hover .marquee-track,
+:where(.sfs-ui) .marquee:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+:where(.sfs-ui) .marquee-item {
+  display: flex;
+  align-items: center;
+  height: 3rem;
+  margin-right: 4rem;
+  flex-shrink: 0;
+}
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.sfs-ui) .marquee-track {
+    animation: none;
+  }
+}
+@keyframes modal-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.sfs-ui) *,
+  :where(.sfs-ui) *::before,
+  :where(.sfs-ui) *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+} /* Hero photos: edges dissolve into the page colour so the picture never ends on a hard line. */
+:where(.sfs-ui) .fade-up {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 42%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 42%);
+}
+:where(.sfs-ui) .fade-hero {
+  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent);
+  mask-image: linear-gradient(to bottom, #000 70%, transparent);
+}
+@media (min-width: 1024px) {
+  :where(.sfs-ui) .fade-hero {
+    -webkit-mask-image: linear-gradient(to right, transparent 0, #000 34%);
+    mask-image: linear-gradient(to right, transparent 0, #000 34%);
+  }
+}
+@media (min-width: 1600px) {
+  :where(.sfs-ui) .fade-sides {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 6%,
+      #000 94%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0,
+      #000 6%,
+      #000 94%,
+      transparent 100%
+    );
+  }
+}
+
+/*
+ * The platform's index.css makes <body> the scroll container (html and body are height: 100%).
+ * The redesigned pages rely on window scrolling (GSAP ScrollTrigger, scroll-linked motion), so while one is mounted
+ * the document goes back to normal flow. Old pages are unaffected: they never render `.sfs-page`.
+ */
+html:has(.sfs-page),
+body:has(.sfs-page) {
+  height: auto;
+  min-height: 100%;
+  overflow-y: visible;
+}

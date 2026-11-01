@@ -13,6 +13,8 @@ import App from "./App.tsx";
 import { getMissingRequired } from "./lib/env";
 import { configError, normalizeError } from "./lib/errors";
 import { initObservability, reportError } from "./lib/observability";
+// SFS UI (scoped to .sfs-ui). Must come before index.css so Tailwind utilities win the cascade.
+import "./sfs/styles/sfs-ui.css";
 import "./index.css";
 
 /* Start reporting before anything else, so failures during boot are captured. */
