@@ -54,7 +54,6 @@ const SignUp = lazyWithRetry(() => import("./pages/Signup"));
 const Training = lazyWithRetry(() => import("./pages/Training"));
 const TrainingSpotlight = lazyWithRetry(() => import("./pages/TrainingSpotlight"));
 const ExploreProgramDashboard = lazyWithRetry(() => import("./pages/ExploreProgramDashboard"));
-const InstitutionPricing = lazyWithRetry(() => import("./pages/InstitutionPricing"));
 const CampusAmbassadorDash = lazyWithRetry(() => import("./pages/CampusAmbassadorDash"));
 const CampusAmbassadorBooking = lazyWithRetry(() => import("./pages/CampusAmbassadorBooking"));
 const PartnerRole = lazyWithRetry(() => import("./pages/PartnerRole"));
@@ -69,7 +68,6 @@ const Blog = lazyWithRetry(() => import("./pages/Blog"));
 const BlogArticle = lazyWithRetry(() => import("./pages/BlogArticle"));
 const BlogPost = lazyWithRetry(() => import("./pages/BlogPost"));
 const InstitutionBookingFlow = lazyWithRetry(() => import("./pages/InstitutionBookingFlow"));
-const InstitutionOrIndividual = lazyWithRetry(() => import("./pages/InstitutionOrIndividual"));
 const FinishingSchool = lazyWithRetry(() => import("./pages/FinishingSchool"));
 const AcademyDetail = lazyWithRetry(() => import("./pages/AcademyDetail"));
 const SkillDevelopment = lazyWithRetry(() => import("./pages/SkillDevelopment"));
@@ -247,10 +245,6 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/refund-policy" element={<RefundPolicy />} />
                 <Route path="/terms-condition" element={<TermsConditions />} />
-                <Route
-                  path="/insituion-individual"
-                  element={<InstitutionOrIndividual />}
-                />
                 <Route path="/partner-role" element={<PartnerRole />} />
                 <Route
                   path="/campus-ambassador-signup"
@@ -280,10 +274,6 @@ function App() {
                   element={<InstitutionBookingFlow />}
                 />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route
-                  path="/institution-pricing"
-                  element={<InstitutionPricing />}
-                />
                 <Route
                   path="/campus-ambassador-booking"
                   element={<CampusAmbassadorBooking />}

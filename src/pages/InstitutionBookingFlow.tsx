@@ -266,7 +266,7 @@ const InstitutionBookingFlow = () => {
 
   const handleBack = () => {
     if (currentStep === 1) {
-      navigate('/institution-pricing');
+      navigate('/institutions');
     } else if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }

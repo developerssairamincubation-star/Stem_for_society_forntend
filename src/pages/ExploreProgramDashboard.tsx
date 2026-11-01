@@ -11,13 +11,13 @@ const ExploreProgramDashboard = () => {
       category: "Students (UG/PG/PhD), Job Seekers",
       title: "Individual",
       description: "Expert guidance to help you build in-demand skills, strengthen your profile, and unlock your highest personal potential.",
-      route: "/insituion-individual?mode=individual"
+      route: "/skill-development"
     },
     {
       category: "Students, Researchers, Young Professionals",
       title: "Institutional",
       description: "Holistic development solutions for edu institutions focusing on career readiness, well-being, and skill enhancement programs.",
-      route: "/insituion-individual?mode=institution"
+      route: "/institutions"
     },
    
     {

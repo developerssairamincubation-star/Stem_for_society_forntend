@@ -106,7 +106,7 @@ cursor-pointer ${getCardClasses("finishing")}`}
               onMouseLeave={() => setHoveredCard(null)}
               className={`group relative w-full h-[280px] sm:h-[320px] md:h-[344px] lg:col-start-3 lg:col-span-2 lg:row-span-2 lg:row-start-3 rounded-2xl sm:rounded-3xl p-4 sm:p-6 overflow-hidden transition-all duration-500 bg-[#FFE07A] hover:bg-[#FFD65C] cursor-pointer ${getCardClasses("individuals")}`}
             >
-              <Link to="/insituion-individual?mode=individual">
+              <Link to="/skill-development">
                 <img loading="lazy" decoding="async"
                   src={asset3}
                   alt="Individuals"

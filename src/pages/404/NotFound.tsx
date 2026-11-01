@@ -14,7 +14,7 @@ const SUGGESTIONS = [
   { to: "/courses", label: "Courses", hint: "Browse every programme on offer" },
   { to: "/training", label: "Trainings", hint: "Live and upcoming sessions" },
   { to: "/blogs", label: "Blog", hint: "Articles from our community" },
-  { to: "/insituion-individual", label: "Get started", hint: "Individual and institution plans" },
+  { to: "/skill-development", label: "Get started", hint: "Explore our programs" },
 ];
 
 type NotFoundProps = {
