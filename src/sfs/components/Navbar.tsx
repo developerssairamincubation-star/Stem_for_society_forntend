@@ -3,20 +3,23 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useActiveSection } from '../hooks/useActiveSection'
-import { navLeft, navRight } from '../data/content'
-import { CAMPUS_AMBASSADOR_PATH, COMMUNITY_PATH, INSTITUTIONS_PATH, currentPath, isHomePath, sectionHref } from '../lib/route'
+import { isExternal } from '../config'
+import { academyLinks, navLeft, navRight, resourceLinks } from '../data/content'
+import { CAMPUS_AMBASSADOR_PATH, COMMUNITY_PATH, INSTITUTIONS_PATH, SKILL_DEVELOPMENT_PATH, currentPath, isHomePath, sectionHref } from '../lib/route'
 import { AuthControl } from './AuthControl'
-import { ResourcesMenu, ResourcesMobileGroup } from './ResourcesMenu'
+import { NavDropdown, NavMobileGroup } from './NavDropdown'
 import { ScrollToHash } from './ScrollToHash'
 import { SmartLink } from './ui/SmartLink'
 
-const sectionIds = ['academy', 'network', 'testimonials', 'partners'] as const
+const sectionIds = ['testimonials', 'partners'] as const
 
 function NavLink({ href, active, children, onClick }: { href: string; active: boolean; children: string; onClick?: () => void }) {
   return (
     <SmartLink
       href={href}
       onClick={onClick}
+      // External destinations (Network Beyond Campus) open in the same tab from the navigation bar.
+      target={isExternal(href) ? '_self' : undefined}
       aria-current={active ? 'true' : undefined}
       className={`t-label inline-flex h-10 items-center rounded-full px-4 whitespace-nowrap transition-colors duration-200 ${
         active ? 'bg-tint/60 text-deep' : 'text-ink/80 hover:bg-white hover:text-ink'
@@ -54,6 +57,8 @@ export function Navbar() {
   const resourcePage = currentPath() === COMMUNITY_PATH || currentPath() === CAMPUS_AMBASSADOR_PATH
   const isActive = (id: string) => {
     if (id === 'resources') return resourcePage
+    if (id === 'academy') return currentPath() === SKILL_DEVELOPMENT_PATH
+    if (id === 'network' || id === 'partner') return false
     return onHome ? id === active : currentPath() === INSTITUTIONS_PATH && id === 'institutions'
   }
   const close = () => setOpen(false)
@@ -81,13 +86,17 @@ export function Navbar() {
               {open ? <X size={22} aria-hidden="true" /> : <List size={22} aria-hidden="true" />}
             </button>
             <ul className="hidden items-center gap-1 min-[1180px]:flex">
-              {navLeft.map((l) => (
-                <li key={l.id}>
-                  <NavLink href={to(l.href)} active={isActive(l.id)}>
-                    {l.label}
-                  </NavLink>
-                </li>
-              ))}
+              {navLeft.map((l) =>
+                l.id === 'academy' ? (
+                  <NavDropdown key={l.id} label={l.label} items={academyLinks} active={isActive(l.id)} />
+                ) : (
+                  <li key={l.id}>
+                    <NavLink href={to(l.href)} active={isActive(l.id)}>
+                      {l.label}
+                    </NavLink>
+                  </li>
+                ),
+              )}
             </ul>
           </div>
 
@@ -101,7 +110,7 @@ export function Navbar() {
             <ul className="hidden items-center gap-1 min-[1180px]:flex">
               {navRight.map((l) =>
                 l.id === 'resources' ? (
-                  <ResourcesMenu key={l.id} active={isActive(l.id)} />
+                  <NavDropdown key={l.id} label={l.label} items={resourceLinks} active={isActive(l.id)} />
                 ) : (
                   <li key={l.id}>
                     <NavLink href={to(l.href)} active={isActive(l.id)}>
@@ -127,13 +136,16 @@ export function Navbar() {
             >
               <ul className="flex flex-col gap-1">
                 {[...navLeft, ...navRight].map((l) =>
-                  l.id === 'resources' ? (
-                    <ResourcesMobileGroup key={l.id} onNavigate={close} />
+                  l.id === 'academy' ? (
+                    <NavMobileGroup key={l.id} label={l.label} items={academyLinks} onNavigate={close} />
+                  ) : l.id === 'resources' ? (
+                    <NavMobileGroup key={l.id} label={l.label} items={resourceLinks} onNavigate={close} />
                   ) : (
                   <li key={l.id}>
                     <SmartLink
                       href={to(l.href)}
                       onClick={close}
+                      target={isExternal(l.href) ? '_self' : undefined}
                       aria-current={isActive(l.id) ? 'true' : undefined}
                       className={`t-label flex h-12 items-center rounded-control px-4 transition-colors duration-200 ${
                         isActive(l.id) ? 'bg-tint/60 text-deep' : 'text-ink hover:bg-surface'

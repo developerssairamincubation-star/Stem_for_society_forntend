@@ -1,16 +1,24 @@
 import { BookOpen, CalendarCheck, GraduationCap, Handshake, MapPin, type Icon } from '@phosphor-icons/react'
 import { links } from '../config'
-import { CAMPUS_AMBASSADOR_PATH, COMMUNITY_PATH } from '../lib/route'
+import { CAMPUS_AMBASSADOR_PATH, COMMUNITY_PATH, SKILL_DEVELOPMENT_PATH } from '../lib/route'
 
 export const navLeft = [
   { label: 'Our Academy', href: '#academy', id: 'academy' },
   { label: 'Institutions', href: '/institutions', id: 'institutions' },
-  { label: 'Network Beyond Campus', href: '#network', id: 'network' },
+  // External website: opens in the same tab from the navigation.
+  { label: 'Network Beyond Campus', href: links.network, id: 'network' },
 ] as const
 
 export const navRight = [
   { label: 'Resources', href: '#resources', id: 'resources' },
   { label: 'Partner With Us', href: links.partner, id: 'partner' },
+] as const
+
+/** Items of the Our Academy dropdown. All three lead to the platform's existing Skill Development page. */
+export const academyLinks = [
+  { label: 'Skill Development', href: SKILL_DEVELOPMENT_PATH },
+  { label: 'Institutions', href: SKILL_DEVELOPMENT_PATH },
+  { label: 'Individuals', href: SKILL_DEVELOPMENT_PATH },
 ] as const
 
 /** Items of the Resources dropdown in the header. */

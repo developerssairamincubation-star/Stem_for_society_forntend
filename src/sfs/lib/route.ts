@@ -3,6 +3,7 @@ export const currentPath = () => window.location.pathname.replace(/\/+$/, '') ||
 export const isHomePath = () => currentPath() === '/'
 export const INSTITUTIONS_PATH = '/institutions'
 export const LOGIN_PATH = '/login'
+export const SKILL_DEVELOPMENT_PATH = '/skill-development'
 export const COMMUNITY_PATH = '/community'
 export const CAMPUS_AMBASSADOR_PATH = '/campus-ambassador'
 
