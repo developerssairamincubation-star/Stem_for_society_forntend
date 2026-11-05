@@ -19,10 +19,19 @@ export function ProgrammeExplorer() {
     tabs.current[i]?.focus()
   }
   const onKey = (e: KeyboardEvent) => {
-    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') (e.preventDefault(), move(active + 1))
-    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') (e.preventDefault(), move(active - 1))
-    else if (e.key === 'Home') (e.preventDefault(), move(0))
-    else if (e.key === 'End') (e.preventDefault(), move(programs.length - 1))
+    const target =
+      e.key === 'ArrowDown' || e.key === 'ArrowRight'
+        ? active + 1
+        : e.key === 'ArrowUp' || e.key === 'ArrowLeft'
+          ? active - 1
+          : e.key === 'Home'
+            ? 0
+            : e.key === 'End'
+              ? programs.length - 1
+              : null
+    if (target === null) return
+    e.preventDefault()
+    move(target)
   }
 
   return (
