@@ -1,21 +1,24 @@
-import { Academy } from "@/sfs/components/Academy";
-import { Hero } from "@/sfs/components/Hero";
-import { NetworkBeyondCampus } from "@/sfs/components/NetworkBeyondCampus";
-import { PartnerCTA } from "@/sfs/components/PartnerCTA";
-import { Partners } from "@/sfs/components/Partners";
+import { HomeHero } from "@/sfs/components/home/HomeHero";
+import { NetworkBand } from "@/sfs/components/home/NetworkBand";
+import { PartnerBand } from "@/sfs/components/home/PartnerBand";
+import { PartnerLogos } from "@/sfs/components/home/PartnerLogos";
+import { ProgrammeExplorer } from "@/sfs/components/home/ProgrammeExplorer";
+import { ProofStrip } from "@/sfs/components/home/ProofStrip";
 import { SfsPage } from "@/sfs/components/SfsPage";
-import { Testimonials } from "@/sfs/components/Testimonials";
 
-/** Home: the redesigned SFS landing page. (The previous home sections remain in components1 but are no longer rendered.) */
+/**
+ * Home, redesign direction "Route": a calm page on cool paper, one full-colour band, one drawn line.
+ * (Testimonials are left out until approved student quotes exist; the previous sample ones were placeholders.)
+ */
 function Home() {
   return (
     <SfsPage>
-      <Hero />
-      <Academy />
-      <NetworkBeyondCampus />
-      <Testimonials />
-      <Partners />
-      <PartnerCTA />
+      <HomeHero />
+      <ProofStrip />
+      <ProgrammeExplorer />
+      <NetworkBand />
+      <PartnerLogos />
+      <PartnerBand />
     </SfsPage>
   );
 }

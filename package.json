@@ -15,6 +15,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-sans": "^5.3.0",
     "@fontsource/poppins": "^5.2.7",
     "@gfazioli/mantine-marquee": "^2.0.8",
     "@hookform/resolvers": "^3.9.0",

@@ -9,13 +9,13 @@ export default {
 				brand: '#0389ff',
 				deep: '#00549f',
 				tint: '#c0e1ff',
-				ink: '#111827',
-				surface: '#f2f8ff',
+				ink: '#0e1b2e',
+				surface: '#f5f8fb',
 			},
 			borderRadius: {
-				control: '0.5rem',
-				card: '1rem',
-				panel: '1.5rem',
+				control: '0.375rem',
+				card: '0.875rem',
+				panel: '1.25rem',
 			},
 			boxShadow: {
 				raised: '0 1px 2px rgb(17 24 39 / 0.06), 0 10px 24px -12px rgb(17 24 39 / 0.16)',

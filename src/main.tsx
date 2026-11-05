@@ -5,6 +5,10 @@ import "@mantine/dates/styles.css";
 import "@fontsource/poppins/400.css";
 import "@fontsource/poppins/500.css";
 import "@fontsource/poppins/600.css";
+// SFS UI typeface (scoped to .sfs-ui; the older pages keep Poppins)
+import "@fontsource/ibm-plex-sans/400.css";
+import "@fontsource/ibm-plex-sans/500.css";
+import "@fontsource/ibm-plex-sans/600.css";
 import "@fontsource/poppins/700.css";
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";

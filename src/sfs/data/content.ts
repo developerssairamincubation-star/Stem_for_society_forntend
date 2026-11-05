@@ -97,6 +97,13 @@ export const networkHighlights: readonly { icon: Icon; label: string }[] = [
   { icon: MapPin, label: 'Find a session near you' },
 ]
 
+/** Headline figures, as published on the platform's previous home page. */
+export const stats = [
+  { value: '22,000+', label: 'Trained Students' },
+  { value: '70+', label: 'Industry Partners' },
+  { value: '40+', label: 'Institution Partners' },
+] as const
+
 export interface Testimonial {
   name: string
   background: string
