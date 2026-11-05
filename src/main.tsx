@@ -16,6 +16,9 @@ import { initObservability, reportError } from "./lib/observability";
 // SFS UI (scoped to .sfs-ui). Must come before index.css so Tailwind utilities win the cascade.
 import "./sfs/styles/sfs-ui.css";
 import "./sfs/styles/sfs-skin.css";
+import "./sfs/styles/sfs-premium.css";
+import "./sfs/lib/motion/motion.css";
+import { startAutoMotion } from "./sfs/lib/motion/autoMotion";
 import "./index.css";
 
 /* Start reporting before anything else, so failures during boot are captured. */
@@ -125,6 +128,8 @@ if (!container) {
     const error = reportError(cause, { source: "boot" });
     renderBootFailure(container, error.correlationId);
   }
+  // Soft entrance motion on every page except the home page (see sfs/lib/motion/autoMotion.ts).
+  startAutoMotion();
 }
 
 /* Surface an early failure of the module graph itself (e.g. a stale chunk). */

@@ -59,14 +59,12 @@ const BlogListing: React.FC = () => {
         description={
           <>
             <p>
-              Stem for Society invites Scientist, Postdoc, PhD, masters, bachelor students and researchers to share their research journey by
-              writing blogs about their publication or scientific information aimed at the general public and society! By sharing insights and
-              engaging with readers, you can foster community connections and encourage meaningful discussions around your research.
+              Stem for Society invites scientists, postdocs, PhD, master’s and bachelor students and researchers to write about their publications
+              or scientific findings for the general public. Sharing what you learn builds community and starts conversations about your research.
             </p>
             <p className="mt-4">
-              Join us in making your research matter to everyone—let's empower society with knowledge and encourage curiosity about the world
-              around us! Every month for the best scientific communication and Outstanding contributions will be rewarded with prizes and
-              certificates of appreciation, recognizing your efforts to make science accessible and engaging for all.
+              Make your research matter to everyone. Each month, the best scientific communication and outstanding contributions receive prizes
+              and certificates of appreciation.
             </p>
           </>
         }

@@ -1,22 +1,11 @@
-import { CaretDown, Eye, EyeSlash } from '@phosphor-icons/react'
+import { Eye, EyeSlash, WarningCircle } from '@phosphor-icons/react'
 import { motion } from 'framer-motion'
-import { useId, useState, type FormEvent } from 'react'
+import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { SmartLink } from '../ui/SmartLink'
-
-export type LoginRole = 'STUDENT' | 'PARTNER' | 'ADMIN'
-
-/** The roles the platform can actually sign in (student, partner and admin each have their own endpoint). */
-export const loginRoles: { value: LoginRole; label: string }[] = [
-  { value: 'STUDENT', label: 'Student' },
-  { value: 'PARTNER', label: 'Partner' },
-  { value: 'ADMIN', label: 'Admin' },
-]
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 interface LoginFormPanelProps {
-  role: LoginRole
-  onRoleChange: (role: LoginRole) => void
   loading: boolean
   /** Shown only when Google sign-in is configured (and for students). */
   googleEnabled: boolean
@@ -35,8 +24,27 @@ function GoogleIcon() {
   )
 }
 
-export function LoginFormPanel({ role, onRoleChange, loading, googleEnabled, onGoogle, onSubmit }: LoginFormPanelProps) {
+/** The line under a field. It always takes its height, so an error appearing never moves the field below it. */
+function FieldNote({ id, error, children }: { id: string; error?: string; children?: ReactNode }) {
+  return (
+    <div className="mt-1.5 flex min-h-[1.375rem] flex-wrap items-start justify-between gap-x-4 gap-y-1 text-sm leading-[1.375rem]">
+      {error ? (
+        <p id={id} role="alert" className="flex items-start gap-1.5 text-[var(--login-error)]">
+          <WarningCircle size={18} weight="fill" aria-hidden="true" className="mt-0.5 shrink-0" />
+          {error}
+        </p>
+      ) : (
+        <span />
+      )}
+      {children}
+    </div>
+  )
+}
+
+export function LoginFormPanel({ loading, googleEnabled, onGoogle, onSubmit }: LoginFormPanelProps) {
   const id = useId()
+  const emailRef = useRef<HTMLInputElement>(null)
+  const passwordRef = useRef<HTMLInputElement>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -48,15 +56,18 @@ export function LoginFormPanel({ role, onRoleChange, loading, googleEnabled, onG
 
   const submit = (e: FormEvent) => {
     e.preventDefault()
+    if (loading) return
     setTouched({ email: true, password: true })
-    if (!valid || loading) return
+    if (!valid) {
+      // Take the person straight to the first field that needs attention.
+      ;(emailError ? emailRef : passwordRef).current?.focus()
+      return
+    }
     onSubmit({ email: email.trim(), password })
   }
 
   const showEmailError = touched.email && emailError
   const showPasswordError = touched.password && passwordError
-  const student = role === 'STUDENT'
-  const partner = role === 'PARTNER'
 
   return (
     <motion.section
@@ -64,154 +75,116 @@ export function LoginFormPanel({ role, onRoleChange, loading, googleEnabled, onG
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-      className="flex items-center justify-center px-2 py-10 sm:px-8 lg:px-10 lg:py-0"
+      className="flex items-center justify-center px-6 py-10 sm:px-10 sm:py-12 lg:px-14"
     >
-      <div className="w-full max-w-sm">
-        <h2 id="login-title" className="t-title">
+      <div className="w-full max-w-[26rem]">
+        <h1 id="login-title" className="text-[1.75rem] leading-tight font-semibold sm:text-[2rem]">
           Login to STEM Portal
-        </h2>
+        </h1>
 
-        <form onSubmit={submit} noValidate className="mt-8 grid gap-5">
+        <form onSubmit={submit} noValidate className="mt-8">
           <div>
-            <label htmlFor={`${id}-email`} className="t-label mb-2 block">
-              Email Address
+            <label htmlFor={`${id}-email`} className="mb-2 block text-sm font-medium">
+              Email address
             </label>
             <input
+              ref={emailRef}
               id={`${id}-email`}
               name="email"
               type="email"
               autoComplete="email"
               inputMode="email"
-              placeholder="student@college.edu"
+              placeholder="name@example.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               onBlur={() => setTouched((t) => ({ ...t, email: true }))}
               aria-invalid={showEmailError ? true : undefined}
               aria-describedby={showEmailError ? `${id}-email-error` : undefined}
-              className={`field ${showEmailError ? '!border-red-500' : ''}`}
+              className="login-field"
             />
-            {showEmailError && (
-              <p id={`${id}-email-error`} role="alert" className="t-small mt-1.5 text-red-600">
-                {emailError}
-              </p>
-            )}
+            <FieldNote id={`${id}-email-error`} error={showEmailError ? emailError : undefined} />
           </div>
 
-          <div>
-            <div className="mb-2 flex items-center justify-between gap-3">
-              <label htmlFor={`${id}-password`} className="t-label">
-                Password
-              </label>
-              {student && (
-                <SmartLink href="/forgot-password" className="t-small text-deep underline-offset-4 hover:underline">
-                  Forgot Password?
-                </SmartLink>
-              )}
-            </div>
+          <div className="mt-2">
+            <label htmlFor={`${id}-password`} className="mb-2 block text-sm font-medium">
+              Password
+            </label>
             <div className="relative">
               <input
+                ref={passwordRef}
                 id={`${id}-password`}
                 name="password"
                 type={showPassword ? 'text' : 'password'}
                 autoComplete="current-password"
-                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onBlur={() => setTouched((t) => ({ ...t, password: true }))}
                 aria-invalid={showPasswordError ? true : undefined}
                 aria-describedby={showPasswordError ? `${id}-password-error` : undefined}
-                className={`field !pr-12 ${showPasswordError ? '!border-red-500' : ''}`}
+                className="login-field !pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
                 aria-pressed={showPassword}
-                className="absolute inset-y-0 right-0 grid w-11 place-items-center rounded-control text-ink/60 transition-colors duration-200 hover:text-deep"
+                className="absolute inset-y-0 right-0 grid w-12 place-items-center rounded-control text-ink/65 transition-colors duration-200 hover:text-deep focus-visible:!outline-offset-[-3px] motion-reduce:transition-none"
               >
                 {showPassword ? <EyeSlash size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
               </button>
             </div>
-            {showPasswordError && (
-              <p id={`${id}-password-error`} role="alert" className="t-small mt-1.5 text-red-600">
-                {passwordError}
-              </p>
-            )}
+            <FieldNote id={`${id}-password-error`} error={showPasswordError ? passwordError : undefined}>
+              <SmartLink href="/forgot-password" className="login-link shrink-0">
+                Forgot password?
+              </SmartLink>
+            </FieldNote>
           </div>
 
-          <div>
-            <label htmlFor={`${id}-role`} className="t-label mb-2 block">
-              Choose Role
-            </label>
-            <div className="relative">
-              <select
-                id={`${id}-role`}
-                name="role"
-                value={role}
-                onChange={(e) => onRoleChange(e.target.value as LoginRole)}
-                className="field appearance-none !pr-11"
-              >
-                {loginRoles.map((r) => (
-                  <option key={r.value} value={r.value}>
-                    {r.label}
-                  </option>
-                ))}
-              </select>
-              <CaretDown size={16} aria-hidden="true" className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-ink/60" />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading || !valid}
-            aria-busy={loading}
-            className="btn btn-primary w-full transition-transform duration-200 enabled:hover:-translate-y-0.5 enabled:active:translate-y-0 motion-reduce:transition-none"
-          >
+          <button type="submit" disabled={loading} aria-busy={loading} className="login-btn login-btn-primary mt-4">
             {loading ? (
               <>
-                <span className="login-spinner size-4 rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+                <span className="login-spinner size-[1.125rem] rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
                 Logging in…
               </>
             ) : (
-              'Log In'
+              'Log in'
             )}
           </button>
         </form>
 
-        {(student || partner) && (
-          <p className="t-small mt-5 text-center text-ink/70">
-            {student ? 'Don’t have an account? ' : 'Want to partner with us? '}
-            <SmartLink href={student ? '/signup' : '/partner/signup'} className="font-medium text-deep underline-offset-4 hover:underline">
-              {student ? 'Create account' : 'Sign up'}
-            </SmartLink>
-          </p>
-        )}
-
         {googleEnabled && (
-          <>
-            <div className="my-5 flex items-center gap-4" role="separator" aria-label="Or">
+          <div className="mt-5">
+            <div className="mb-5 flex items-center gap-4" role="separator" aria-label="Or">
               <span className="h-px flex-1 bg-tint" />
-              <span className="t-small text-ink/60">Or</span>
+              <span className="text-sm text-ink/65">Or</span>
               <span className="h-px flex-1 bg-tint" />
             </div>
-            <button type="button" onClick={onGoogle} disabled={loading} className="btn btn-secondary w-full !border-tint !text-ink hover:!bg-surface">
+            <button type="button" onClick={onGoogle} disabled={loading} className="login-btn login-btn-alt">
               <GoogleIcon />
               Continue with Google
             </button>
-          </>
+          </div>
         )}
 
-        <p className="t-small mt-6 text-center text-ink/60">
-          By continuing, you agree to our{' '}
-          <SmartLink href="/terms-condition" className="text-deep underline underline-offset-4">
-            Terms of Service
-          </SmartLink>{' '}
-          and{' '}
-          <SmartLink href="/privacy-policy" className="text-deep underline underline-offset-4">
-            Privacy Policy
-          </SmartLink>
-          .
-        </p>
+        <div className="mt-7 grid gap-3 text-center text-sm text-ink/70">
+          <p>
+            Don’t have an account?{' '}
+            <SmartLink href="/signup" className="login-link font-medium">
+              Create account
+            </SmartLink>
+          </p>
+          <p>
+            By continuing, you agree to our{' '}
+            <SmartLink href="/terms-condition" className="login-link">
+              Terms of Service
+            </SmartLink>{' '}
+            and{' '}
+            <SmartLink href="/privacy-policy" className="login-link">
+              Privacy Policy
+            </SmartLink>
+            .
+          </p>
+        </div>
       </div>
     </motion.section>
   )

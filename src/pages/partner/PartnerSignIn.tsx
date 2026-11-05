@@ -44,7 +44,8 @@ export default function PartnerSignIn() {
 
   return (
     <AuthShell
-      title="Partner Login"
+      scene="partner"
+      title="Partner login"
       description="Enter your credentials to access your dashboard"
       brandTitle="Innovate, Incubate and Impact"
       brandText="Partner with us to transform education."
@@ -101,7 +102,7 @@ export default function PartnerSignIn() {
           </div>
         </AuthField>
         <button disabled={isSigningIn} type="submit" className="btn btn-primary w-full">
-          {isSigningIn ? "Signing in..." : "Login"}
+          {isSigningIn ? "Signing in..." : "Log in"}
         </button>
       </form>
     </AuthShell>

@@ -42,11 +42,14 @@ export function PageHero({ title, description, kicker, actions, image, id = 'pag
     transition: { duration: 0.6, delay, ease },
   })
   return (
-    <section aria-labelledby={id} className="on-dark relative isolate overflow-hidden bg-deep pt-32 pb-12 sm:pb-14 lg:pt-40 lg:pb-16">
-      <div className={`container-x relative ${image ? 'grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14' : ''}`}>
+    <section aria-labelledby={id} className="on-dark relative isolate overflow-hidden bg-deep pt-36 pb-16 sm:pb-20 lg:pt-44 lg:pb-24">
+      {/* A soft light from the upper right, so the blue has depth. Decorative only. */}
+      <div aria-hidden="true" className="premium-hero-light absolute inset-0 -z-10" />
+      <div aria-hidden="true" className="absolute inset-x-0 bottom-0 -z-10 h-px bg-white/15" />
+      <div className={`container-x relative ${image ? 'grid items-center gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16' : ''}`}>
         <div className={image ? '' : 'max-w-3xl'}>
           {kicker && (
-            <motion.div {...rise(0)} className="t-small mb-4 text-white/75">
+            <motion.div {...rise(0)} className="t-small mb-5 text-white/75">
               {kicker}
             </motion.div>
           )}
@@ -54,12 +57,12 @@ export function PageHero({ title, description, kicker, actions, image, id = 'pag
             {title}
           </motion.h1>
           {description && (
-            <motion.div {...rise(0.15)} className="t-lead mt-5 max-w-2xl text-white/80">
+            <motion.div {...rise(0.15)} className="t-lead mt-6 max-w-2xl">
               {description}
             </motion.div>
           )}
           {actions && (
-            <motion.div {...rise(0.25)} className="mt-8 flex flex-wrap items-center gap-4">
+            <motion.div {...rise(0.25)} className="mt-10 flex flex-wrap items-center gap-4">
               {actions}
             </motion.div>
           )}
@@ -69,9 +72,9 @@ export function PageHero({ title, description, kicker, actions, image, id = 'pag
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0.1, ease }}
-            className="overflow-hidden rounded-card"
+            className="overflow-hidden rounded-panel shadow-overlay ring-1 ring-white/20"
           >
-            <img src={image.src} alt={image.alt} className="aspect-[16/10] w-full object-cover" />
+            <img src={image.src} alt={image.alt} className="aspect-[4/3] w-full object-cover" />
           </motion.div>
         )}
       </div>

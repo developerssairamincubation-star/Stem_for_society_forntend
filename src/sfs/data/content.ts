@@ -109,15 +109,18 @@ export interface Testimonial {
   background: string
   quote: string
   portrait: string
+  /** Optional 1 to 5 star rating. Cards show stars only when one is given, so no rating is ever shown that nobody supplied. */
+  rating?: 1 | 2 | 3 | 4 | 5
 }
 
-/** Sample content — replace with approved student testimonials before launch. */
+/** Sample content, including the five-star ratings: replace with approved student testimonials and real ratings before launch. */
 export const testimonials: readonly Testimonial[] = [
   {
     name: 'Amara O.',
     background: 'Industry Skills · Robotics and AI',
     quote:
       'I had only ever built things in a classroom. Shipping a working prototype for a real client taught me more in eight weeks than a full semester of theory.',
+    rating: 5,
     portrait: '/images/portraits/p2.jpg',
   },
   {
@@ -125,6 +128,7 @@ export const testimonials: readonly Testimonial[] = [
     background: 'Professional Skills · Leadership track',
     quote:
       'Presenting to mentors every week changed how I speak up. I went from hiding in the back row to leading my team’s demo.',
+    rating: 5,
     portrait: '/images/portraits/p4.jpg',
   },
   {
@@ -132,6 +136,7 @@ export const testimonials: readonly Testimonial[] = [
     background: 'Finishing School · Career preparation',
     quote:
       'Mock interviews and portfolio reviews made my first real interview feel familiar. I knew what to say and why my projects mattered.',
+    rating: 5,
     portrait: '/images/portraits/p1.jpg',
   },
   {
@@ -139,6 +144,7 @@ export const testimonials: readonly Testimonial[] = [
     background: 'Industry Skills · UI/UX Design',
     quote:
       'My mentor challenged every design decision I made. Defending my choices to a working designer is what finally made me feel like one.',
+    rating: 5,
     portrait: '/images/portraits/p5.jpg',
   },
   {
@@ -146,6 +152,7 @@ export const testimonials: readonly Testimonial[] = [
     background: 'Industry Skills · Data Science and Analytics',
     quote:
       'Working with messy, real datasets was humbling and exciting. The community around the programme kept me going when the models didn’t.',
+    rating: 5,
     portrait: '/images/portraits/p3.jpg',
   },
 ]

@@ -1,53 +1,62 @@
-/** Left panel: moving blue gradient, a few soft shapes and a faint network, with the logo and welcome copy. */
-export function BrandPanel() {
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+
+const ease = [0.16, 1, 0.3, 1] as const
+
+/** The photographs the sign-in screens use, each cropped so the people stay in frame. */
+const scenes = {
+  student: { src: '/images/hero-v2.jpg', width: 1072, height: 760, position: '46% 18%' },
+  partner: { src: '/images/partner.jpg', width: 1200, height: 800, position: '72% 35%' },
+  admin: { src: '/images/network.jpg', width: 1600, height: 1068, position: '68% 30%' },
+} as const
+
+export type BrandScene = keyof typeof scenes
+
+interface BrandPanelProps {
+  title?: string
+  text?: string
+  scene?: BrandScene
+}
+
+/**
+ * Left panel: a real photograph from the site behind the welcome line. A deep-blue scrim rises from the bottom edge so the
+ * words stay readable whatever the crop. On phones it becomes a short banner above the form.
+ */
+export function BrandPanel({ title = 'Start Your Journey', text = 'Explore, innovate, and connect with the STEM community', scene = 'student' }: BrandPanelProps) {
+  const photo = scenes[scene]
   return (
     <section
       aria-label="Welcome to STEM for Society"
-      className="login-gradient relative flex flex-col overflow-hidden rounded-[1.5rem] p-6 text-white sm:p-8 lg:p-10"
+      className="relative isolate flex min-h-[14.5rem] flex-col overflow-hidden text-white sm:min-h-[17rem] lg:min-h-0"
     >
-      {/* Decorative layer: shapes, glow and a faint network of nodes */}
-      <div aria-hidden="true" className="login-decor pointer-events-none absolute inset-0">
-        <span className="login-float absolute -top-16 -right-10 size-56 rounded-full bg-white/10" />
-        <span className="login-float absolute bottom-24 -left-16 size-44 rounded-full bg-white/10 [animation-delay:-4s]" />
-        <span className="login-glow absolute top-1/3 right-1/4 size-64 rounded-full bg-cyan-300/30 blur-3xl" />
-        <svg className="login-glow absolute inset-0 h-full w-full" viewBox="0 0 400 600" preserveAspectRatio="xMidYMid slice" fill="none">
-          <g stroke="white" strokeOpacity="0.5" strokeWidth="1">
-            <path d="M60 120 L170 80 L260 150 L340 90" />
-            <path d="M170 80 L200 210 L260 150" />
-            <path d="M200 210 L120 290 L60 120" />
-            <path d="M260 150 L330 260 L200 210" />
-          </g>
-          <g fill="white">
-            {[
-              [60, 120],
-              [170, 80],
-              [260, 150],
-              [340, 90],
-              [200, 210],
-              [120, 290],
-              [330, 260],
-            ].map(([x, y]) => (
-              <circle key={`${x}-${y}`} cx={x} cy={y} r="3.5" />
-            ))}
-          </g>
-        </svg>
-      </div>
+      <motion.img
+        src={photo.src}
+        alt=""
+        width={photo.width}
+        height={photo.height}
+        initial={{ scale: 1.06 }}
+        animate={{ scale: 1 }}
+        transition={{ duration: 1.6, ease }}
+        style={{ objectPosition: photo.position }}
+        className="absolute inset-0 -z-10 size-full object-cover"
+      />
+      <div aria-hidden="true" className="login-scrim absolute inset-0 -z-10" />
 
-      <div className="relative z-10 flex flex-1 flex-col">
-        <img
-          src="/images/brand/sfs-logo.png"
-          alt="STEM for Society"
-          width={64}
-          height={64}
-          className="size-14 object-contain brightness-0 invert sm:size-16"
-        />
+      <div className="flex flex-1 flex-col p-6 sm:p-8 lg:p-10">
+        <Link to="/" aria-label="STEM for Society home" className="on-dark w-fit rounded-control">
+          <img
+            src="/images/brand/sfs-logo.png"
+            alt="STEM for Society"
+            width={64}
+            height={64}
+            className="size-12 object-contain brightness-0 invert sm:size-16"
+          />
+        </Link>
 
-        {/* Welcome copy sits at the bottom of the panel */}
-        <div className="mt-10 lg:mt-auto lg:pt-16">
-          <h1 className="t-display !text-white">Start Your Journey</h1>
-          <p className="t-lead mt-4 max-w-md text-white/85">Explore, innovate, and connect with the STEM community</p>
+        <div className="mt-auto grid gap-3 pt-8">
+          <p className="t-display text-white">{title}</p>
+          <p className="t-lead hidden max-w-sm text-white/90 sm:block">{text}</p>
         </div>
-
       </div>
     </section>
   )

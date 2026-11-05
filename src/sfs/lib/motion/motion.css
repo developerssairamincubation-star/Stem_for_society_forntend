@@ -1,0 +1,34 @@
+/*
+ * Scroll and entrance motion for the pages outside the home page.
+ * The timing comes from the reference capture: quick 150 to 200ms hover changes, slower 600 to 700ms entrances, one soft ease.
+ * Content is only hidden once autoMotion.ts has marked it, so every page still works without scripting.
+ */
+:root {
+  --sfs-ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --sfs-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --sfs-reveal-duration: 650ms;
+  --sfs-reveal-distance: 20px;
+}
+
+.sfs-motion [data-reveal] {
+  opacity: 0;
+  transform: translate3d(0, var(--sfs-reveal-distance), 0);
+  transition:
+    opacity var(--sfs-reveal-duration) var(--sfs-ease),
+    transform var(--sfs-reveal-duration) var(--sfs-ease-out);
+}
+.sfs-motion [data-reveal='fade'] {
+  transform: none;
+}
+.sfs-motion [data-reveal].is-in {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sfs-motion [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

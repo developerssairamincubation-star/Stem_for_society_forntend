@@ -1,6 +1,7 @@
 import { motion, MotionConfig } from 'framer-motion'
 import type { ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { BrandPanel, type BrandScene } from '../login/BrandPanel'
+import '@/sfs/styles/sfs-login.css'
 
 interface AuthShellProps {
   /** Heading of the form panel. */
@@ -10,6 +11,8 @@ interface AuthShellProps {
   /** Headline and line shown on the blue brand panel. */
   brandTitle?: string
   brandText?: string
+  /** Which photograph sits behind the brand panel. */
+  scene?: BrandScene
   /** Wider form column for long registration forms. */
   wide?: boolean
   children: ReactNode
@@ -28,64 +31,43 @@ export function AuthShell({
   description,
   brandTitle = 'Start Your Journey',
   brandText = 'Explore, innovate, and connect with the STEM community',
+  scene = 'student',
   wide = false,
   children,
   footer,
 }: AuthShellProps) {
   return (
     <MotionConfig reducedMotion="user">
-      <div className="sfs-ui sfs-skin min-h-screen bg-surface px-3 py-6 sm:px-6 sm:py-10 lg:flex lg:items-center lg:justify-center">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.98 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, ease }}
-          className={`mx-auto grid w-full gap-2 rounded-[2rem] bg-white p-2 shadow-overlay lg:min-h-[640px] ${
-            wide ? 'max-w-6xl lg:grid-cols-[40fr_60fr]' : 'max-w-6xl lg:grid-cols-[58fr_42fr]'
-          }`}
-        >
-          <section
-            aria-label="Welcome to STEM for Society"
-            className="login-gradient relative flex flex-col overflow-hidden rounded-[1.5rem] p-6 text-white sm:p-8 lg:p-10"
+      <div className="sfs-ui sfs-skin sfs-login min-h-dvh bg-surface p-3 sm:p-6 lg:flex lg:items-center lg:justify-center">
+        <main className="mx-auto w-full max-w-[72rem]">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.4, ease }}
+            className={`grid overflow-hidden rounded-panel bg-white shadow-overlay lg:min-h-[40rem] ${
+              wide ? 'lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]' : 'lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)]'
+            }`}
           >
-            <div aria-hidden="true" className="login-decor pointer-events-none absolute inset-0">
-              <span className="login-float absolute -top-16 -right-10 size-56 rounded-full bg-white/10" />
-              <span className="login-float absolute bottom-24 -left-16 size-44 rounded-full bg-white/10 [animation-delay:-4s]" />
-              <span className="login-glow absolute top-1/3 right-1/4 size-64 rounded-full bg-cyan-300/30 blur-3xl" />
-            </div>
-            <div className="relative z-10 flex flex-1 flex-col">
-              <Link to="/" aria-label="STEM for Society home" className="w-fit rounded-control">
-                <img
-                  src="/images/brand/sfs-logo.png"
-                  alt="STEM for Society"
-                  width={64}
-                  height={64}
-                  className="size-14 object-contain brightness-0 invert sm:size-16"
-                />
-              </Link>
-              <div className="mt-8 lg:mt-auto lg:pt-16">
-                <h2 className="t-display !text-white">{brandTitle}</h2>
-                <p className="t-lead mt-4 max-w-md text-white/85">{brandText}</p>
-              </div>
-            </div>
-          </section>
+            <BrandPanel title={brandTitle} text={brandText} scene={scene} />
 
-          <motion.section
-            aria-labelledby="auth-title"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.1, ease }}
-            className="flex items-center justify-center px-2 py-10 sm:px-8 lg:px-10 lg:py-10"
-          >
-            <div className={`w-full ${wide ? 'max-w-2xl' : 'max-w-sm'}`}>
-              <h1 id="auth-title" className="t-title">
-                {title}
-              </h1>
-              {description && <p className="t-body mt-2 text-ink/70">{description}</p>}
-              <div className="mt-8">{children}</div>
-              {footer && <div className="t-small mt-6 text-center text-ink/70">{footer}</div>}
-            </div>
-          </motion.section>
-        </motion.div>
+            <motion.section
+              aria-labelledby="auth-title"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1, ease }}
+              className="flex items-center justify-center px-6 py-10 sm:px-10 sm:py-12 lg:px-14"
+            >
+              <div className={`w-full ${wide ? 'max-w-2xl' : 'max-w-[26rem]'}`}>
+                <h1 id="auth-title" className="text-[1.75rem] leading-tight font-semibold sm:text-[2rem]">
+                  {title}
+                </h1>
+                {description && <p className="t-body mt-3 text-ink/70">{description}</p>}
+                <div className="mt-8">{children}</div>
+                {footer && <div className="t-small mt-7 text-center text-ink/70">{footer}</div>}
+              </div>
+            </motion.section>
+          </motion.div>
+        </main>
       </div>
     </MotionConfig>
   )

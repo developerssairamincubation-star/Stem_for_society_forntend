@@ -674,7 +674,7 @@ const ForgotPassword = () => {
     <AuthShell
       title={stepCopy[currentStep].title}
       description={stepCopy[currentStep].description}
-      brandTitle="Reset your password and get back to innovating!"
+      brandTitle="Reset your password and get back to innovating"
       brandText="A few steps and you are back in."
       footer={
         <>

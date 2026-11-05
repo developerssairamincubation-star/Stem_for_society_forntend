@@ -1,6 +1,6 @@
 import { LoginPage } from "@/sfs/components/login/LoginPage";
 
-/** /login: the redesigned sign-in page (students, partners and admins; see the sfs login components). */
+/** /login: the student sign-in. Partners and admins sign in at /partner/signin and /admin/signin. */
 const Login = () => <LoginPage />;
 
 export default Login;

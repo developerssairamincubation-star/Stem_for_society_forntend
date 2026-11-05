@@ -763,7 +763,8 @@ const PartnerInstitutionPortal = () => {
 
   return (
     <AuthShell
-      title="Partner With Us - Institution"
+      scene="partner"
+      title="Partner with us: institution"
       description={
         currentStep === 1
           ? "Enter your company details to proceed further"

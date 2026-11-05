@@ -1,0 +1,187 @@
+/* Hallmark · shape: kept (each page keeps its own composition) · genre: editorial · theme: brand · redesign: restyle
+ * paper: oklch(0.977 0.011 252) · accent: oklch(0.448 0.140 253) · display: Poppins · body: Poppins · hero: kept · nav: kept · footer: kept · signature: calm type, wide spacing and one real photograph per opener
+ * axes: surface/Poppins/deep · posture: settled · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E3 S3 R4 V4 · weakest: E, the long catalogue pages are still card grids, only their surfaces and spacing moved */
+/*
+ * Premium layer for the migrated pages (the old public, sign-in and registration pages).
+ * Loaded after sfs-skin.css. Rules start with `.sfs-skin` or `:where(.sfs-skin)`, a class only those pages add, so the five
+ * reference pages and the Partner and Admin dashboards cannot be reached from here.
+ */
+
+:root {
+  /* The field edge tint (#c0e1ff) is 1.3:1 on white. This one is 4.2:1, enough to find a field by. */
+  --sfs-edge: #6b7c93;
+  --sfs-edge-hover: #00549f;
+  --sfs-paper: #ffffff;
+  --sfs-surface: #f2f8ff;
+  --sfs-ink: #111827;
+  --sfs-ink-2: rgb(17 24 39 / 0.72);
+  --sfs-accent: #00549f;
+  --sfs-brand: #0389ff;
+  --sfs-hairline: rgb(192 225 255 / 0.75);
+  --sfs-shadow-card: 0 1px 2px rgb(17 24 39 / 0.04), 0 18px 36px -24px rgb(0 84 159 / 0.35);
+  --sfs-shadow-lift: 0 1px 2px rgb(17 24 39 / 0.05), 0 24px 44px -22px rgb(0 84 159 / 0.45);
+  --sfs-hero-light: 3 137 255;
+}
+
+/* ---- Type: calmer, tighter, a little larger ------------------------------ */
+:where(.sfs-skin) .t-display {
+  line-height: 1.05;
+  letter-spacing: -0.022em;
+}
+:where(.sfs-skin) .t-title {
+  letter-spacing: -0.018em;
+}
+:where(.sfs-skin) .t-lead {
+  color: var(--sfs-ink-2);
+}
+.sfs-skin .on-dark .t-lead {
+  color: rgb(255 255 255 / 0.78);
+}
+
+/* ---- Rhythm: more air between sections --------------------------------- */
+:where(.sfs-skin) .section {
+  padding-block: 4.5rem;
+}
+@media (min-width: 640px) {
+  :where(.sfs-skin) .section {
+    padding-block: 6rem;
+  }
+}
+@media (min-width: 1024px) {
+  :where(.sfs-skin) .section {
+    padding-block: 7rem;
+  }
+}
+
+/* ---- Surfaces: a hairline and a soft, layered shadow ---------------------- */
+:where(.sfs-skin) .card {
+  border-color: var(--sfs-hairline);
+  box-shadow: var(--sfs-shadow-card);
+}
+@media (hover: hover) {
+  :where(.sfs-skin) a.card:hover,
+  :where(.sfs-skin) .card.group:hover {
+    box-shadow: var(--sfs-shadow-lift);
+  }
+}
+:where(.sfs-skin) .chip {
+  background-color: var(--sfs-surface);
+  border-color: transparent;
+}
+
+/* ---- Buttons: one size up, same radius ---------------------------------- */
+:where(.sfs-skin) .btn {
+  height: 3rem;
+  padding-inline: 1.5rem;
+  font-size: 1rem;
+}
+:where(.sfs-skin) .btn-sm {
+  height: 2.5rem;
+  padding-inline: 1rem;
+  font-size: 0.875rem;
+}
+.sfs-skin .btn:focus-visible {
+  outline: 2px solid var(--sfs-brand);
+  outline-offset: 2px;
+  transition: none;
+}
+
+/* ---- Fields: a clear edge, one focus ring ------------------------------- */
+.sfs-skin input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='range']):not([type='hidden']),
+.sfs-skin select,
+.sfs-skin textarea {
+  min-height: 3rem;
+  border-color: var(--sfs-edge);
+  font-size: 1rem;
+}
+@media (hover: hover) {
+  .sfs-skin input:not([type='checkbox']):not([type='radio']):not([type='file']):not([type='range']):not([type='hidden']):hover:not(:focus):not(:disabled),
+  .sfs-skin select:hover:not(:focus):not(:disabled),
+  .sfs-skin textarea:hover:not(:focus):not(:disabled) {
+    border-color: var(--sfs-edge-hover);
+    background-color: var(--sfs-surface);
+  }
+}
+.sfs-skin input:not([type='checkbox']):not([type='radio']):focus,
+.sfs-skin select:focus,
+.sfs-skin textarea:focus {
+  border-color: var(--sfs-accent);
+  box-shadow: 0 0 0 3px rgb(3 137 255 / 0.22);
+}
+.sfs-skin input[aria-invalid='true'],
+.sfs-skin select[aria-invalid='true'] {
+  border-color: #b42318;
+}
+.sfs-skin .mantine-PasswordInput-input,
+.sfs-skin .mantine-TagsInput-input,
+.sfs-skin .mantine-PillsInput-input {
+  min-height: 3rem;
+  border-color: var(--sfs-edge);
+}
+.sfs-skin .mantine-Checkbox-input {
+  border-color: var(--sfs-edge);
+}
+
+/* The +91 prefix of the phone field is drawn with shadcn tokens that this app does not define, so give it its own look. */
+.sfs-skin span[aria-hidden='true'].pointer-events-none.select-none {
+  display: flex;
+  align-items: center;
+  padding-inline: 0.875rem;
+  border: 1px solid var(--sfs-edge);
+  border-right: 0;
+  border-radius: 0.5rem 0 0 0.5rem;
+  background-color: var(--sfs-surface);
+  color: var(--sfs-ink-2);
+  font-size: 1rem;
+}
+.sfs-skin span[aria-hidden='true'].pointer-events-none.select-none + input {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+/* ---- Page opener: deep blue with a soft light from the upper right ------- */
+.sfs-skin .premium-hero-light {
+  background:
+    radial-gradient(60rem 28rem at 88% -8%, rgb(var(--sfs-hero-light) / 0.42), transparent 62%),
+    radial-gradient(40rem 22rem at 0% 110%, rgb(0 30 60 / 0.35), transparent 70%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sfs-skin .card,
+  .sfs-skin .btn {
+    transition: none;
+  }
+}
+
+/* ---- Institutions, Community and Campus Ambassador: refinements only, their layouts are unchanged ------- */
+:where(.sfs-polish) .card {
+  border-color: var(--sfs-hairline);
+  box-shadow: var(--sfs-shadow-card);
+  transition:
+    box-shadow 0.2s var(--sfs-ease),
+    border-color 0.2s var(--sfs-ease);
+}
+@media (hover: hover) {
+  :where(.sfs-polish) a.card:hover,
+  :where(.sfs-polish) .card.group:hover {
+    box-shadow: var(--sfs-shadow-lift);
+  }
+}
+.sfs-polish .btn {
+  transition:
+    background-color 0.16s var(--sfs-ease),
+    border-color 0.16s var(--sfs-ease),
+    color 0.16s var(--sfs-ease),
+    transform 0.16s var(--sfs-ease);
+}
+.sfs-polish .btn:focus-visible {
+  outline: 2px solid var(--sfs-brand);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .sfs-polish .card,
+  .sfs-polish .btn {
+    transition: none;
+  }
+}

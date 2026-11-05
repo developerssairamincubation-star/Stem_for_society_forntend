@@ -5,10 +5,11 @@ import { AuthShell } from "@/sfs/components/auth/AuthShell";
 const PartnerRole = () => {
   return (
     <AuthShell
-      title="Select your Role"
+      scene="partner"
+      title="Select your role"
       description="Log in as a partner institution."
       brandTitle="Innovate, Incubate and Impact"
-      brandText="Let's Innovate, Incubate and Impact the world together!"
+      brandText="Let’s innovate, incubate and impact the world together."
       footer={
         <Link to="/" className="font-medium text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep">
           Back to Home

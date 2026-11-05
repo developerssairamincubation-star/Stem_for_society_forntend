@@ -131,8 +131,8 @@ const Signup = () => {
 
   return (
     <AuthShell
-      title="Create an Account"
-      description="Enter your details to proceed further"
+      title="Create an account"
+      description="Enter your details to get started."
       brandTitle="Join the community"
       brandText="Join us to Innovate, Incubate and Impact the world together!"
       footer={
@@ -197,7 +197,7 @@ const Signup = () => {
             disabled={isAnyLoading}
           />
         </AuthField>
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4">
           <AuthField label="Password" htmlFor="signup-password">
             <PasswordInput
               id="signup-password"

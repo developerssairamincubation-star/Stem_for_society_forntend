@@ -47,8 +47,9 @@ export default function AdminSignIn() {
 
   return (
     <AuthShell
-      title="Admin Login"
-      description="Enter your credentials to access the admin panel"
+      scene="admin"
+      title="Admin login"
+      description="Enter your credentials to access the admin panel."
       brandTitle="Innovate, Incubate and Impact"
       brandText="STEM for Society administration."
     >
@@ -88,7 +89,7 @@ export default function AdminSignIn() {
           </div>
         </AuthField>
         <button disabled={isSigningIn} type="submit" className="btn btn-primary w-full">
-          {isSigningIn ? "Signing in..." : "Sign In"}
+          {isSigningIn ? "Signing in..." : "Sign in"}
         </button>
       </form>
     </AuthShell>

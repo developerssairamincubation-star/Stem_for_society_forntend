@@ -3,7 +3,7 @@ import { SfsPage } from "@/sfs/components/SfsPage";
 
 export default function Community() {
   return (
-    <SfsPage>
+    <SfsPage polish>
       <CommunityPage />
     </SfsPage>
   );

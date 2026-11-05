@@ -4,7 +4,7 @@ import { SfsPage } from "@/sfs/components/SfsPage";
 /** /institutions: the redesigned institutions page (new route). */
 export default function Institutions() {
   return (
-    <SfsPage>
+    <SfsPage polish>
       <InstitutionsPage />
     </SfsPage>
   );

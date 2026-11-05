@@ -128,11 +128,12 @@ function PartnerSignUp() {
 
   return (
     <AuthShell
+      scene="partner"
       wide
-      title="Partner with us!"
+      title="Partner with us"
       description="We invite individuals, startups, and corporations to collaborate with STEM for Society in developing an innovative course focused on enhancing technological and Hands on experience. This partnership aims to create educational opportunities that empower participants to address real-world challenges. If you are interested in joining this impactful initiative, please fill up the form below."
       brandTitle="Innovate, Incubate and Impact"
-      brandText="Join us to Innovate, Incubate and Impact!"
+      brandText="Join us to innovate, incubate and impact."
       footer={
         <>
           Have an account?{" "}

@@ -4,7 +4,7 @@ import { SfsPage } from "@/sfs/components/SfsPage";
 /** /campus-ambassador: the redesigned program page. Registration stays on /campus-ambassador-booking. */
 export default function CampusAmbassadorDash() {
   return (
-    <SfsPage>
+    <SfsPage polish>
       <CampusAmbassadorPage />
     </SfsPage>
   );

@@ -1,0 +1,213 @@
+/* Hallmark · shape: split sign-in (photo panel, form panel) · genre: modern-minimal · theme: brand · redesign: full
+ * paper: oklch(0.977 0.011 252) · accent: oklch(0.448 0.140 253) · display: Poppins · body: Poppins · hero: kept (the form is the first screen) · nav: none · footer: none · signature: the real photo behind the welcome line, with the form already in reach
+ * axes: surface/Poppins/deep · posture: settled · contrast: pass · fold: pass · v2.0.0 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S3 R4 V4 · weakest: S, the role switch is a plain segmented control, it does the job and nothing louder */
+/*
+ * /login only. Every rule starts with `.sfs-login`, a class only the login page adds, so nothing here can reach another page.
+ * The brand tokens themselves (deep, brand, tint, ink, surface, radii) stay in tailwind.config.js and sfs-ui.css; this file adds
+ * the few login-specific roles on top of them.
+ */
+
+:root {
+  /* Field edge: tint (#c0e1ff) is 1.3:1 on white, which is too faint to find a field by. This one is 4.2:1. */
+  --login-edge: #6b7c93;
+  --login-edge-hover: #00549f;
+  --login-error: #b42318;
+  --login-focus: #0389ff;
+  /* The deep brand blue as an rgb triplet, so the photo scrim can use it at several strengths. */
+  --login-scrim-rgb: 0 84 159;
+  --login-paper: #ffffff;
+  --login-surface: #f2f8ff;
+  --login-ink: #111827;
+  --login-ink-2: rgb(17 24 39 / 0.75);
+  --login-ink-quiet: rgb(17 24 39 / 0.5);
+  --login-accent: #00549f;
+  --login-accent-hover: #003f78;
+  --login-tint: #c0e1ff;
+}
+
+/* Photo scrim: deep blue rising from the bottom edge so the welcome line reads on any part of the picture. */
+.sfs-login .login-scrim {
+  background:
+    linear-gradient(to top, rgb(var(--login-scrim-rgb) / 0.94) 0%, rgb(var(--login-scrim-rgb) / 0.6) 34%, rgb(var(--login-scrim-rgb) / 0) 68%),
+    linear-gradient(to bottom, rgb(var(--login-scrim-rgb) / 0.4) 0%, rgb(var(--login-scrim-rgb) / 0) 28%);
+}
+
+/* ---- Fields --------------------------------------------------------------- */
+.sfs-login .login-field {
+  width: 100%;
+  height: 3rem;
+  padding: 0 1rem;
+  border: 1px solid var(--login-edge);
+  border-radius: 0.5rem;
+  background-color: var(--login-paper);
+  color: var(--login-ink);
+  font: inherit;
+  font-size: 1rem;
+  outline: 2px solid transparent;
+  outline-offset: -3px;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+.sfs-login .login-field::placeholder {
+  color: var(--login-ink-quiet);
+}
+@media (hover: hover) {
+  .sfs-login .login-field:hover:not(:focus-visible):not([aria-invalid='true']) {
+    background-color: var(--login-surface);
+    border-color: var(--login-edge-hover);
+  }
+}
+.sfs-login .login-field:focus-visible {
+  border-color: var(--login-accent);
+  outline-color: var(--login-focus);
+  transition: none;
+}
+.sfs-login .login-field[aria-invalid='true'] {
+  border-color: var(--login-error);
+}
+.sfs-login .login-field[aria-invalid='true']:focus-visible {
+  outline-color: var(--login-error);
+}
+.sfs-login .login-field:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ---- Buttons -------------------------------------------------------------- */
+.sfs-login .login-btn {
+  display: inline-flex;
+  width: 100%;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+.sfs-login .login-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.sfs-login .login-btn:focus-visible {
+  outline: 2px solid var(--login-focus);
+  outline-offset: 2px;
+  transition: none;
+}
+.sfs-login .login-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.sfs-login .login-btn-primary {
+  background-color: var(--login-accent);
+  color: var(--login-paper);
+}
+.sfs-login .login-btn-alt {
+  background-color: var(--login-paper);
+  border-color: var(--login-edge);
+  color: var(--login-ink);
+}
+@media (hover: hover) {
+  .sfs-login .login-btn-primary:hover:not(:disabled) {
+    background-color: var(--login-accent-hover);
+  }
+  .sfs-login .login-btn-alt:hover:not(:disabled) {
+    background-color: var(--login-surface);
+    border-color: var(--login-edge-hover);
+  }
+}
+
+/* ---- Role switch ---------------------------------------------------------- */
+.sfs-login .login-role {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border: 1px solid var(--login-edge);
+  border-radius: 0.75rem;
+  background-color: var(--login-surface);
+}
+.sfs-login .login-role label {
+  position: relative;
+  display: grid;
+  min-height: 2.5rem;
+  place-items: center;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--login-ink-2);
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+.sfs-login .login-role input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.sfs-login .login-role label:has(input:checked) {
+  background-color: var(--login-accent);
+  color: var(--login-paper);
+}
+@media (hover: hover) {
+  .sfs-login .login-role label:hover:not(:has(input:checked)) {
+    background-color: var(--login-paper);
+    color: var(--login-accent);
+  }
+}
+.sfs-login .login-role label:has(input:focus-visible) {
+  outline: 2px solid var(--login-focus);
+  outline-offset: 2px;
+}
+
+/* ---- Links ---------------------------------------------------------------- */
+.sfs-login .login-link {
+  color: var(--login-accent);
+  text-decoration: underline;
+  text-decoration-color: var(--login-tint);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  transition: text-decoration-color 0.2s ease;
+}
+@media (hover: hover) {
+  .sfs-login .login-link:hover {
+    text-decoration-color: var(--login-accent);
+  }
+}
+.sfs-login .login-link:focus-visible {
+  outline: 2px solid var(--login-focus);
+  outline-offset: 3px;
+  border-radius: 0.25rem;
+}
+
+.sfs-login .login-spinner {
+  animation: login-spin 0.8s linear infinite;
+}
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sfs-login .login-spinner {
+    animation-duration: 2.4s;
+  }
+  .sfs-login .login-field,
+  .sfs-login .login-btn,
+  .sfs-login .login-role label,
+  .sfs-login .login-link {
+    transition: none;
+  }
+}

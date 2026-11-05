@@ -43,10 +43,11 @@ const InstitutionLogin = () => {
 
   return (
     <AuthShell
-      title="Partner with us to transform education!"
+      scene="partner"
+      title="Partner with us to transform education"
       description="Sign in to your partner account."
       brandTitle="Innovate, Incubate and Impact"
-      brandText="Join us to Innovate, Incubate and Impact!"
+      brandText="Join us to innovate, incubate and impact."
     >
       <form className="grid gap-5" onSubmit={handleSubmit}>
         <AuthField label="Email" htmlFor="partner-email">
@@ -84,16 +85,16 @@ const InstitutionLogin = () => {
               className="size-5 rounded border-tint bg-white data-[state=checked]:border-deep data-[state=checked]:bg-deep data-[state=checked]:text-white"
             />
             <label htmlFor="remember" className="t-small text-ink/70">
-              Remember Password
+              Remember password
             </label>
           </div>
           <button type="button" className="t-small font-medium text-deep underline-offset-4 hover:underline">
-            Forget Password?
+            Forgot password?
           </button>
         </div>
 
         <button className="btn btn-primary w-full" disabled={isSigningIn} type="submit">
-          LOGIN
+          Log in
         </button>
       </form>
     </AuthShell>
