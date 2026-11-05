@@ -1,6 +1,7 @@
-import { Button, PasswordInput, Text, TextInput, Title } from "@mantine/core";
-import { useState } from "react";
+import { Eye, EyeSlash } from "@phosphor-icons/react";
+import { useId, useState } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { AuthField, AuthShell } from "@/sfs/components/auth/AuthShell";
 import { useAdmin } from "../../lib/hooks";
 
 type AdminSignInForm = {
@@ -9,6 +10,8 @@ type AdminSignInForm = {
 };
 
 export default function AdminSignIn() {
+  const id = useId();
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const from =
@@ -43,60 +46,51 @@ export default function AdminSignIn() {
   if (user) return <Navigate to={from} replace />;
 
   return (
-    <div className="min-h-screen flex items-center justify-center w-full bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10 space-y-6">
-          <div className="text-center space-y-2 mb-8">
-            <Title order={1} className="text-3xl font-bold text-gray-900">
-              Admin Login
-            </Title>
-            <Text size="md" c="dimmed" className="text-gray-600">
-              Enter your credentials to access the admin panel
-            </Text>
-          </div>
-          <form className="space-y-5" onSubmit={handleSubmit}>
-            <TextInput
-              label="Email Address"
-              placeholder="admin@example.com"
-              type="email"
-              autoComplete="email"
-              size="md"
-              radius="md"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              classNames={{
-                label: "mb-2 font-medium text-gray-700",
-                input: "h-11",
-              }}
-            />
-            <PasswordInput
+    <AuthShell
+      title="Admin Login"
+      description="Enter your credentials to access the admin panel"
+      brandTitle="Innovate, Incubate and Impact"
+      brandText="STEM for Society administration."
+    >
+      <form className="grid gap-5" onSubmit={handleSubmit}>
+        <AuthField label="Email Address" htmlFor={`${id}-email`}>
+          <input
+            id={`${id}-email`}
+            placeholder="admin@example.com"
+            type="email"
+            autoComplete="email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+          />
+        </AuthField>
+        <AuthField label="Password" htmlFor={`${id}-password`}>
+          <div className="relative">
+            <input
+              id={`${id}-password`}
               autoComplete="current-password"
-              label="Password"
               placeholder="Enter your password"
-              size="md"
-              radius="md"
+              type={showPassword ? "text" : "password"}
               name="password"
               value={formData.password}
               onChange={handleInputChange}
-              classNames={{
-                label: "mb-2 font-medium text-gray-700",
-                input: "h-11",
-              }}
+              className="!pr-12"
             />
-            <Button
-              radius="md"
-              fullWidth
-              size="md"
-              disabled={isSigningIn}
-              type="submit"
-              className="h-11 mt-6 font-semibold bg-blue-600 hover:bg-blue-700 transition-colors"
+            <button
+              type="button"
+              onClick={() => setShowPassword((v) => !v)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              aria-pressed={showPassword}
+              className="absolute inset-y-0 right-0 grid w-11 place-items-center rounded-control text-ink/60 transition-colors duration-200 hover:text-deep"
             >
-              {isSigningIn ? "Signing in..." : "Sign In"}
-            </Button>
-          </form>
-        </div>
-      </div>
-    </div>
+              {showPassword ? <EyeSlash size={20} aria-hidden="true" /> : <Eye size={20} aria-hidden="true" />}
+            </button>
+          </div>
+        </AuthField>
+        <button disabled={isSigningIn} type="submit" className="btn btn-primary w-full">
+          {isSigningIn ? "Signing in..." : "Sign In"}
+        </button>
+      </form>
+    </AuthShell>
   );
 }

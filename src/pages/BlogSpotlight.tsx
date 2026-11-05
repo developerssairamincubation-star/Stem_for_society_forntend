@@ -1,13 +1,13 @@
-import { Avatar, Button, Flex, Image, Text, Title } from "@mantine/core";
 import BlogContent from "../components/BlogContent";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { CaretLeft } from "@phosphor-icons/react";
+import { PageFrame } from "@/sfs/components/page/PageFrame";
+import { PageLoading } from "@/sfs/components/page/PageStatus";
 import { api } from "../lib/api";
 import { GenericError, GenericResponse } from "../lib/types";
 import { Blog } from "./BlogListing";
 import { AxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
-import Loading from "../components/Loading";
 import Errorbox from "../components/Errorbox";
 import { formatDate } from "../lib/utils";
 
@@ -30,74 +30,68 @@ function BlogSpotlight() {
   const { data, isPending, error } = useBlog(id!);
 
   if (isPending) {
-    return <Loading />;
+    return <PageLoading label="Loading article…" />;
   }
 
   if (error) {
-    // @ts-expect-error - error is of type AxiosError
-    return <Errorbox message={error.response?.data.error} />;
+    return (
+      <PageFrame tone="surface">
+        <div className="container-x pt-32 pb-16">
+          {/* @ts-expect-error - error is of type AxiosError */}
+          <Errorbox message={error.response?.data.error} />
+        </div>
+      </PageFrame>
+    );
   }
 
   const blog = data?.data;
 
   return (
-    <div className="w-full mt-4 max-w-7xl mx-auto flex flex-col">
-      {/*// @ts-expect-error shutup */}
-      <Link to={-1}>
-        <Button radius={999}>
-          <ChevronLeft size={16} />
-          Back
-        </Button>
-      </Link>
-      {!blog ? (
-        <Title mt={20}>Invalid blog!</Title>
-      ) : (
-        <>
-          <Title mt={20}>{blog.title}</Title>
-          <Flex
-            mt={15}
-            gap="md"
-            justify="flex-start"
-            align="center"
-            direction="row"
-            wrap="wrap"
-          >
-            <Avatar size="sm" color="cyan" radius="xl">
-              {blog.blogAuthor.name
-                .split(" ")
-                .map((x) => x[0].toUpperCase())
-                .join("")}
-            </Avatar>
-            <Text size="sm" display={"flex"} className="items-center gap-3">
-              <div className="grid">
-                <span className="text-base">{blog.blogAuthor.name}</span>
-                <span className="text-gray-400">
-                  {blog.blogAuthor.designation}
+    <PageFrame>
+      <article className="container-x pt-28 pb-16 sm:pb-20 lg:pt-32">
+        <div className="mx-auto max-w-3xl">
+          {/* @ts-expect-error back navigation, as before */}
+          <Link to={-1} className="t-label nudge mb-8 inline-flex items-center gap-2 text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep">
+            <CaretLeft size={16} aria-hidden="true" />
+            Back
+          </Link>
+
+          {!blog ? (
+            <h1 className="t-title">Invalid blog!</h1>
+          ) : (
+            <>
+              {blog.category && <p className="chip mb-4 text-deep">{blog.category}</p>}
+              <h1 className="t-display">{blog.title}</h1>
+
+              <div className="mt-6 flex flex-wrap items-center gap-3 border-b border-tint pb-6">
+                <span
+                  aria-hidden="true"
+                  className="grid size-10 place-items-center rounded-full bg-deep text-sm font-semibold text-white"
+                >
+                  {blog.blogAuthor.name
+                    .split(" ")
+                    .map((x) => x[0].toUpperCase())
+                    .join("")}
                 </span>
-              </div>{" "}
-              • {formatDate(blog.createdAt)}
-            </Text>
-          </Flex>
-          <Flex
-            gap={10}
-            mt={20}
-            className="content"
-            justify="center"
-            align="center"
-            direction="column"
-          >
-            <Image
-              radius="md"
-              h={300}
-              w={700}
-              fit="contain"
-              src={blog.coverImage}
-            />
-            <BlogContent markdownContent={blog.content}></BlogContent>
-          </Flex>
-        </>
-      )}
-    </div>
+                <div className="t-small">
+                  <p className="font-medium">{blog.blogAuthor.name}</p>
+                  <p className="text-ink/60">
+                    {blog.blogAuthor.designation ? `${blog.blogAuthor.designation} • ` : ""}
+                    {formatDate(blog.createdAt)}
+                  </p>
+                </div>
+              </div>
+
+              <img src={blog.coverImage} alt="" className="mt-8 aspect-video w-full rounded-card bg-surface object-cover" />
+
+              <div className="content prose-sfs mt-10">
+                <BlogContent markdownContent={blog.content}></BlogContent>
+              </div>
+            </>
+          )}
+        </div>
+      </article>
+    </PageFrame>
   );
 }
 

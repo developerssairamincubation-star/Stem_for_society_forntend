@@ -1,11 +1,9 @@
 import { clientSafeText } from "@/lib/errors";
 import React, { useState, useCallback, useEffect } from 'react';
-import Header from '@/components1/Header';
-import { Button } from '@/components1/ui/button';
+import { PageFrame, PageHero } from '@/sfs/components/page/PageFrame';
 import { Input } from '@/components1/ui/input';
-import { Card } from '@/components1/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components1/ui/select';
-import { ArrowLeft, Share2, Check, AlertTriangle, ChevronLeft, ChevronRight, Send, AlertCircle, Mail } from 'lucide-react';
+import { ArrowLeft, ShareNetwork, Check, Warning, CaretLeft, CaretRight, Info, Envelope } from '@phosphor-icons/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useMutation } from '@tanstack/react-query';
@@ -631,30 +629,22 @@ const InstitutionBookingFlow = () => {
   }, [formData, selectedDate, mutateAsync]);
 
   const renderStepIndicator = () => (
-    <div className="flex items-center justify-center space-x-8 mb-12">
+    <ol className="mb-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3" aria-label="Progress">
       {steps.map((step, index) => (
-        <div key={step.number} className="flex items-center">
-          <div className={cn(
-            "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium",
-            currentStep === step.number 
-              ? "bg-blue-500 text-white" 
-              : currentStep > step.number 
-                ? "bg-green-500 text-white"
-                : "bg-gray-200 text-gray-500"
-          )}>
-            {currentStep > step.number ? <Check className="h-4 w-4" /> : step.number}
-          </div>
-          {step.number === currentStep && (
-            <div className="text-blue-500 text-sm font-medium ml-3">
-              {step.title}
-            </div>
-          )}
-          {index < steps.length - 1 && (
-            <div className="w-16 h-px bg-gray-300 ml-3"></div>
-          )}
-        </div>
+        <li key={step.number} aria-current={currentStep === step.number ? 'step' : undefined} className="flex items-center gap-3">
+          <span
+            className={cn(
+              "flex size-10 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-300",
+              currentStep === step.number ? "bg-deep text-white" : currentStep > step.number ? "bg-brand text-white" : "bg-tint text-deep"
+            )}
+          >
+            {currentStep > step.number ? <Check size={16} weight="bold" aria-hidden="true" /> : step.number}
+          </span>
+          {step.number === currentStep && <span className="t-label text-deep">{step.title}</span>}
+          {index < steps.length - 1 && <span aria-hidden="true" className="hidden h-px w-10 bg-tint sm:block" />}
+        </li>
       ))}
-    </div>
+    </ol>
   );
 
   const renderStep1 = () => (
@@ -665,13 +655,12 @@ const InstitutionBookingFlow = () => {
           placeholder="Institution/School Name *"
           value={formData.schoolName}
           onChange={(e) => updateFormData('schoolName', e.target.value)}
-          className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
         />
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start space-x-3">
-        <AlertTriangle className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-        <span className="text-blue-800 text-sm">
+      <div className="bg-surface border border-tint rounded-control p-4 flex items-start space-x-3">
+        <Warning size={20} className="mt-0.5 shrink-0 text-deep" aria-hidden="true" />
+        <span className="text-deep text-sm">
           Enter your institution or school name exactly as it appears in official webpage.
         </span>
       </div>
@@ -681,13 +670,11 @@ const InstitutionBookingFlow = () => {
           placeholder="Address line 1 *"
           value={formData.addressLine1}
           onChange={(e) => updateFormData('addressLine1', e.target.value)}
-          className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
         />
         <Input
           placeholder="Address line 2"
           value={formData.addressLine2}
           onChange={(e) => updateFormData('addressLine2', e.target.value)}
-          className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
         />
       </div>
 
@@ -696,13 +683,11 @@ const InstitutionBookingFlow = () => {
           placeholder="City *"
           value={formData.city}
           onChange={(e) => updateFormData('city', e.target.value)}
-          className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
         />
         <Input
           placeholder="State *"
           value={formData.state}
           onChange={(e) => updateFormData('state', e.target.value)}
-          className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
         />
       </div>
 
@@ -711,7 +696,6 @@ const InstitutionBookingFlow = () => {
           placeholder="Pincode *"
           value={formData.pincode}
           onChange={(e) => updateFormData('pincode', e.target.value)}
-          className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
         />
       </div>
     </div>
@@ -725,7 +709,6 @@ const InstitutionBookingFlow = () => {
           placeholder="Contact Person Name *"
           value={formData.contactName}
           onChange={(e) => updateFormData('contactName', e.target.value)}
-          className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
           disabled={formData.otpVerified}
         />
         <div className="relative">
@@ -738,7 +721,6 @@ const InstitutionBookingFlow = () => {
             autoCorrect="off"
             value={formData.contactEmail}
             onChange={(e) => updateFormData('contactEmail', e.target.value)}
-            className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
             disabled={formData.otpVerified}
           />
           {formData.otpVerified && (
@@ -754,7 +736,7 @@ const InstitutionBookingFlow = () => {
           value={formData.country}
           onValueChange={(value) => updateFormData('country', value)}
         >
-          <SelectTrigger className="h-12 bg-[#F1F4F9] border-0 text-gray-500">
+          <SelectTrigger className="h-11 rounded-control border-tint bg-white text-ink/70">
             <SelectValue placeholder="Country" />
           </SelectTrigger>
           <SelectContent>
@@ -775,7 +757,6 @@ const InstitutionBookingFlow = () => {
               const value = e.target.value.replace(/\D/g, '').slice(0, 10);
               updateFormData('contactMobile', value);
             }}
-            className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
             maxLength={10}
           />
         </div>
@@ -783,22 +764,18 @@ const InstitutionBookingFlow = () => {
 
       {!formData.otpVerified && (
         <div className="flex items-center justify-end">
-          <Button 
-            onClick={handleSendOTP}
-            disabled={!formData.contactEmail || isSendingOTP}
-            className={`px-8 ${formData.otpSent ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
-          >
-            <Mail className="h-4 w-4 mr-2" />
+          <button type="button" onClick={handleSendOTP} disabled={!formData.contactEmail || isSendingOTP} className="btn btn-primary">
+            <Envelope size={18} aria-hidden="true" />
             {isSendingOTP ? 'Sending...' : formData.otpSent ? 'OTP Sent' : 'Send Email OTP'}
-          </Button>
+          </button>
         </div>
       )}
 
       {formData.otpSent && !formData.otpVerified && (
         <>
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-start space-x-3">
-            <Mail className="h-5 w-5 text-blue-600 mt-0.5 flex-shrink-0" />
-            <div className="text-blue-800 text-sm">
+          <div className="bg-surface border border-tint rounded-control p-4 flex items-start space-x-3">
+            <Envelope size={20} className="mt-0.5 shrink-0 text-deep" aria-hidden="true" />
+            <div className="text-deep text-sm">
               <p className="font-medium">OTP sent to {formData.contactEmail}</p>
               <p className="mt-1">Enter the 6-digit code you received in your email (valid for 10 minutes)</p>
             </div>
@@ -814,42 +791,41 @@ const InstitutionBookingFlow = () => {
                   const value = e.target.value.replace(/\D/g, '').slice(0, 6);
                   updateFormData('otp', value);
                 }}
-                className="h-12 bg-[#F1F4F9] border-0 placeholder:text-gray-500"
                 maxLength={6}
                 disabled={isVerifyingOTP}
               />
-              <Button 
+              <button
+                type="button"
                 onClick={handleVerifyOTP}
                 disabled={!formData.otp || formData.otp.length !== 6 || isVerifyingOTP}
-                className="px-6 bg-green-500 hover:bg-green-600 text-white"
+                className="btn btn-primary shrink-0"
               >
                 {isVerifyingOTP ? 'Verifying...' : 'Verify'}
-              </Button>
+              </button>
             </div>
 
             {/* Resend OTP option */}
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">
+              <span className="text-ink/75">
                 Didn't receive the email?
               </span>
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
+                type="button"
                 onClick={handleResendOTP}
                 disabled={!canResendOtp || isSendingOTP}
-                className="text-blue-600 hover:text-blue-700 px-2"
+                className="t-small px-2 font-medium text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep disabled:no-underline disabled:opacity-60"
               >
                 {canResendOtp ? 'Resend OTP' : `Resend in ${otpTimer}s`}
-              </Button>
+              </button>
             </div>
           </div>
         </>
       )}
 
       {formData.otpVerified && (
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center space-x-3">
+        <div className="bg-green-50 border border-green-200 rounded-control p-4 flex items-center space-x-3">
           <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-            <Check className="h-5 w-5 text-white" />
+            <Check size={20} weight="bold" className="text-white" aria-hidden="true" />
           </div>
           <div className="text-green-800">
             <p className="font-medium">Email address verified successfully!</p>
@@ -859,10 +835,10 @@ const InstitutionBookingFlow = () => {
       )}
 
       {/* UPDATED: Additional security info for email verification */}
-      <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+      <div className="bg-surface border border-tint rounded-control p-4">
         <div className="flex items-start space-x-3">
-          <AlertTriangle className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
-          <div className="text-gray-700 text-sm">
+          <Warning size={20} className="mt-0.5 shrink-0 text-ink/60" aria-hidden="true" />
+          <div className="text-ink/75 text-sm">
             <p className="font-medium mb-2">Why do we need to verify your email address?</p>
             <ul className="space-y-1 text-xs">
               <li>• To send you important session updates and meeting links</li>
@@ -886,7 +862,7 @@ const InstitutionBookingFlow = () => {
             updateFormData('studentsCount', parseInt(value.split('-')[0]) || 0);
           }}
         >
-          <SelectTrigger className="w-full h-12 bg-[#F1F4F9] border-0 text-gray-500">
+          <SelectTrigger className="h-11 w-full rounded-control border-tint bg-white text-ink/70">
             <SelectValue placeholder="Number of Students *" />
           </SelectTrigger>
           <SelectContent>
@@ -901,8 +877,8 @@ const InstitutionBookingFlow = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Basics Plan */}
         <div 
-          className={`border rounded-lg p-6 cursor-pointer transition-all ${
-            formData.plan === 'Basics' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'
+          className={`border rounded-control p-6 cursor-pointer transition-all ${
+            formData.plan === 'Basics' ? 'border-brand bg-surface' : 'border-tint bg-white'
           }`} 
           onClick={() => updateFormData('plan', 'Basics')}
           role="button"
@@ -914,28 +890,28 @@ const InstitutionBookingFlow = () => {
           }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-gray-900">Basics</h3>
+            <h3 className="text-xl font-semibold text-ink">Basics</h3>
             <div className={`w-4 h-4 rounded-full border-2 ${
-              formData.plan === 'Basics' ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+              formData.plan === 'Basics' ? 'border-brand bg-deep' : 'border-tint'
             } flex items-center justify-center`}>
               {formData.plan === 'Basics' && <div className="w-2 h-2 bg-white rounded-full"></div>}
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-4">Essential Skills to Shape a Promising Future</p>
+          <p className="text-sm text-ink/75 mb-4">Essential Skills to Shape a Promising Future</p>
           <div className="space-y-2 mb-4 text-sm">
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Time Management Training</div>
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Personality Development</div>
           </div>
           <div className="flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-gray-900">₹ 20,000.00</span>
-            <span className="text-gray-500 text-sm">/ Per Year</span>
+            <span className="text-2xl font-semibold text-ink">₹ 20,000.00</span>
+            <span className="text-ink/60 text-sm">/ Per Year</span>
           </div>
         </div>
 
         {/* Premium Plan */}
         <div 
-          className={`border rounded-lg p-6 cursor-pointer transition-all ${
-            formData.plan === 'Premium' ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white'
+          className={`border rounded-control p-6 cursor-pointer transition-all ${
+            formData.plan === 'Premium' ? 'border-brand bg-surface' : 'border-tint bg-white'
           }`} 
           onClick={() => updateFormData('plan', 'Premium')}
           role="button"
@@ -947,14 +923,14 @@ const InstitutionBookingFlow = () => {
           }}
         >
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-gray-900">Premium</h3>
+            <h3 className="text-xl font-semibold text-ink">Premium</h3>
             <div className={`w-4 h-4 rounded-full border-2 ${
-              formData.plan === 'Premium' ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
+              formData.plan === 'Premium' ? 'border-brand bg-deep' : 'border-tint'
             } flex items-center justify-center`}>
               {formData.plan === 'Premium' && <div className="w-2 h-2 bg-white rounded-full"></div>}
             </div>
           </div>
-          <p className="text-sm text-gray-600 mb-4">Comprehensive Training for a Brighter Tomorrow</p>
+          <p className="text-sm text-ink/75 mb-4">Comprehensive Training for a Brighter Tomorrow</p>
           <div className="space-y-2 mb-4 text-sm">
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Sex Education</div>
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Entrepreneurship Training</div>
@@ -962,16 +938,16 @@ const InstitutionBookingFlow = () => {
             <div className="flex items-center"><span className="text-green-500 mr-2">✔</span>Industrial Visit</div>
           </div>
           <div className="flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-gray-900">₹ 40,000.00</span>
-            <span className="text-gray-500 text-sm">/ Per Year</span>
+            <span className="text-2xl font-semibold text-ink">₹ 40,000.00</span>
+            <span className="text-ink/60 text-sm">/ Per Year</span>
           </div>
         </div>
       </div>
 
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <div className="text-3xl font-bold text-blue-600 mb-2">₹ {calculatePrice().toLocaleString()}.00</div>
-        <div className="text-gray-600">Selected Plan: {formData.plan}</div>
-        <div className="text-gray-600">Students: {formData.numberOfStudents}</div>
+      <div className="bg-surface border border-tint rounded-control p-4">
+        <div className="text-3xl font-semibold text-deep mb-2">₹ {calculatePrice().toLocaleString()}.00</div>
+        <div className="text-ink/75">Selected Plan: {formData.plan}</div>
+        <div className="text-ink/75">Students: {formData.numberOfStudents}</div>
       </div>
     </div>
   );
@@ -987,30 +963,28 @@ const InstitutionBookingFlow = () => {
           {/* Calendar */}
           <div>
             <div className="flex items-center justify-between mb-4">
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
+                type="button"
                 onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-                className="p-2"
+                className="icon-btn"
                 aria-label="Previous month"
               >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
+                <CaretLeft size={16} aria-hidden="true" />
+              </button>
               <h3 className="font-medium">
                 {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               </h3>
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
+                type="button"
                 onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-                className="p-2"
+                className="icon-btn"
                 aria-label="Next month"
               >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
+                <CaretRight size={16} aria-hidden="true" />
+              </button>
             </div>
 
-            <div className="grid grid-cols-7 gap-1 mb-4 text-center text-sm text-gray-500">
+            <div className="grid grid-cols-7 gap-1 mb-4 text-center text-sm text-ink/60">
               {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
                 <div key={day} className="p-2">{day}</div>
               ))}
@@ -1048,16 +1022,16 @@ const InstitutionBookingFlow = () => {
                           handleDateSelect(date);
                         }
                       }}
-                      className={`p-2 text-sm rounded-lg transition-colors ${
+                      className={`p-2 text-sm rounded-control transition-colors ${
                         isDisabled
                           ? 'text-gray-300 cursor-not-allowed'
                           : isSelected
-                            ? 'bg-blue-500 text-white'
+                            ? 'bg-deep text-white'
                             : isToday
-                              ? 'bg-blue-100 text-blue-600 font-semibold'
+                              ? 'bg-surface text-deep font-semibold'
                               : isCurrentMonth
-                                ? 'hover:bg-gray-100 text-gray-900'
-                                : 'text-gray-400'
+                                ? 'hover:bg-surface text-ink'
+                                : 'text-ink/60'
                       }`}
                       disabled={isDisabled}
                       aria-label={`Select date ${date.getDate()}`}
@@ -1073,7 +1047,7 @@ const InstitutionBookingFlow = () => {
               })()}
             </div>
             
-            <div className="mt-4 text-xs text-gray-500 text-center">
+            <div className="mt-4 text-xs text-ink/60 text-center">
               Available dates: Today to {oneMonthFromToday.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}
             </div>
           </div>
@@ -1081,7 +1055,7 @@ const InstitutionBookingFlow = () => {
           {/* Right side */}
           <div className="space-y-6">
             <div>
-              <label htmlFor="date-select" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="date-select" className="block text-sm font-medium text-ink/75 mb-2">
                 Select Date
               </label>
               {/* Updated Select with proper value synchronization */}
@@ -1089,7 +1063,7 @@ const InstitutionBookingFlow = () => {
                 value={selectedDate ? formatDateForComparison(selectedDate) : ''} 
                 onValueChange={handleDropdownDateSelect}
               >
-                <SelectTrigger id="date-select" className="w-full h-12 bg-[#F1F4F9] border-0 text-gray-700">
+                <SelectTrigger id="date-select" className="h-11 w-full rounded-control border-tint bg-white text-ink">
                   <SelectValue placeholder="Select Date" />
                 </SelectTrigger>
                 <SelectContent>
@@ -1103,13 +1077,13 @@ const InstitutionBookingFlow = () => {
             </div>
 
             <div>
-              <h4 className="font-medium text-gray-900 mb-4">Available Time</h4>
+              <h4 className="font-medium text-ink mb-4">Available Time</h4>
               
               {/* Show info message for today's date */}
               {selectedDate && formatDateForComparison(selectedDate) === formatDateForComparison(today) && (
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                  <p className="text-blue-800 text-sm flex items-center">
-                    <AlertCircle className="h-4 w-4 mr-2 flex-shrink-0" />
+                <div className="bg-surface border border-tint rounded-control p-3 mb-4">
+                  <p className="text-deep text-sm flex items-center">
+                    <Info size={16} className="mr-2 shrink-0" aria-hidden="true" />
                     For today's session, only future time slots are available (30 min advance booking required)
                   </p>
                 </div>
@@ -1129,18 +1103,18 @@ const InstitutionBookingFlow = () => {
                         }
                       }}
                       disabled={isPastTime}
-                      className={`p-3 text-sm rounded-lg border transition-colors ${
+                      className={`p-3 text-sm rounded-control border transition-colors ${
                         isPastTime
-                          ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-50'
+                          ? 'bg-surface text-ink/60 border-tint cursor-not-allowed opacity-50'
                           : isSelected
-                            ? 'bg-blue-500 text-white border-blue-500'
-                            : 'bg-gray-100 text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-white'
+                            ? 'bg-deep text-white border-brand'
+                            : 'bg-surface text-ink/75 border-tint hover:border-tint hover:bg-white'
                       }`}
                       aria-label={`Select time ${time}`}
                     >
                       <span>{time}</span>
                       {isPastTime && (
-                        <div className="text-xs text-gray-400 mt-1">Past</div>
+                        <div className="text-xs text-ink/60 mt-1">Past</div>
                       )}
                     </button>
                   );
@@ -1151,7 +1125,7 @@ const InstitutionBookingFlow = () => {
               {selectedDate && 
                formatDateForComparison(selectedDate) === formatDateForComparison(today) && 
                timeSlots.every(time => isTimeSlotPast(time)) && (
-                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mt-4">
+                <div className="bg-orange-50 border border-orange-200 rounded-control p-4 mt-4">
                   <p className="text-orange-800 text-sm text-center">
                     ⏰ No more time slots available for today. Please select tomorrow or a future date.
                   </p>
@@ -1159,25 +1133,25 @@ const InstitutionBookingFlow = () => {
               )}
             </div>
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start space-x-3">
-              <AlertTriangle className="h-5 w-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+            <div className="bg-yellow-50 border border-yellow-200 rounded-control p-4 flex items-start space-x-3">
+              <Warning size={20} className="mt-0.5 shrink-0 text-yellow-600" aria-hidden="true" />
               <span className="text-yellow-800 text-sm">
                 After payment, your session will be booked and a Meet link will be shared instantly.
               </span>
             </div>
             
             {/* Add payment summary for institution booking */}
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-4">Booking Summary</h4>
+            <div className="bg-surface border border-tint rounded-control p-6">
+              <h4 className="text-lg font-semibold text-ink mb-4">Booking Summary</h4>
               
               <div className="space-y-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Institution:</span>
+                  <span className="text-ink/75">Institution:</span>
                   <span className="font-medium">{formData.schoolName || 'Not selected'}</span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Selected Date:</span>
+                  <span className="text-ink/75">Selected Date:</span>
                   <span className="font-medium">
                     {selectedDate ? selectedDate.toLocaleDateString('en-US', { 
                       weekday: 'short', 
@@ -1188,24 +1162,24 @@ const InstitutionBookingFlow = () => {
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Selected Time:</span>
+                  <span className="text-ink/75">Selected Time:</span>
                   <span className="font-medium">{formData.selectedTime || 'Not selected'}</span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Selected Plan:</span>
+                  <span className="text-ink/75">Selected Plan:</span>
                   <span className="font-medium">{formData.plan} Plan</span>
                 </div>
                 
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Students:</span>
+                  <span className="text-ink/75">Students:</span>
                   <span className="font-medium">{formData.numberOfStudents || 'Not selected'}</span>
                 </div>
                 
                 <div className="border-t pt-3">
                   <div className="flex justify-between items-center">
                     <span className="text-lg font-semibold">Amount to Pay:</span>
-                    <span className="text-2xl font-bold text-blue-600">
+                    <span className="text-2xl font-semibold text-deep">
                       ₹{calculatePrice().toLocaleString()}.00
                     </span>
                   </div>
@@ -1220,19 +1194,19 @@ const InstitutionBookingFlow = () => {
 
   const renderSuccess = () => (
     <div className="text-center space-y-8">
-      <div className="bg-green-50 border border-green-200 rounded-2xl p-12">
+      <div className="bg-green-50 border border-green-200 rounded-card p-12">
         <div className="flex flex-col items-center space-y-6">
           <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center">
-            <Check className="h-8 w-8 text-white" />
+            <Check size={32} weight="bold" className="text-white" aria-hidden="true" />
           </div>
-          <h2 className="text-3xl font-bold text-gray-900">Session Booked Successfully</h2>
-          <p className="text-gray-600 max-w-md">
+          <h2 className="text-3xl font-semibold text-ink">Session Booked Successfully</h2>
+          <p className="text-ink/75 max-w-md">
             Your institution session has been scheduled. A secure meeting link will be sent to your email.
           </p>
           
           {/* Show booked session details */}
           {selectedDate && formData.selectedTime && (
-            <div className="bg-white border border-green-200 rounded-lg p-4 text-left max-w-md">
+            <div className="bg-white border border-green-200 rounded-control p-4 text-left max-w-md">
               <h4 className="font-medium text-green-900 mb-2">Session Details:</h4>
               <p className="text-green-800 text-sm">
                 <strong>Date:</strong> {selectedDate.toLocaleDateString('en-US', { 
@@ -1257,14 +1231,10 @@ const InstitutionBookingFlow = () => {
       </div>
       
       <div className="flex justify-center space-x-4">
-        <Button 
-          variant="outline" 
-          className="px-8 h-12"
-          onClick={() => window.location.href = '/'}
-        >
+        <button type="button" className="btn btn-secondary" onClick={() => window.location.href = '/'}>
           Back to Home
-        </Button>
-        {/* <Button className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white px-8 h-12">
+        </button>
+        {/* <Button className="bg-deep hover:bg-deep/90 text-white px-8 h-12">
           DOWNLOAD CONFIRMATION
         </Button> */}
       </div>
@@ -1272,78 +1242,56 @@ const InstitutionBookingFlow = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="relative overflow-hidden min-h-screen" style={{ height: '100%', minHeight: '100%' }}>
-
-        {/* Content above grid */}
-        <div className="relative z-10">
-          <Header />
-
-          {/* Navigation Bar */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleBack}
-                className="flex items-center space-x-2 bg-[#0389FF] text-white border-[#0389FF] rounded-full px-4 hover:bg-[#0389FF]/90"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                <span>Back</span>
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleShare}
-                className="flex items-center space-x-2 bg-[#0389FF] text-white border-[#0389FF] rounded-full px-4 hover:bg-[#0389FF]/90"
-              >
-                <Share2 className="h-4 w-4" />
-                <span>Share</span>
-              </Button>
-            </div>
+    <PageFrame tone="surface">
+      <PageHero
+        kicker={
+          <div className="flex items-center gap-6">
+            <button type="button" onClick={handleBack} className="nudge inline-flex items-center gap-2 text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">
+              <ArrowLeft size={16} aria-hidden="true" />
+              Back
+            </button>
+            <button type="button" onClick={handleShare} className="nudge inline-flex items-center gap-2 text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">
+              <ShareNetwork size={16} aria-hidden="true" />
+              Share
+            </button>
           </div>
+        }
+        title="Institution Plan"
+        description="Book your Session"
+      />
 
-                  <div className="text-center mb-8">
-          <p className="text-black mb-5">Book your Session</p>
-            <h1 className="text-2xl md:text-3xl font-medium text-[#000000] relative inline-block">
-              <span className="relative">
-                Institution Plan
-                <span className="absolute bottom-1 left-0 w-full h-[30%] bg-yellow-300 -z-10"></span>
-              </span>
-            </h1>
+      <section className="section" aria-label="Booking">
+        <div className="container-x">
+          <div className="mx-auto max-w-4xl">
+            {currentStep <= 4 && renderStepIndicator()}
+
+            <div className="card min-h-96 p-6 sm:p-8">
+              {currentStep === 1 && renderStep1()}
+              {currentStep === 2 && renderStep2()}
+              {currentStep === 3 && renderStep3()}
+              {currentStep === 4 && renderStep4()}
+              {currentStep === 5 && renderSuccess()}
+            </div>
+
+            {currentStep <= 4 && (
+              <div className="mt-8 flex items-center justify-end">
+                {/* Continue/Payment Button */}
+                <button
+                  type="button"
+                  onClick={nextStep}
+                  className="btn btn-primary"
+                  disabled={isPending || (currentStep === 2 && !formData.otpVerified)}
+                >
+                  {currentStep === 4 ? (isPending ? 'PROCESSING...' : 'PROCEED TO PAYMENT') : 'CONTINUE'}
+                </button>
+              </div>
+            )}
           </div>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {currentStep <= 4 && renderStepIndicator()}
-
-        <Card className="p-8 shadow-sm min-h-96">
-          {currentStep === 1 && renderStep1()}
-          {currentStep === 2 && renderStep2()}
-          {currentStep === 3 && renderStep3()}
-          {currentStep === 4 && renderStep4()}
-          {currentStep === 5 && renderSuccess()}
-        </Card>
-
-        {currentStep <= 4 && (
-          <div className="flex justify-end items-center mt-8">
-            {/* Continue/Payment Button */}
-            <Button 
-              onClick={nextStep}
-              className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white px-8 py-3 text-sm font-semibold h-12 rounded-lg"
-              disabled={isPending || (currentStep === 2 && !formData.otpVerified)}
-            >
-              {currentStep === 4 ? (isPending ? 'PROCESSING...' : 'PROCEED TO PAYMENT') : 'CONTINUE'}
-            </Button>
-          </div>
-        )}
-      </div>
+      </section>
 
       <SharePopup isVisible={isShowing} />
-    </div>
+    </PageFrame>
   );
 };
 

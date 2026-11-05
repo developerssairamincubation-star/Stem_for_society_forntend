@@ -106,7 +106,7 @@ export function Navbar() {
           </SmartLink>
 
           {/* Right */}
-          <div className="flex items-center justify-end gap-3 min-[1180px]:justify-start min-[1180px]:pl-3">
+          <div className="flex items-center justify-end gap-3 min-[1180px]:justify-between min-[1180px]:pl-3">
             <ul className="hidden items-center gap-1 min-[1180px]:flex">
               {navRight.map((l) =>
                 l.id === 'resources' ? (

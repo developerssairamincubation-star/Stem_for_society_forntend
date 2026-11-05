@@ -1,4 +1,3 @@
-import { Button } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState, useEffect } from "react";
@@ -12,7 +11,7 @@ import { Input } from "@/components1/ui/input";
 import { PasswordInput } from "@/components1/ui/password-input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components1/ui/select";
 import { Checkbox } from "@/components1/ui/checkbox";
-import SignupLayout from "@/components1/ui/SignupLayout";
+import { AuthShell } from "@/sfs/components/auth/AuthShell";
 import { 
   isValidEmail, 
   isValidPhone, 
@@ -324,8 +323,8 @@ const PartnerInstitutionPortal = () => {
   };
 
   const StepIndicator = ({ currentStep, totalSteps }: { currentStep: number, totalSteps: number }) => (
-    <div className="flex justify-center mb-6">
-      <div className="flex items-center space-x-4">
+    <div className="mb-2 flex justify-start">
+      <div className="flex items-center gap-3">
         {Array.from({ length: totalSteps }, (_, index) => {
           const stepNumber = index + 1;
           const isActive = stepNumber === currentStep;
@@ -333,20 +332,22 @@ const PartnerInstitutionPortal = () => {
           
           return (
             <div key={stepNumber} className="flex items-center">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
-                isActive 
-                  ? 'bg-[#0389FF] text-white' 
-                  : isCompleted 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-gray-300 text-gray-600'
+              <div
+                aria-current={isActive ? 'step' : undefined}
+                className={`flex size-8 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-300 ${
+                isActive
+                  ? 'bg-deep text-white'
+                  : isCompleted
+                    ? 'bg-brand text-white'
+                    : 'bg-tint text-deep'
               }`}>
                 {stepNumber}
               </div>
               {stepNumber < totalSteps && (
-                <div className={`w-16 h-0.5 ${
-                  isCompleted || stepNumber === currentStep 
-                    ? 'bg-[#0389FF] bg-opacity-30' 
-                    : 'bg-gray-300'
+                <div className={`h-0.5 w-10 sm:w-16 ${
+                  isCompleted
+                    ? 'bg-brand'
+                    : 'bg-tint'
                 }`}></div>
               )}
             </div>
@@ -361,7 +362,7 @@ const PartnerInstitutionPortal = () => {
       case 1:
         return (
           <div className="space-y-4">
-            <div className="text-right text-sm text-gray-600 mb-4">
+            <div className="text-right text-sm text-ink/70 mb-4">
               Company Information
             </div>
             
@@ -371,7 +372,6 @@ const PartnerInstitutionPortal = () => {
                 name="companyName"
                 value={formData.companyName}
                 onChange={handleChange}
-                className="bg-white/80 rounded-xl"
                 required
               />
             </div>
@@ -382,7 +382,7 @@ const PartnerInstitutionPortal = () => {
                 checked={formData.hasGst}
                 onCheckedChange={handleGSTToggle}
               />
-              <label htmlFor="hasGst" className="text-sm font-medium text-gray-700">
+              <label htmlFor="hasGst" className="text-sm font-medium text-ink">
                 Do you have GST?
               </label>
             </div>
@@ -394,7 +394,6 @@ const PartnerInstitutionPortal = () => {
                   name="gst"
                   value={formData.gst}
                   onChange={handleChange}
-                  className="bg-white/80 rounded-xl"
                   required
                 />
               </div>
@@ -406,36 +405,35 @@ const PartnerInstitutionPortal = () => {
                 name="instructorName"
                 value={formData.instructorName}
                 onChange={handleChange}
-                className="bg-white/80 rounded-xl"
                 required
               />
             </div>
             
             {/* Company Logo Upload - UPDATED */}
               <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-ink mb-2">
                 Company Logo <span className="text-red-500">*</span>
-                <span className="text-xs text-gray-500 block">Only PNG and JPG files allowed (Max: 5MB)</span>
+                <span className="text-xs text-ink/60 block">Only PNG and JPG files allowed (Max: 5MB)</span>
               </label>
-              <div className="flex items-center justify-between bg-white/80 rounded-xl border border-gray-300 p-3">
+              <div className="flex items-center justify-between rounded-control border border-tint bg-white p-3">
                 <div className="flex-1">
                   {formData.logo ? (
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-green-600 font-medium">
                         {formData.logo.name}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-ink/60">
                         ({(formData.logo.size / 1024 / 1024).toFixed(2)} MB)
                       </span>
                     </div>
                   ) : (
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-ink/60">
                       No file selected
                     </span>
                   )}
                 </div>
                 <div className="ml-3">
-                  <label className="cursor-pointer bg-[#0389FF] hover:bg-[#0389FF]/90 text-white px-4 py-2 rounded-full text-sm font-semibold transition-colors">
+                  <label className="inline-flex cursor-pointer items-center rounded-control bg-deep px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-deep/85">
                     Choose File
                     <input
                       type="file"
@@ -451,29 +449,29 @@ const PartnerInstitutionPortal = () => {
             
             {/* Digital Signature Upload - UPDATED */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-ink mb-2">
                 Digital Signature <span className="text-red-500">*</span>
-                <span className="text-xs text-gray-500 block">Only PNG and JPG files allowed (Max: 5MB)</span>
+                <span className="text-xs text-ink/60 block">Only PNG and JPG files allowed (Max: 5MB)</span>
               </label>
-              <div className="flex items-center justify-between bg-white/80 rounded-xl border border-gray-300 p-3">
+              <div className="flex items-center justify-between rounded-control border border-tint bg-white p-3">
                 <div className="flex-1">
                   {formData.digitalSign ? (
                     <div className="flex items-center space-x-2">
                       <span className="text-sm text-green-600 font-medium">
                         {formData.digitalSign.name}
                       </span>
-                      <span className="text-xs text-gray-500">
+                      <span className="text-xs text-ink/60">
                         ({(formData.digitalSign.size / 1024 / 1024).toFixed(2)} MB)
                       </span>
                     </div>
                   ) : (
-                    <span className="text-sm text-gray-500">
+                    <span className="text-sm text-ink/60">
                       No file selected
                     </span>
                   )}
                 </div>
                 <div className="ml-3">
-                  <label className="cursor-pointer bg-[#0389FF] hover:bg-[#0389FF]/90 text-white px-4 py-2 rounded-full text-sm font-semibold transition-colors">
+                  <label className="inline-flex cursor-pointer items-center rounded-control bg-deep px-4 py-2 text-sm font-medium text-white transition-colors duration-200 hover:bg-deep/85">
                     Choose File
                     <input
                       type="file"
@@ -492,13 +490,13 @@ const PartnerInstitutionPortal = () => {
       case 2:
         return (
           <div className="space-y-4">
-            <div className="text-right text-sm text-gray-600 mb-4">
+            <div className="text-right text-sm text-ink/70 mb-4">
               Address Details
             </div>
             
             <div>
               <Select value={formData.country} onValueChange={(value) => handleSelectChange('country', value)}>
-                <SelectTrigger className="bg-white/80 rounded-xl">
+                <SelectTrigger className="h-11 rounded-control border-tint bg-white">
                   <SelectValue placeholder="Select your country" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -520,7 +518,7 @@ const PartnerInstitutionPortal = () => {
 
             <div>
               <Select value={formData.state} onValueChange={(value) => handleSelectChange('state', value)}>
-                <SelectTrigger className="bg-white/80 rounded-xl">
+                <SelectTrigger className="h-11 rounded-control border-tint bg-white">
                   <SelectValue placeholder="Select your state" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -549,7 +547,7 @@ const PartnerInstitutionPortal = () => {
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
-                className="bg-white/80 rounded-xl flex-1"
+                className="flex-1"
                 required
               />
               <Input
@@ -568,7 +566,6 @@ const PartnerInstitutionPortal = () => {
                 name="addressLine1"
                 value={formData.addressLine1}
                 onChange={handleChange}
-                className="bg-white/80 rounded-xl"
                 required
               />
             </div>
@@ -579,7 +576,6 @@ const PartnerInstitutionPortal = () => {
                 name="addressLine2"
                 value={formData.addressLine2}
                 onChange={handleChange}
-                className="bg-white/80 rounded-xl"
               />
             </div>
           </div>
@@ -588,7 +584,7 @@ const PartnerInstitutionPortal = () => {
       case 3:
         return (
           <div className="space-y-4">
-            <div className="text-right text-sm text-gray-600 mb-4">
+            <div className="text-right text-sm text-ink/70 mb-4">
               Account & Professional Details
             </div>
 
@@ -603,21 +599,21 @@ const PartnerInstitutionPortal = () => {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className="bg-white/80 rounded-xl flex-1"
+                className="flex-1"
                 required
               />
-              <Button 
-                type="button" 
+              <button
+                type="button"
                 onClick={sendOTP}
-                className="bg-[#0389FF] hover:bg-[#0389FF]/90 rounded-xl"
+                className="btn btn-primary shrink-0"
                 disabled={!formData.email || isSendingOTP || (otpSent && !canResendOtp)}
               >
                 {isSendingOTP ? "Sending..." : otpSent ? (canResendOtp ? "Resend OTP" : `Resend in ${otpTimer}s`) : "Send OTP"}
-              </Button>
+              </button>
               
             </div>
             {otpSent && (
-              <div className="bg-yellow-100 p-3 rounded-xl flex items-center justify-between">
+              <div className="rounded-control bg-yellow-50 p-3 flex items-center justify-between">
                 <span className="text-sm">⚠️ OTP sent to {formData.email}</span>
               </div>
             )}
@@ -629,7 +625,6 @@ const PartnerInstitutionPortal = () => {
                   name="otp"
                   value={formData.otp}
                   onChange={handleChange}
-                  className="bg-white/80 rounded-xl"
                   maxLength={6}
                   required
                 />
@@ -643,7 +638,6 @@ const PartnerInstitutionPortal = () => {
                                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                className="bg-white/80 rounded-xl"
                 required
               />
             </div>
@@ -654,7 +648,7 @@ const PartnerInstitutionPortal = () => {
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="bg-white/80 rounded-xl flex-1"
+                className="flex-1"
                 required
               />
               {/* <Button 
@@ -668,7 +662,7 @@ const PartnerInstitutionPortal = () => {
             </div>
             
             {/* {otpSent && (
-              <div className="bg-yellow-100 p-3 rounded-xl flex items-center justify-between">
+              <div className="rounded-control bg-yellow-50 p-3 flex items-center justify-between">
                 <span className="text-sm">⚠️ OTP sent to {formData.phone}</span>
               </div>
             )}
@@ -680,7 +674,6 @@ const PartnerInstitutionPortal = () => {
                   name="otp"
                   value={formData.otp}
                   onChange={handleChange}
-                  className="bg-white/80 rounded-xl"
                   maxLength={6}
                   required
                 />
@@ -689,7 +682,7 @@ const PartnerInstitutionPortal = () => {
 
             <div>
               <Select value={formData.topic} onValueChange={(value) => handleSelectChange('topic', value)}>
-                <SelectTrigger className="bg-white/80 rounded-xl">
+                <SelectTrigger className="h-11 rounded-control border-tint bg-white">
                   <SelectValue placeholder="Which topic do you want to teach?" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -717,7 +710,7 @@ const PartnerInstitutionPortal = () => {
 
             <div>
               <Select value={formData.sector} onValueChange={(value) => handleSelectChange('sector', value)}>
-                <SelectTrigger className="bg-white/80 rounded-xl">
+                <SelectTrigger className="h-11 rounded-control border-tint bg-white">
                   <SelectValue placeholder="Which sector do you want to work in?" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl">
@@ -749,13 +742,13 @@ const PartnerInstitutionPortal = () => {
                 checked={formData.acceptTerms}
                 onCheckedChange={handleCheckboxChange}
               />
-              <label htmlFor="terms" className="text-sm text-gray-600">
+              <label htmlFor="terms" className="text-sm text-ink/70">
                 I agree to the{" "}
-                <Link to="/terms" className="text-[#0389FF] hover:underline">
+                <Link to="/terms" className="text-deep hover:underline">
                   Terms and Conditions
                 </Link>{" "}
                 and{" "}
-                <Link to="/privacy" className="text-[#0389FF] hover:underline">
+                <Link to="/privacy" className="text-deep hover:underline">
                   Privacy Policy
                 </Link>
               </label>
@@ -769,72 +762,57 @@ const PartnerInstitutionPortal = () => {
   };
 
   return (
-    <SignupLayout 
-      title="Innovate, Incubate and Impact the world together!" 
-      subtitle="Join us to Innovate, Incubate and Impact!"
+    <AuthShell
+      title="Partner With Us - Institution"
+      description={
+        currentStep === 1
+          ? "Enter your company details to proceed further"
+          : currentStep === 2
+            ? "Enter your address details to proceed further"
+            : "Complete your account setup and verify details"
+      }
+      brandTitle="Innovate, Incubate and Impact"
+      brandText="Join us to Innovate, Incubate and Impact!"
+      footer={
+        <>
+          Already have an account?{" "}
+          <Link to="/partner-signin" className="font-medium text-deep hover:underline">
+            Login
+          </Link>
+        </>
+      }
     >
-      <div className="w-full max-w-md mx-auto">
-        <div className="text-center mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">Partner With Us - Institution</h1>
-          
-          <p className="text-gray-600 text-sm">
-            {currentStep === 1 && "Enter your company details to proceed further"}
-            {currentStep === 2 && "Enter your address details to proceed further"}
-            {currentStep === 3 && "Complete your account setup and verify details"}
-          </p>
+      <form onSubmit={handleSubmit} className="grid gap-6">
+        <StepIndicator currentStep={currentStep} totalSteps={3} />
+
+        {renderStepContent()}
+
+        <div className="flex items-center justify-between gap-4">
+          {currentStep > 1 && (
+            <button type="button" onClick={handleBack} className="btn btn-secondary">
+              Back
+            </button>
+          )}
+
+          <div className="flex-1" />
+
+          {currentStep < 3 ? (
+            <button type="button" onClick={handleNext} className="btn btn-primary">
+              CONTINUE
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className="btn btn-primary"
+              disabled={!formData.acceptTerms || registerMutation.isPending || (otpSent && !formData.otp)}
+            >
+              {registerMutation.isPending ? "SIGNING UP..." : "SIGN UP"}
+            </button>
+          )}
         </div>
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <StepIndicator currentStep={currentStep} totalSteps={3} />
-          
-          {renderStepContent()}
-
-          <div className="flex justify-between space-x-4">
-            {currentStep > 1 && (
-              <Button
-                type="button"
-                onClick={handleBack}
-                variant="outline"
-                className="px-6 rounded-xl border-[#0389FF] text-[#0389FF] hover:bg-[#0389FF] hover:text-white"
-              >
-                Back
-              </Button>
-            )}
-            
-            <div className="flex-1" />
-            
-            {currentStep < 3 ? (
-              <Button
-                type="button"
-                onClick={handleNext}
-                className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white px-6 rounded-xl"
-              >
-                CONTINUE
-              </Button>
-            ) : (
-              <Button
-                type="submit"
-                className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white px-6 rounded-xl"
-                disabled={!formData.acceptTerms || registerMutation.isPending || (otpSent && !formData.otp)}
-              >
-                {registerMutation.isPending ? "SIGNING UP..." : "SIGN UP"}
-              </Button>
-            )}
-          </div>
-        </form>
-
-        <div className="text-center mt-6">
-          <p className="text-sm text-gray-600">
-            Already have an account?{" "}
-            <Link to="/partner-signin" className="text-[#0389FF] hover:text-[#0389FF]/80 hover:underline font-semibold">
-              Login
-            </Link>
-          </p>
-        </div>
-      </div>
-    </SignupLayout>
+      </form>
+    </AuthShell>
   );
 };
 
 export default PartnerInstitutionPortal;
-

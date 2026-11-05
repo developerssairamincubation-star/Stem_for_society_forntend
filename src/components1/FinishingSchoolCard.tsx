@@ -1,7 +1,5 @@
-import { Card } from "@/components1/ui/card";
-import { Badge } from "@/components1/ui/badge";
-import { Button } from "@/components1/ui/button";
-import { ArrowRight, Clock, MapPin, Calendar } from "lucide-react";
+import { ArrowRight, CalendarBlank, Clock, MapPin } from "@phosphor-icons/react";
+import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { COURSE_IMAGE_FALLBACK, handleCourseImageError } from "@/lib/courseImage";
 
@@ -19,6 +17,7 @@ interface FinishingSchoolCardProps {
   startDate: string;
 }
 
+/** Programme card in the SFS style: 16:10 picture, category label, title, three facts and one action. */
 const FinishingSchoolCard = ({
   courseId,
   image,
@@ -34,99 +33,62 @@ const FinishingSchoolCard = ({
 }: FinishingSchoolCardProps) => {
   const navigate = useNavigate();
 
+  const facts = [
+    { Icon: Clock, label: "Duration", value: duration },
+    { Icon: MapPin, label: mode, value: modeDescription },
+    { Icon: CalendarBlank, label: "Starts", value: startDate },
+  ];
+
   return (
-    <Card className="flex flex-col overflow-hidden rounded-xl sm:rounded-2xl bg-white border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 group">
-      {/* Image Section */}
-      <div className="relative w-full h-[180px] sm:h-[220px] overflow-hidden bg-gray-100 flex items-center justify-center">
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="card group flex h-full flex-col overflow-hidden transition-[box-shadow,border-color] duration-300 hover:border-brand hover:shadow-raised"
+    >
+      <div className="relative aspect-[16/10] w-full overflow-hidden bg-surface">
         <img
           src={image || COURSE_IMAGE_FALLBACK}
           alt={title}
-          className="w-full h-auto max-h-full object-contain transition-transform duration-500 group-hover:scale-105"
+          loading="lazy"
+          className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           onError={handleCourseImageError}
         />
+        <span className="t-label absolute top-4 left-4 rounded-control bg-deep px-2.5 py-1 text-white">{badge}</span>
       </div>
 
-      {/* Content Section */}
-      <div className="flex-1 p-3 sm:p-5 flex flex-col">
-        {/* University Logo and Badge Row */}
-        <div className="flex items-center justify-between gap-2 mb-3 sm:mb-4 flex-wrap">
-          {universityLogo ? (
-            <div className="flex items-center gap-2 min-w-0">
-              <img
-                src={universityLogo}
-                alt={universityName}
-                className="h-6 sm:h-8 w-auto object-contain"
-              />
-              {universityName && (
-                <span className="text-xs sm:text-sm font-medium text-gray-700 truncate">{universityName}</span>
-              )}
-            </div>
-          ) : (
-            <div className="h-6 sm:h-8" />
-          )}
-          <Badge className="bg-[#0D9488] hover:bg-[#0D9488] text-white text-xs px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full font-medium flex-shrink-0">
-            {badge}
-          </Badge>
-        </div>
-
-        {/* Title */}
-        <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 leading-tight line-clamp-2">
-          {title}
-        </h3>
-
-        {/* Description */}
-        <p className="text-gray-500 text-xs sm:text-sm mb-4 sm:mb-5 line-clamp-3 leading-relaxed flex-grow">
-          {description}
-        </p>
-
-        {/* Course Info Row - Responsive Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-5 pt-4 border-t border-gray-100">
-          {/* Duration */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#E0F2F1] flex items-center justify-center flex-shrink-0">
-              <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0D9488]" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-gray-400 text-[9px] sm:text-[10px] font-medium uppercase tracking-wide">Duration</p>
-              <p className="text-gray-900 font-semibold text-xs sm:text-sm truncate">{duration}</p>
-            </div>
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        {(universityLogo || universityName) && (
+          <div className="mb-3 flex items-center gap-2">
+            {universityLogo && <img src={universityLogo} alt="" className="h-7 w-auto object-contain" />}
+            {universityName && <span className="t-small truncate font-medium text-ink/75">{universityName}</span>}
           </div>
+        )}
 
-          {/* Mode */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#E0F2F1] flex items-center justify-center flex-shrink-0">
-              <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0D9488]" />
-            </div>
-            <div className="min-w-0">
-              <p className="text-gray-400 text-[9px] sm:text-[10px] font-medium uppercase tracking-wide">{mode}</p>
-              <p className="text-gray-900 font-semibold text-xs sm:text-sm truncate">{modeDescription}</p>
-            </div>
-          </div>
+        <h3 className="t-heading line-clamp-2">{title}</h3>
+        <p className="t-body mt-2 line-clamp-3 text-ink/70">{description}</p>
 
-          {/* Start Date */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#E0F2F1] flex items-center justify-center flex-shrink-0">
-              <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-[#0D9488]" />
+        <dl className="mt-5 grid grid-cols-1 gap-4 border-t border-tint pt-5 sm:grid-cols-3">
+          {facts.map(({ Icon, label, value }) => (
+            <div key={label} className="flex min-w-0 items-start gap-2.5">
+              <Icon size={20} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
+              <div className="min-w-0">
+                <dt className="truncate text-xs text-ink/60">{label}</dt>
+                <dd className="t-small font-medium">{value}</dd>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-gray-400 text-[9px] sm:text-[10px] font-medium uppercase tracking-wide">Starts</p>
-              <p className="text-gray-900 font-semibold text-xs sm:text-sm truncate">{startDate}</p>
-            </div>
-          </div>
-        </div>
+          ))}
+        </dl>
 
-        {/* Action Buttons */}
-        <div className="flex items-center gap-3 sm:gap-4">
-          <Button
-            onClick={() => navigate(`/academy-detail/${courseId}`)}
-            className="flex-1 bg-[#0F4C5C] hover:bg-[#0F4C5C]/90 text-white py-2 sm:py-3 rounded-full font-medium text-xs sm:text-sm transition-all duration-300"
-          >
+        <div className="mt-auto pt-6">
+          <button type="button" onClick={() => navigate(`/academy-detail/${courseId}`)} className="btn btn-primary nudge w-full sm:w-auto">
             Explore more
-          </Button>
-          
+            <ArrowRight size={16} aria-hidden="true" />
+          </button>
         </div>
       </div>
-    </Card>
+    </motion.article>
   );
 };
 

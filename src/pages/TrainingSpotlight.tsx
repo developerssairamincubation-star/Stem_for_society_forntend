@@ -1,19 +1,18 @@
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { clientSafeText } from "@/lib/errors";
-import { Alert, Badge, Button, Rating, Textarea } from "@mantine/core";
+import { Alert, Rating, Textarea } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { Calendar, ChevronLeft, NotepadText } from "lucide-react";
+import { CalendarBlank, CaretLeft, MapPin, NotePencil, ShareNetwork, Certificate } from "@phosphor-icons/react";
+import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
+import { PageLoading } from "@/sfs/components/page/PageStatus";
 import { useCallback, useState } from "react";
 import { FaLinkedin } from "react-icons/fa";
-import { FaLocationDot } from "react-icons/fa6";
-import { MdShare } from "react-icons/md";
 import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useShare } from "@/hooks/useShare";
 import { SharePopup } from "@/components1/ui/SharePopup";
 import Errorbox from "../components/Errorbox";
-import Loading from "../components/Loading";
 import { RZPY_KEYID } from "../Constants";
 import { api, queryClient } from "../lib/api";
 import { useUser } from "../lib/hooks";
@@ -211,157 +210,164 @@ function TrainingSpotlight() {
   }, [user, mutateAsync, id]);
 
   if (isLoading) {
-    return <Loading />;
+    return <PageLoading label="Loading event…" />;
   }
 
+  const framed = (node: React.ReactNode) => (
+    <PageFrame tone="surface">
+      <div className="container-x pt-32 pb-16">{node}</div>
+    </PageFrame>
+  );
+
   if (error) {
-    return <Errorbox message={error.message} />;
+    return framed(<Errorbox message={error.message} />);
   }
 
   const event = data?.data;
 
+  if (!event) {
+    return framed(<Errorbox message="Something went wrong!" />);
+  }
+
+  const detail = "grid gap-1 border-b border-tint py-4 sm:grid-cols-[10rem_1fr] sm:gap-6";
+  const label = "t-small text-ink/60";
+
   return (
-    <div className="w-full my-8 h-full flex justify-center">
-      <div className="lg:w-[80%] lg:p-0 p-3 mb-10 flex flex-col gap-4">
-        <Link to={"/courses"}>
-          <Button radius={999}>
-            <ChevronLeft size={16} />
+    <PageFrame tone="surface">
+      <PageHero
+        kicker={
+          <Link to={"/courses"} className="nudge inline-flex items-center gap-2 text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">
+            <CaretLeft size={16} aria-hidden="true" />
             Back
-          </Button>
-        </Link>
-        {!event ? (
-          <Errorbox message="Something went wrong!" />
-        ) : (
-          <>
-            <span className=" text-xl md:text-3xl flex justify-between">
-              {event.title}
-              <Button
-                radius={999}
-                variant="outline"
-                onClick={handleShare}
-              >
-                <MdShare />
-                Share
-              </Button>
-            </span>
-            {event.description}
-            <div className="flex gap-4 lg:flex-row flex-col">
-              <img
-                src={event.coverImg}
-                alt={event.title}
-                className="lg:w-2/3 aspect-video object-contain rounded-lg"
-              />
-              <div className="flex flex-col gap-2">
-                <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base">
-                  Instructor:{" "}
-                  <span className="date ml-2 text-black font-semibold">
-                    {event.instructor.firstName +
-                      " " +
-                      (event.instructor.lastName ?? "")}
-                  </span>
-                </span>
-                {event.instructor.institutionName && (
-                  <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base">
-                    Institution:{" "}
-                    <span className="date ml-2 text-black font-semibold">
-                      {event.instructor.institutionName}
-                    </span>
-                  </span>
-                )}
-                {event.enrolments?.length === 1 && event.link && (
-                  <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base">
-                    Enrolled On:{" "}
-                    <span className="date ml-2 text-black font-semibold">
-                      {formatDate(event.enrolments?.[0]?.createdAt)}
-                    </span>
-                  </span>
-                )}
+          </Link>
+        }
+        title={event.title}
+        description={event.description}
+        actions={
+          <button type="button" onClick={handleShare} className="btn btn-inverse">
+            <ShareNetwork size={18} aria-hidden="true" />
+            Share
+          </button>
+        }
+      />
+
+      <section className="section" aria-label="Event details">
+        <div className="container-x grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+          <div className="grid content-start gap-8">
+            <img src={event.coverImg} alt={event.title} className="aspect-video w-full rounded-card bg-white object-contain" />
+
+            {event.lessons && event.lessons.length > 0 && (
+              <div className="grid gap-4">
+                <h2 className="t-title">Course Content</h2>
+                {event.lessons.map((l) => (
+                  <div className="card p-5 sm:p-6" key={l.id}>
+                    <div className="mb-3 flex items-start justify-between gap-3">
+                      <h3 className="t-heading">{l.title}</h3>
+                      <span className="chip shrink-0 text-deep">{l.type}</span>
+                    </div>
+                    {l.content && <div className="ql-snow" dangerouslySetInnerHTML={{ __html: sanitizeHtml(l.content) }}></div>}
+                    <div className="mt-3 flex flex-col gap-3">
+                      <span className="t-small inline-flex items-center gap-2 text-ink/70">
+                        <CalendarBlank size={16} aria-hidden="true" />
+                        {formatDate(l.lastDate)}
+                      </span>
+                      {l.type === "ONLINE" && l.video && (
+                        <div className="relative overflow-hidden rounded-card pt-[56.25%]">
+                          <ReactPlayer
+                            url={l.video}
+                            controls
+                            height={"100%"}
+                            width={"100%"}
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    {l.type === "OFFLINE" && l.location && (
+                      <div className="t-small mt-3 inline-flex items-center gap-2 text-ink/70">
+                        <MapPin size={16} aria-hidden="true" />
+                        {l.location}
+                      </div>
+                    )}
+                  </div>
+                ))}
               </div>
-            </div>
-            <span className="text-green-600 flex items-center gap-2 font-semibold text-xs sm:text-sm md:text-base">
-              <Calendar size={18} />
-              Dates:{" "}
-              <span className="date ml-2 text-black font-semibold">
-                {formatDate(event.startDate) +
-                  " to " +
-                  formatDate(event.endDate)}
-              </span>
-            </span>
-            <span className="text-green-600 flex items-center gap-2 font-semibold text-xs sm:text-sm md:text-base">
-              <FaLocationDot /> Mode:{" "}
-              <span className=" text-black font-normal">
-                <Badge variant="dot" color={location ? "red" : "green"}>
-                  {event.type ?? (event.location ? "Offline" : "Online")}
-                </Badge>
-              </span>
-            </span>
-            {event.location && (
-              <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base">
-                Location:{" "}
-                <span className="location text-black font-semibold">
-                  {event.location}
-                </span>
-              </span>
             )}
-            {event.isEnrolled && (
-              <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base">
-                Event Link:{" "}
-                <a
-                  href={event.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="location text-blue-500 underline font-semibold"
-                >
-                  {event.link}
-                </a>
-              </span>
-            )}
-            <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base">
-              Price:{" "}
-              <span className="date ml-2 text-black font-semibold">
-                ₹{event.cost}
-              </span>
-            </span>
-            <div className="">
+          </div>
+
+          <div className="grid content-start gap-6 max-lg:order-first lg:sticky lg:top-28 lg:self-start">
+            <dl className="card px-6 py-2">
+              <div className={detail}>
+                <dt className={label}>Instructor</dt>
+                <dd className="t-body font-medium">{event.instructor.firstName + " " + (event.instructor.lastName ?? "")}</dd>
+              </div>
+              {event.instructor.institutionName && (
+                <div className={detail}>
+                  <dt className={label}>Institution</dt>
+                  <dd className="t-body font-medium">{event.instructor.institutionName}</dd>
+                </div>
+              )}
+              {event.enrolments?.length === 1 && event.link && (
+                <div className={detail}>
+                  <dt className={label}>Enrolled On</dt>
+                  <dd className="t-body font-medium">{formatDate(event.enrolments?.[0]?.createdAt)}</dd>
+                </div>
+              )}
+              <div className={detail}>
+                <dt className={label}>Dates</dt>
+                <dd className="t-body font-medium">{formatDate(event.startDate) + " to " + formatDate(event.endDate)}</dd>
+              </div>
+              <div className={detail}>
+                <dt className={label}>Mode</dt>
+                <dd className="t-body font-medium">{event.type ?? (event.location ? "Offline" : "Online")}</dd>
+              </div>
+              {event.location && (
+                <div className={detail}>
+                  <dt className={label}>Location</dt>
+                  <dd className="t-body font-medium">{event.location}</dd>
+                </div>
+              )}
+              {event.isEnrolled && (
+                <div className={detail}>
+                  <dt className={label}>Event Link</dt>
+                  <dd className="t-body break-all font-medium">
+                    <a href={event.link} target="_blank" rel="noreferrer" className="text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep">
+                      {event.link}
+                    </a>
+                  </dd>
+                </div>
+              )}
+              <div className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-6">
+                <dt className={label}>Price</dt>
+                <dd className="t-body font-medium">₹{event.cost}</dd>
+              </div>
+            </dl>
+
+            <div className="grid gap-4">
               {!user ? (
-                <Link to={loginUrl}>
-                  <Button
-                    radius={999}
-                    variant="filled"
-                    px={20}
-                    leftSection={<NotepadText size={14} />}
-                  >
-                    Sign in to register
-                  </Button>
+                <Link to={loginUrl} className="btn btn-primary">
+                  <NotePencil size={18} aria-hidden="true" />
+                  Sign in to register
                 </Link>
               ) : !event.isEnrolled ? (
-                <Button
-                  radius={999}
-                  variant="filled"
-                  leftSection={<NotepadText size={14} />}
-                  onClick={() => setConfirmOpen(true)}
-                  disabled={isPending}
-                  px={20}
-                >
+                <button type="button" className="btn btn-primary" onClick={() => setConfirmOpen(true)} disabled={isPending}>
+                  <NotePencil size={18} aria-hidden="true" />
                   {isPending ? "Please wait..." : "Enroll Now"}
-                </Button>
+                </button>
               ) : (
-                <div className="space-y-2">
-                  <Button
-                    radius={999}
-                    variant="filled"
-                    leftSection={<NotepadText size={14} />}
-                    className="px-4 py-2 text-sm"
-                    disabled
-                  >
+                <div className="grid gap-4">
+                  <button type="button" className="btn btn-primary" disabled>
+                    <NotePencil size={18} aria-hidden="true" />
                     You are already registered
-                  </Button>
+                  </button>
                   {event.displayFeedback && (
-                    <RatingAndFeedback
-                      data={event}
-                      id={id!}
-                      disabled={event.ratings.length > 0}
-                    />
+                    <div className="card grid gap-3 p-5">
+                      <RatingAndFeedback data={event} id={id!} disabled={event.ratings.length > 0} />
+                    </div>
                   )}
                 </div>
               )}
@@ -379,105 +385,32 @@ function TrainingSpotlight() {
                 isProcessing={isPending}
                 loginUrl={loginUrl}
               />
-              {event.lessons && event.lessons.length > 0 && (
-                <div className="grid gap-3 mt-8">
-                  <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base">
-                    Course Content
-                  </span>
-                  {event.lessons.map((l) => (
-                    <div
-                      className="w-full border my-1 rounded-md p-4"
-                      key={l.id}
-                    >
-                      <div className="flex justify-between items-center mb-2">
-                        <h4 className="text-lg font-semibold">{l.title}</h4>
-                        <Badge
-                          variant="dot"
-                          color={l.type === "ONLINE" ? "red" : "green"}
-                        >
-                          {l.type}
-                        </Badge>
-                      </div>
-                      {l.content && (
-                        <div
-                          className="ql-snow"
-                          dangerouslySetInnerHTML={{ __html: sanitizeHtml(l.content) }}
-                        ></div>
-                      )}
-                      <div className="flex flex-col mb-2 gap-3">
-                        <span className="text-gray-600">
-                          <Calendar size={16} className="inline-block mr-1" />
-                          {formatDate(l.lastDate)}
-                        </span>
-                        {l.type === "ONLINE" && l.video && (
-                          <div className="pt-[56.25%] relative">
-                            <ReactPlayer
-                              url={l.video}
-                              controls
-                              height={"100%"}
-                              width={"100%"}
-                              style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                              }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                      {l.type === "OFFLINE" && l.location && (
-                        <div className="text-gray-600">
-                          <FaLocationDot
-                            size={16}
-                            className="inline-block mr-1"
-                          />
-                          {l.location}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
 
               {event.enrolments?.[0]?.certificate && (
-                <>
-                  <Alert color="green" className="mt-4">
-                    <h4 className="font-medium text-green-600 text-xl">
-                      Congratulations! You have successfully completed the
-                      training
-                    </h4>
-                    <p className="text-green-700">
-                      You have earned a certificate and is now available for you
-                      to download!
-                    </p>
-                    <div className="flex gap-2">
-                      <Button radius={999} mt={8}>
-                        <Link
-                          target="_blank"
-                          to={event.enrolments?.[0]?.certificate}
-                        >
-                          Download now
-                        </Link>
-                      </Button>
-                      <Button radius={999} mt={8}>
-                        <Link
-                          target="_blank"
-                          className="flex gap-2"
-                          to={`https://www.linkedin.com/shareArticle?mini=true&url=${event.enrolments?.[0]?.certificate}&text=Hello connections! I have completed a course with STEM for society website and have earned a certificate on ${event.title}`}
-                        >
-                          <FaLinkedin /> Share
-                        </Link>
-                      </Button>
-                    </div>
-                  </Alert>
-                </>
+                <Alert color="green" radius="md">
+                  <h3 className="t-heading text-green-700">Congratulations! You have successfully completed the training</h3>
+                  <p className="t-body mt-1 text-green-800">You have earned a certificate and is now available for you to download!</p>
+                  <div className="mt-4 flex flex-wrap gap-3">
+                    <Link target="_blank" to={event.enrolments?.[0]?.certificate} className="btn btn-primary">
+                      <Certificate size={18} aria-hidden="true" />
+                      Download now
+                    </Link>
+                    <Link
+                      target="_blank"
+                      className="btn btn-secondary"
+                      to={`https://www.linkedin.com/shareArticle?mini=true&url=${event.enrolments?.[0]?.certificate}&text=Hello connections! I have completed a course with STEM for society website and have earned a certificate on ${event.title}`}
+                    >
+                      <FaLinkedin aria-hidden="true" /> Share
+                    </Link>
+                  </div>
+                </Alert>
               )}
             </div>
-          </>
-        )}
-      </div>
+          </div>
+        </div>
+      </section>
       <SharePopup isVisible={isShowing} />
-    </div>
+    </PageFrame>
   );
 }
 
@@ -517,13 +450,9 @@ function RatingAndFeedback({
         onChange={(event) => setFeedback(event.currentTarget.value)}
         placeholder="Enter feedback to apply for certificate"
       />
-      <Button
-        radius={999}
-        onClick={handleSubmit}
-        disabled={data.ratings?.length > 0 || mutation.isPending}
-      >
+      <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={data.ratings?.length > 0 || mutation.isPending}>
         {data.ratings?.length > 0 ? "Already submitted" : "Submit feedback"}
-      </Button>
+      </button>
     </>
   );
 }

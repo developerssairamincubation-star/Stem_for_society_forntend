@@ -1,9 +1,5 @@
-import { Badge } from "@/components1/ui/badge";
-import { Button } from "@/components1/ui/button";
-import { Card } from "@/components1/ui/card";
-import { ArrowRight } from "lucide-react";
-import { Icon } from "@iconify/react";
-import VectorIcon from "@/assets/Vector.png";
+import { ArrowRight, CalendarBlank, MapPin, UserCircle } from "@phosphor-icons/react";
+import { motion } from "framer-motion";
 import { COURSE_IMAGE_FALLBACK, handleCourseImageError } from "@/lib/courseImage";
 
 interface CourseCardProps {
@@ -23,6 +19,7 @@ interface CourseCardProps {
   onMoreDetails?: () => void;
 }
 
+/** Course row card in the SFS style: picture on the left, details on the right, one primary action. */
 const CourseCard = ({
   image,
   category,
@@ -38,105 +35,80 @@ const CourseCard = ({
   onMoreDetails,
 }: CourseCardProps) => {
   return (
-    <Card className="flex flex-col md:flex-row overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow duration-300">
-      {/* Image Section */}
-      <div className="relative w-full md:w-[320px] h-[200px] md:h-[220px] flex-shrink-0 p-3 bg-gray-100 flex items-center justify-center">
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="card group flex flex-col overflow-hidden transition-[box-shadow,border-color] duration-300 hover:border-brand hover:shadow-raised md:flex-row"
+    >
+      <div className="relative aspect-[16/10] w-full shrink-0 overflow-hidden bg-surface md:aspect-auto md:w-80">
         <img
           src={image || COURSE_IMAGE_FALLBACK}
           alt={title}
-          className="w-full h-auto max-h-full object-contain rounded-xl"
+          loading="lazy"
+          className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           onError={handleCourseImageError}
         />
-        {/* Category Badge */}
-        <Badge className="absolute top-5 left-5 bg-[#0389FF] text-white text-xs px-2.5 py-1 rounded-lg font-medium flex items-center gap-1.5 whitespace-nowrap">
-          <img src={VectorIcon} className="w-3.5 h-3.5 object-contain" alt="" />
-          {category}
-        </Badge>
+        <span className="t-label absolute top-4 left-4 rounded-control bg-deep px-2.5 py-1 text-white">{category}</span>
       </div>
 
-      {/* Content Section */}
-      <div className="flex-1 py-3 px-4 flex flex-col justify-between">
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-2">
-          {tags.map((tag, index) => (
-            <Badge
-              key={index}
-              variant="outline"
-              className="text-[#0389FF] border-[#0389FF] text-xs px-3 py-0.5 rounded-full font-medium bg-white"
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0389FF] mr-1.5"></span>
+      <div className="flex flex-1 flex-col p-5 sm:p-6">
+        <ul className="flex flex-wrap gap-2" aria-label="Tags">
+          {tags.map((tag) => (
+            <li key={tag} className="chip text-deep">
               {tag}
-            </Badge>
+            </li>
           ))}
-        </div>
+        </ul>
 
-        {/* Title */}
-        <h3 className="text-lg font-bold text-gray-900 mb-1">{title}</h3>
+        <h3 className="t-heading mt-3">{title}</h3>
+        <p className="t-body mt-2 line-clamp-2 text-ink/70">{description}</p>
 
-        {/* Description */}
-        <p className="text-gray-500 text-sm mb-3 line-clamp-2 leading-relaxed">{description}</p>
-
-        {/* Info Row */}
-        <div className="flex flex-wrap items-center gap-5 mb-3 border-t border-gray-100 pt-3">
-          <div className="flex items-center gap-2">
-            <Icon icon="solar:calendar-bold" className="text-[#0389FF]" width="20" height="20" />
+        <dl className="mt-4 grid gap-4 border-t border-tint pt-4 sm:grid-cols-3">
+          <div className="flex items-start gap-2.5">
+            <CalendarBlank size={22} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
             <div>
-              <p className="text-gray-400 text-[10px]">Starts</p>
-              <p className="text-gray-900 font-semibold text-xs">{startDate}</p>
+              <dt className="text-xs text-ink/60">Starts</dt>
+              <dd className="t-small font-medium">{startDate}</dd>
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
-            <Icon icon="basil:location-solid" className="text-[#0389FF]" width="20" height="20" />
+          <div className="flex items-start gap-2.5">
+            <MapPin size={22} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
             <div>
-              <p className="text-gray-400 text-[10px]">Online plus In person</p>
-              <p className="text-gray-900 font-semibold text-xs">{mode}</p>
+              <dt className="text-xs text-ink/60">Online plus In person</dt>
+              <dd className="t-small font-medium">{mode}</dd>
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
+          <div className="flex items-start gap-2.5">
             {instructorImage ? (
-              <img src={instructorImage} alt={instructor} className="w-5 h-5 rounded-full object-cover" />
+              <img src={instructorImage} alt="" className="mt-0.5 size-[22px] shrink-0 rounded-full object-cover" />
             ) : (
-              <Icon icon="solar:user-bold" width="20" height="20" className="text-[#0389FF]" />
+              <UserCircle size={22} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
             )}
             <div>
-              <p className="text-gray-400 text-[10px]">In collaboration with</p>
-              <p className="text-gray-900 font-semibold text-xs">{instructor}</p>
+              <dt className="text-xs text-ink/60">In collaboration with</dt>
+              <dd className="t-small font-medium">{instructor}</dd>
             </div>
           </div>
-        </div>
+        </dl>
 
-        {/* Action Buttons */}
-        <div className="flex items-center justify-between">
-          <button 
-            className="flex items-center gap-2 text-gray-800 font-medium text-sm hover:text-[#0389FF] transition-colors group"
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-4 pt-5">
+          <button
+            type="button"
             onClick={onMoreDetails}
+            className="t-label nudge inline-flex items-center gap-1.5 text-deep underline decoration-tint decoration-2 underline-offset-4 transition-colors duration-200 hover:decoration-deep"
           >
             More Details
-            <span className="w-5 h-5 rounded-full border-2 border-gray-800 flex items-center justify-center group-hover:border-[#0389FF] transition-colors">
-              <ArrowRight className="w-3 h-3 text-gray-800 group-hover:text-[#0389FF]" />
-            </span>
+            <ArrowRight size={16} aria-hidden="true" />
           </button>
-          
-          {isEnrolled ? (
-            <Button 
-              className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white px-5 py-2 rounded-full font-medium text-sm"
-              onClick={onMoreDetails}
-            >
-              View Course
-            </Button>
-          ) : (
-            <Button 
-              className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white px-5 py-2 rounded-full font-medium text-sm"
-              onClick={onRegister}
-            >
-              Register Now
-            </Button>
-          )}
+
+          <button type="button" className="btn btn-primary" onClick={isEnrolled ? onMoreDetails : onRegister}>
+            {isEnrolled ? "View Course" : "Register Now"}
+          </button>
         </div>
       </div>
-    </Card>
+    </motion.article>
   );
 };
 

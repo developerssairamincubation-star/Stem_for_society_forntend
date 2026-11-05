@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { PasswordInput } from "@/components1/ui/password-input";
 import { usePartner } from '@/lib/hooks';
-import { Button } from '@/components1/ui/button';
 import { Input } from '@/components1/ui/input';
 import { Checkbox } from '@/components1/ui/checkbox';
-import { Mail, User } from 'lucide-react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import SignupLayout from '@/components1/ui/SignupLayout'
+import { Navigate, useNavigate } from 'react-router-dom';
+import { AuthField, AuthShell } from '@/sfs/components/auth/AuthShell';
 
 type PartnerSignInForm = {
   email: string;
@@ -44,70 +42,61 @@ const InstitutionLogin = () => {
   if (user) return <Navigate to="/partner" />;
 
   return (
-    <SignupLayout 
-      title="Innovate, Incubate and Impact the world together!" 
-      subtitle="Join us to Innovate, Incubate and Impact!"
+    <AuthShell
+      title="Partner with us to transform education!"
+      description="Sign in to your partner account."
+      brandTitle="Innovate, Incubate and Impact"
+      brandText="Join us to Innovate, Incubate and Impact!"
     >
-      <div className="w-full max-w-md mx-auto">
-        <div className="text-center mb-6">
-        <p className="text-2xl font-bold text-gray-800 mb-2  drop-shadow-md ">Partner with us to transform education!</p></div>
+      <form className="grid gap-5" onSubmit={handleSubmit}>
+        <AuthField label="Email" htmlFor="partner-email">
+          <Input
+            id="partner-email"
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            placeholder="Email"
+            name="email"
+            value={formData.email}
+            onChange={handleInputChange}
+          />
+        </AuthField>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
-              <div>
-                <Input
-                  type="email"
-                  autoComplete="email"
-                  inputMode="email"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  placeholder="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl placeholder-gray-500 focus:ring-2 focus:ring-[#0389FF] focus:border-transparent shadow-lg"
-                />
-              </div>
+        <AuthField label="Password" htmlFor="partner-password">
+          <PasswordInput
+            id="partner-password"
+            autoComplete="current-password"
+            placeholder="Password"
+            name="password"
+            value={formData.password}
+            onChange={handleInputChange}
+          />
+        </AuthField>
 
-              <div>
-                <PasswordInput
-                  autoComplete="current-password"
-                                    placeholder="Password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 bg-white/90 backdrop-blur-sm border border-white/50 rounded-xl placeholder-gray-500 focus:ring-2 focus:ring-[#0389FF] focus:border-transparent shadow-lg"
-                />
-              </div>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <Checkbox
+              id="remember"
+              checked={rememberPassword}
+              onCheckedChange={(checked) => setRememberPassword(checked as boolean)}
+              className="size-5 rounded border-tint bg-white data-[state=checked]:border-deep data-[state=checked]:bg-deep data-[state=checked]:text-white"
+            />
+            <label htmlFor="remember" className="t-small text-ink/70">
+              Remember Password
+            </label>
+          </div>
+          <button type="button" className="t-small font-medium text-deep underline-offset-4 hover:underline">
+            Forget Password?
+          </button>
+        </div>
 
-              <div className="flex items-center justify-between py-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="remember"
-                    checked={rememberPassword}
-                    onCheckedChange={(checked) => setRememberPassword(checked as boolean)}
-                    className="data-[state=checked]:bg-[#0389FF] data-[state=checked]:border-[#0389FF] border-white/50 bg-white/30"
-                  />
-                  <label htmlFor="remember" className="text-sm text-white/90">
-                    Remember Password
-                  </label>
-                </div>
-                <button type="button" className="text-sm text-[#0389FF] hover:text-[#0389FF]/80 font-medium">
-                  Forget Password?
-                </button>
-              </div>
-
-              <Button
-                className="w-full bg-[#0389FF] hover:bg-[#0389FF]/90 text-white py-3 rounded-xl font-semibold shadow-lg"
-                disabled={isSigningIn}
-                type="submit"
-              >
-                LOGIN
-              </Button>
-            </form>
-
-
-      </div>
-    </SignupLayout>
+        <button className="btn btn-primary w-full" disabled={isSigningIn} type="submit">
+          LOGIN
+        </button>
+      </form>
+    </AuthShell>
   );
 };
 

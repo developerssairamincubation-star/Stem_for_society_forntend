@@ -1,9 +1,10 @@
 import { clientSafeText } from "@/lib/errors";
 import { useState, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { Button } from "@/components1/ui/button";
-import { ArrowLeft, CheckCircle, Award, ExternalLink, Calendar, MapPin, User } from "lucide-react";
-import Header from "@/components1/Header";
+import { ArrowLeft, CheckCircle, Certificate, ArrowSquareOut, CalendarBlank, MapPin, UserCircle } from "@phosphor-icons/react";
+import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
+import { PageLoading } from "@/sfs/components/page/PageStatus";
+import { Reveal } from "@/sfs/components/ui/Reveal";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -16,7 +17,6 @@ import {
   mutationErrorHandler,
   initializeRazorpay,
 } from "@/lib/utils";
-import Loading from "@/components/Loading";
 import Errorbox from "@/components/Errorbox";
 import { useUser } from "@/lib/hooks";
 import { Rating, Textarea } from "@mantine/core";
@@ -155,13 +155,9 @@ function RatingAndFeedback({
         placeholder="Enter feedback to apply for certificate"
         minLength={10}
       />
-      <Button
-        onClick={handleSubmit}
-        disabled={data.ratings?.length > 0 || mutation.isPending}
-        className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white"
-      >
+      <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={data.ratings?.length > 0 || mutation.isPending}>
         {data.ratings?.length > 0 ? "Already submitted" : "Submit feedback"}
-      </Button>
+      </button>
     </div>
   );
 }
@@ -367,196 +363,157 @@ function RatingAndFeedback({
     return tags;
   };
 
-  if (isLoading) return <Loading />;
-  if (error) return <Errorbox message={error.message} />;
-  if (!training) return <Errorbox message="Course not found" />;
+  const framed = (node: React.ReactNode) => (
+    <PageFrame tone="surface">
+      <div className="container-x pt-32 pb-16">{node}</div>
+    </PageFrame>
+  );
+  if (isLoading) return <PageLoading label="Loading course…" />;
+  if (error) return framed(<Errorbox message={error.message} />);
+  if (!training) return framed(<Errorbox message="Course not found" />);
 
   const instructorName = `${training.instructor?.firstName || ""} ${training.instructor?.lastName || ""}`.trim() || "Instructor";
   const institutionName = training.instructor?.institutionName || "Institution";
   const courseTags = getCourseTags();
 
+  const chip = "inline-flex items-center gap-2 rounded-full border border-white/25 px-3.5 py-1.5 text-white/90";
+  const panel = "card p-6 sm:p-7";
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-        {/* Back Button */}
-        <div className="mb-6 md:mb-8">
-          <Button
-            onClick={() => navigate(-1)}
-            variant="outline"
-            className="flex items-center gap-2 text-gray-600 border-gray-200 hover:bg-gray-100 rounded-lg"
-          >
-            <ArrowLeft className="w-4 h-4" />
+    <PageFrame tone="surface">
+      <PageHero
+        kicker={
+          <button type="button" onClick={() => navigate(-1)} className="nudge inline-flex items-center gap-2 text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">
+            <ArrowLeft size={16} aria-hidden="true" />
             Back
-          </Button>
-        </div>
+          </button>
+        }
+        title={training.title}
+        description={
+          <>
+            <p>{training.category || "Professional Program"}</p>
+            <ul className="t-small mt-5 flex flex-wrap gap-3" aria-label="Course details">
+              <li className={chip}>
+                <CalendarBlank size={18} aria-hidden="true" />
+                {formatDate(training.startDate)}
+              </li>
+              <li className={chip}>
+                <MapPin size={18} aria-hidden="true" />
+                {getModeText()}
+              </li>
+              <li className={chip}>
+                <UserCircle size={18} aria-hidden="true" />
+                {instructorName}
+              </li>
+            </ul>
+          </>
+        }
+        image={{ src: training.coverImg || "/course-images/default.jpg", alt: training.title }}
+      />
 
-        {/* Header Section */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-8 mb-6 md:mb-8 shadow-sm">
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-6 lg:gap-8">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-3 break-words">
-                {training.title}
-              </h1>
-              <p className="text-gray-600 mb-4 text-sm md:text-base">{training.category || 'Professional Program'}</p>
-              <div className="flex flex-wrap gap-2 md:gap-3 text-xs md:text-sm">
-                <span className="flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 md:py-2 bg-gray-100 rounded-full whitespace-nowrap">
-                  <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#0D9488] flex-shrink-0" />
-                  <span className="truncate">{formatDate(training.startDate)}</span>
-                </span>
-                <span className="flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 md:py-2 bg-gray-100 rounded-full whitespace-nowrap">
-                  <MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#0389FF] flex-shrink-0" />
-                  <span className="truncate">{getModeText()}</span>
-                </span>
-                <span className="flex items-center gap-1.5 px-2.5 md:px-3 py-1.5 md:py-2 bg-gray-100 rounded-full whitespace-nowrap">
-                  <User className="w-3.5 h-3.5 md:w-4 md:h-4 text-[#F59E0B] flex-shrink-0" />
-                  <span className="truncate">{instructorName}</span>
-                </span>
-              </div>
-            </div>
-
-            {/* Image */}
-            <div className="w-full lg:w-80 flex-shrink-0">
-              <div className="rounded-2xl overflow-hidden shadow-sm bg-gray-100 flex items-center justify-center h-40 sm:h-48 md:h-64 lg:h-72">
-                <img
-                  src={training.coverImg || "/course-images/default.jpg"}
-                  alt={training.title}
-                  className="w-full h-auto max-h-full object-contain"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Description and Register */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8">
+      <section className="section" aria-label="Course information">
+        <div className="container-x grid gap-8 lg:grid-cols-[1fr_22rem] lg:gap-12">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-4 md:space-y-6">
-            {/* Description */}
-            <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm">
-              <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">About</h2>
-              <p className="text-gray-600 leading-relaxed text-sm md:text-base">{training.description}</p>
-            </div>
+          <div className="grid content-start gap-6">
+            <Reveal className={panel}>
+              <h2 className="t-heading">About</h2>
+              <p className="t-body mt-4 text-ink/75">{training.description}</p>
+            </Reveal>
 
-            {/* Topics Section */}
             {training.lessons && training.lessons.length > 0 && (
-              <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm">
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-4">Topics Covered</h2>
-                <ul className="space-y-2 md:space-y-3">
+              <Reveal className={panel}>
+                <h2 className="t-heading">Topics Covered</h2>
+                <ul className="mt-5 grid gap-3">
                   {training.lessons.map((lesson, idx) => (
                     <li key={idx} className="flex items-start gap-3">
-                      <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-[#0D9488] flex-shrink-0 mt-0.5" />
-                      <span className="text-gray-700 text-sm md:text-base">{lesson.title}</span>
+                      <CheckCircle size={22} weight="fill" className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
+                      <span className="t-body">{lesson.title}</span>
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Reveal>
             )}
 
-            {/* Instructor Info */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
-              <div className="bg-gray-50 rounded-2xl p-4 md:p-6">
-                <h3 className="text-xs md:text-sm font-medium text-gray-500 mb-2">Instructor</h3>
-                <p className="text-base md:text-lg font-semibold text-gray-900 break-words">{instructorName}</p>
-              </div>
-              <div className="bg-gray-50 rounded-2xl p-4 md:p-6">
-                <h3 className="text-xs md:text-sm font-medium text-gray-500 mb-2">Institution</h3>
-                <p className="text-base md:text-lg font-semibold text-gray-900 break-words">{institutionName}</p>
-              </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <Reveal className="card bg-white p-6">
+                <h3 className="t-small text-ink/60">Instructor</h3>
+                <p className="t-heading mt-1 break-words">{instructorName}</p>
+              </Reveal>
+              <Reveal delay={0.06} className="card bg-white p-6">
+                <h3 className="t-small text-ink/60">Institution</h3>
+                <p className="t-heading mt-1 break-words">{institutionName}</p>
+              </Reveal>
             </div>
           </div>
 
           {/* Right Sidebar */}
-          <div className="lg:col-span-1 space-y-3 md:space-y-4">
-            {/* Registration Section */}
+          <div className="grid content-start gap-5 max-lg:order-first lg:sticky lg:top-28 lg:self-start">
             {!isEnrolled() ? (
-              <div className="bg-gradient-to-br from-[#0D9488] to-[#0389FF] rounded-2xl p-4 md:p-6 text-white shadow-sm sticky top-4 lg:top-6">
-                <p className="text-base md:text-lg font-medium mb-1">
-                  Interested in this course?
+              <div className="on-dark rounded-card bg-deep p-6 text-white sm:p-7">
+                <p className="t-heading !text-white">Interested in this course?</p>
+                <p className="t-lead mt-2 text-white/80">
+                  {Number(training.cost || 0) > 0 ? `₹${Number(training.cost || 0).toLocaleString()}` : "Free to join"}
                 </p>
-                <p className="text-sm opacity-90 mb-4">
-                  {Number(training.cost || 0) > 0
-                    ? `₹${Number(training.cost || 0).toLocaleString()}`
-                    : "Free to join"}
-                </p>
-                <Button
-                  onClick={handleRegister}
-                  disabled={isPending}
-                  className="w-full bg-white text-[#0D9488] hover:bg-gray-100 rounded-xl h-10 md:h-12 font-semibold text-sm md:text-base"
-                >
+                <button type="button" onClick={handleRegister} disabled={isPending} className="btn btn-inverse mt-6 w-full">
                   {isPending ? "Processing..." : "Enroll Now"}
-                </Button>
+                </button>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm space-y-3 md:space-y-4">
-                <div className="flex items-center gap-2 text-green-600">
-                  <CheckCircle className="w-4 md:w-5 h-4 md:h-5 flex-shrink-0" />
-                  <span className="font-semibold text-sm md:text-base">Already Enrolled</span>
+              <div className={`${panel} grid gap-4`}>
+                <div className="flex items-center gap-2 text-green-700">
+                  <CheckCircle size={22} weight="fill" aria-hidden="true" />
+                  <span className="t-label">Already Enrolled</span>
                 </div>
 
                 {training.link && (
-                  <Button
-                    onClick={() => window.open(training.link, "_blank")}
-                    className="w-full bg-[#0D9488] text-white hover:bg-teal-600 rounded-xl h-10 md:h-12 font-semibold text-sm md:text-base"
-                  >
-                    <ExternalLink className="w-3.5 md:w-4 h-3.5 md:h-4 mr-2" />
+                  <button type="button" onClick={() => window.open(training.link, "_blank")} className="btn btn-primary w-full">
+                    <ArrowSquareOut size={18} aria-hidden="true" />
                     Access Course
-                  </Button>
+                  </button>
                 )}
 
                 {training.enrolments?.[0]?.certificate && (
                   <>
-                    <Button
-                      onClick={() => window.open(training.enrolments?.[0]?.certificate, "_blank")}
-                      className="w-full bg-green-600 text-white hover:bg-green-700 rounded-xl h-10 md:h-12 font-semibold text-sm md:text-base"
-                    >
-                      <Award className="w-3.5 md:w-4 h-3.5 md:h-4 mr-2" />
+                    <button type="button" onClick={() => window.open(training.enrolments?.[0]?.certificate, "_blank")} className="btn btn-primary w-full">
+                      <Certificate size={18} aria-hidden="true" />
                       Download Certificate
-                    </Button>
-                    <Button
-                      variant="outline"
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => window.open(`https://www.linkedin.com/shareArticle?mini=true&url=${training.enrolments?.[0]?.certificate}&text=I completed ${training.title} on STEM for Society!`, "_blank")}
-                      className="w-full border-[#0D9488] text-[#0D9488] hover:bg-teal-50 rounded-xl h-10 md:h-12 font-semibold text-sm md:text-base"
+                      className="btn btn-secondary w-full"
                     >
-                      <FaLinkedin className="w-3.5 md:w-4 h-3.5 md:h-4 mr-2" />
+                      <FaLinkedin size={16} aria-hidden="true" />
                       Share on LinkedIn
-                    </Button>
+                    </button>
                   </>
                 )}
                 {training.displayFeedback && (
-                  <div className="bg-gray-50 border border-gray-200 rounded-2xl p-4">
-                    <RatingAndFeedback
-                      data={training}
-                      id={id!}
-                      disabled={training.ratings?.length > 0}
-                    />
+                  <div className="rounded-card border border-tint bg-surface p-4">
+                    <RatingAndFeedback data={training} id={id!} disabled={training.ratings?.length > 0} />
                   </div>
                 )}
               </div>
             )}
 
             {/* Course Info */}
-            <div className="bg-gray-50 rounded-2xl p-4 md:p-6 space-y-3">
+            <dl className="card grid gap-4 p-6">
               <div>
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Duration</p>
-                <p className="text-sm md:text-base font-semibold text-gray-900 mt-1">
-                  {calculateDuration(training?.startDate, training?.endDate)}
-                </p>
+                <dt className="t-small text-ink/60">Duration</dt>
+                <dd className="t-body mt-1 font-medium">{calculateDuration(training?.startDate, training?.endDate)}</dd>
               </div>
-              <div className="border-t border-gray-200 pt-3">
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Mode</p>
-                <p className="text-sm md:text-base font-semibold text-gray-900 mt-1">{getModeText()}</p>
+              <div className="border-t border-tint pt-4">
+                <dt className="t-small text-ink/60">Mode</dt>
+                <dd className="t-body mt-1 font-medium">{getModeText()}</dd>
               </div>
-              <div className="border-t border-gray-200 pt-3">
-                <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Certificate</p>
-                <p className="text-sm md:text-base font-semibold text-gray-900 mt-1">Yes, Upon Completion</p>
+              <div className="border-t border-tint pt-4">
+                <dt className="t-small text-ink/60">Certificate</dt>
+                <dd className="t-body mt-1 font-medium">Yes, Upon Completion</dd>
               </div>
-            </div>
+            </dl>
           </div>
         </div>
-      </div>
-
+      </section>
 
       <EnrolmentConfirmDialog
         opened={confirmOpen}
@@ -569,7 +526,7 @@ function RatingAndFeedback({
         isProcessing={isPending}
         loginUrl={loginUrl}
       />
-    </div>
+    </PageFrame>
   );
 };
 

@@ -1,24 +1,15 @@
 import React from "react";
-import Header from "./Header";
+import { Reveal } from "@/sfs/components/ui/Reveal";
+import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
 
 const TermsConditions: React.FC = () => {
   return (
-    <>
-      <Header />
-      <div className="bg-gray-100 py-10 px-4">
+    <PageFrame>
+      <PageHero title="Terms & Conditions" description="STEM for Society | Effective Date: January 2026" />
 
-      {/* A4 Paper Container */}
-      <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-xl p-8 md:p-12 leading-relaxed text-gray-800">
-
-        {/* Header */}
-        <div className="text-center border-b pb-4 mb-6">
-          <h1 className="text-3xl font-bold text-black">
-            Terms & Conditions
-          </h1>
-          <p className="text-sm text-gray-500 mt-2">
-            STEM for Society | Effective Date: January 2026
-          </p>
-        </div>
+      <section className="section" aria-label="Terms & Conditions">
+        <div className="container-x">
+          <div className="mx-auto max-w-3xl leading-relaxed">
 
         {/* Sections */}
         {[
@@ -163,29 +154,23 @@ const TermsConditions: React.FC = () => {
             ),
           },
         ].map((section, index) => (
-          <div
-            key={index}
-            className="mb-6 p-5 border border-gray-200 rounded-lg hover:shadow-md transition"
-          >
-            <h2 className="text-lg font-semibold text-black mb-2">
-              {section.title}
-            </h2>
-            <div className="text-gray-700 text-sm md:text-base">
-              {section.content}
-            </div>
-          </div>
+          <Reveal as="section" key={index} className="border-t border-tint py-8">
+            <h2 className="t-heading mb-3">{section.title}</h2>
+            <div className="t-body text-ink/75 [&_li+li]:mt-2 [&_ul]:list-disc [&_ul]:pl-6">{section.content}</div>
+          </Reveal>
         ))}
 
         {/* Footer */}
-        <div className="border-t pt-6 mt-8 text-center">
-          <p className="font-semibold text-black">
+        <div className="border-t border-tint pt-8 text-center">
+          <p className="t-body font-medium">
             Questions? Contact: info@stemforsociety.org
           </p>
         </div>
 
-      </div>
-    </div>
-    </>
+          </div>
+        </div>
+      </section>
+    </PageFrame>
   );
 };
 

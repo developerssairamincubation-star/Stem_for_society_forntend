@@ -1,10 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components1/ui/button';
-import { Input } from '@/components1/ui/input';
-import { Search, Plus, ArrowLeft, Share2, FileText, PenTool, BookOpen, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, ArrowLeft, ShareNetwork, FileText, PenNib, CaretLeft, CaretRight } from '@phosphor-icons/react';
+import { PageFrame, PageHero } from '@/sfs/components/page/PageFrame';
+import { Reveal } from '@/sfs/components/ui/Reveal';
 import { Link } from 'react-router-dom';
-import Header from '@/components1/Header';
 import { AxiosError } from "axios";
 import Errorbox from "../components/Errorbox";
 import { api } from "../lib/api";
@@ -107,281 +106,181 @@ const Blog = () => {
   // Check if there are no blogs at all (not just filtered results)
   const noBlogsAvailable = !isLoading && blogs.length === 0;
 
+  const intro = (
+    <>
+      <p>
+        Join us in making your research matter to everyone—let's empower society with knowledge and encourage curiosity about the world
+        around us! Every month for the best scientific communication and Outstanding contributions will be rewarded with prizes and
+        certificates of appreciation, recognizing your efforts to make science accessible and engaging for all.
+      </p>
+      <p className="mt-4">
+        Stem for Society invites Scientist, Postdoc, PhD, masters, bachelor students and researchers to share their research journey by
+        writing blogs about their publication or scientific information aimed at the general public and society! By sharing insights and
+        engaging with readers, you can foster community connections and encourage meaningful discussions around your research.
+      </p>
+    </>
+  );
+
+  const heroKicker = (
+    <div className="flex items-center gap-6">
+      <Link to="/" className="nudge inline-flex items-center gap-2 text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">
+        <ArrowLeft size={16} aria-hidden="true" />
+        Back
+      </Link>
+      <button type="button" onClick={handleShare} className="nudge inline-flex items-center gap-2 text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">
+        <ShareNetwork size={16} aria-hidden="true" />
+        Share
+      </button>
+    </div>
+  );
+
   // Every hook above has run by this point, so returning early here is safe.
   if (error) {
-    //@ts-expect-error - error is of type AxiosError
-    return <Errorbox message={error.response?.data.error || 'An error occurred'} />;
+    return (
+      <PageFrame tone="surface">
+        <div className="container-x pt-32 pb-16">
+          {/* @ts-expect-error - error is of type AxiosError */}
+          <Errorbox message={error.response?.data.error || 'An error occurred'} />
+        </div>
+      </PageFrame>
+    );
   }
 
   // Show loading skeleton while data is loading
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white">
-        <div className="relative overflow-hidden min-h-[180px] md:min-h-[280px]">
-
-          {/* Content above grid */}
-          <div className="relative z-10">
-            <Header />
-            <div className="text-center mb-8 pt-2">
-              {/* <p className="text-base text-gray-600 mb-1">Explore Blogs</p> */}
-              <h1 className="text-2xl md:text-3xl font-bold text-black relative inline-block">
-                <span className="relative">
-                  Scientific Communication
-                  <span className="absolute bottom-1 left-0 w-full h-[30%] bg-yellow-300 -z-10"></span>
-                </span>
-              </h1>
+      <PageFrame tone="surface">
+        <PageHero title="Scientific Communication" kicker="Explore Blogs" />
+        <section className="section" aria-busy="true" aria-label="Loading articles">
+          <div className="container-x grid gap-10">
+            <div className="grid gap-3">
+              <div className="h-4 w-full max-w-2xl animate-pulse rounded bg-tint" />
+              <div className="h-4 w-11/12 max-w-2xl animate-pulse rounded bg-tint" />
+              <div className="h-4 w-10/12 max-w-2xl animate-pulse rounded bg-tint" />
             </div>
-          </div>
-        </div>
-
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Description skeleton */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-            <div className="lg:col-span-2 space-y-4">
-              <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-11/12"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-10/12"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse mt-4"></div>
-              <div className="h-4 bg-gray-200 rounded animate-pulse w-11/12"></div>
-            </div>
-            <div className="lg:col-span-1">
-              <div className="bg-[#E8F4FD] rounded-xl p-6 h-32 animate-pulse"></div>
-            </div>
-          </div>
-
-          {/* Blog cards skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[...Array(6)].map((_, index) => (
-              <div key={index} className="bg-white rounded-xl overflow-hidden border border-gray-100">
-                <div className="h-48 bg-gray-200 animate-pulse"></div>
-                <div className="p-4">
-                  <div className="h-5 bg-gray-200 rounded animate-pulse w-16 mb-3"></div>
-                  <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4 mb-3"></div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-6 h-6 bg-gray-200 rounded-full animate-pulse"></div>
-                    <div className="h-3 bg-gray-200 rounded animate-pulse w-20"></div>
-                    <div className="h-3 bg-gray-200 rounded animate-pulse w-24"></div>
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {[...Array(6)].map((_, index) => (
+                <div key={index} className="card overflow-hidden">
+                  <div className="aspect-video animate-pulse bg-tint" />
+                  <div className="grid gap-3 p-5">
+                    <div className="h-5 w-16 animate-pulse rounded bg-tint" />
+                    <div className="h-4 animate-pulse rounded bg-tint" />
+                    <div className="h-4 w-3/4 animate-pulse rounded bg-tint" />
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
+      </PageFrame>
     );
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="relative overflow-hidden min-h-[180px] md:min-h-[280px]">
+    <PageFrame tone="surface">
+      <PageHero kicker={heroKicker} title="Scientific Communication" description={intro} />
 
-        {/* Content above grid */}
-        <div className="relative z-10">
-          <Header />
+      <section className="section" aria-label="Articles">
+        <div className="container-x grid gap-10">
+          <Reveal className="card flex flex-col items-center gap-4 p-8 text-center sm:flex-row sm:justify-between sm:text-left">
+            <p className="t-body font-medium text-deep">Getting your article published typically takes about a day to get verified</p>
+            <Link to="/blog-article" className="btn btn-primary shrink-0">
+              CREATE ARTICLE
+            </Link>
+          </Reveal>
 
-          {/* Navigation Bar */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <Link to="/">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-2 bg-[#00549FB8] text-white border-[#0389FF] rounded-full px-4 hover:bg-[#0389FF]/90"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>Back</span>
-                </Button>
-              </Link>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleShare}
-                className="flex items-center space-x-2 bg-[#00549FB8] text-white border-[#0389FF] rounded-full px-4 hover:bg-[#0389FF]/90"
-              >
-                <Share2 className="h-4 w-4" />
-                <span>Share</span>
-              </Button>
-            </div>
-          </div>
-
-          {/* Page Title */}
-          <div className="text-center mb-2">
-            <p className="text-base text-gray-600 mb-1">Explore Blogs</p>
-            <h1 className="text-2xl md:text-3xl font-bold  relative inline-block">
-              <span className="relative">
-                Scientific Communication
-                <span className="absolute bottom-1 left-0 w-full h-[30%] bg-yellow-300 -z-10"></span>
-              </span>
-            </h1>
-          </div>
-        </div>
-      </div>
-
-      {/* Description Section */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-0">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-          {/* Left Content - Description */}
-          <div className="lg:col-span-2 space-y-4">
-            <p className="text-black text-sm leading-relaxed">
-              Join us in making your research matter to everyone—let's empower society with 
-              knowledge and encourage curiosity about the world around us! Every month for 
-              the best scientific communication and Outstanding contributions will be rewarded 
-              with prizes and certificates of appreciation, recognizing your efforts to make 
-              science accessible and engaging for all.
-            </p>
-            <p className="text-black text-sm leading-relaxed">
-              Stem for Society invites Scientist, Postdoc, PhD, masters, bachelor students and 
-              researchers to share their research journey by writing blogs about their publication 
-              or scientific information aimed at the general public and society! By sharing 
-              insights and engaging with readers, you can foster community connections and 
-              encourage meaningful discussions around your research.
-            </p>
-          </div>
-
-          {/* Right Content - Info Card */}
-          <div className="lg:col-span-1">
-            <div className="bg-[#E8F4FD] rounded-xl p-6 text-center">
-              <p className="text-[#0389FF] min-h-[120px] sm:h-[150px] text-lg sm:text-xl">
-                Getting your article published typically takes about a day to get verified
-              </p>
-              <Link to="/blog-article">
-                <Button className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white px-6 py-2 rounded-lg font-medium">
-                  CREATE ARTICLE
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Blog Posts Grid */}
-        {noBlogsAvailable ? (
-          <div className="text-center py-16">
-            <div className="mb-8">
-              <div className="flex justify-center mb-6">
-                <div className="relative">
-                  <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <FileText className="w-16 h-16 text-blue-600" />
-                  </div>
-                  <div className="absolute -top-2 -right-2 w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                    <PenTool className="w-4 h-4 text-white" />
-                  </div>
-                </div>
+          {/* Blog Posts Grid */}
+          {noBlogsAvailable ? (
+            <div className="card px-6 py-16 text-center">
+              <div className="relative mx-auto mb-6 grid size-24 place-items-center rounded-full bg-surface text-brand">
+                <FileText size={44} aria-hidden="true" />
+                <span className="absolute -top-1 -right-1 grid size-9 place-items-center rounded-full bg-deep text-white" aria-hidden="true">
+                  <PenNib size={18} />
+                </span>
               </div>
-              
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                Currently No Articles Available
-              </h3>
-              <p className="text-lg text-gray-600 mb-2">
-                Be the first to share your knowledge and insights!
-              </p>
-              <p className="text-gray-500 mb-8 max-w-md mx-auto">
+              <h2 className="t-title">Currently No Articles Available</h2>
+              <p className="t-lead mt-3 text-ink/75">Be the first to share your knowledge and insights!</p>
+              <p className="t-body mx-auto mt-2 max-w-md text-ink/60">
                 Start the conversation by creating the first article on our Scientific Communication Platform.
               </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link to="/blog-article">
-                  <Button className="bg-[#0389FF] hover:bg-[#0389FF]/90 h-12 px-8 rounded-full text-white flex items-center">
-                    <Plus className="w-5 h-5 mr-2" />
-                    Create First Article
-                  </Button>
-                </Link>
-                
-                {/* <Link to="/courses">
-                  <Button 
-                    variant="outline" 
-                    className="bg-white hover:bg-gray-50 border-gray-300 h-12 px-8 rounded-full flex items-center"
-                  >
-                    <BookOpen className="w-5 h-5 mr-2" />
-                    Explore Courses
-                  </Button>
-                </Link> */}
-              </div>
+              <Link to="/blog-article" className="btn btn-primary mt-8">
+                <Plus size={18} aria-hidden="true" />
+                Create First Article
+              </Link>
             </div>
-          </div>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {paginatedBlogs.map((post) => (
-                <Link key={post.id} to={`/blog-post/${post.slug}`}>
-                  <div className="bg-white rounded-xl overflow-hidden hover:shadow-lg transition-shadow cursor-pointer border border-gray-100">
-                    {/* Image */}
-                    <div className="h-48 bg-gray-200 relative overflow-hidden rounded-t-xl">
-                      <img
-                        src={post.coverImage || '/placeholder-image.jpg'}
-                        alt={post.title || 'Blog post'}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          e.currentTarget.src = '/placeholder-image.jpg';
-                        }}
-                      />
-                    </div>
-                    
-                    {/* Content */}
-                    <div className="p-4">
-                      {/* Category Badge */}
-                      {post.category && (
-                        <span className="inline-block bg-[#F2F2F2] text-[#0389FF] px-3 py-1 rounded-md text-xs font-medium mb-3">
-                          {post.category}
-                        </span>
-                      )}
-                      
-                      {/* Title */}
-                      <h3 className="text-base font-semibold text-gray-900 mb-3 line-clamp-2 leading-snug">
-                        {post.title || 'Untitled Article'}
-                      </h3>
+          ) : (
+            <>
+              <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {paginatedBlogs.map((post) => (
+                  <Reveal as="li" key={post.id} className="h-full">
+                    <Link
+                      to={`/blog-post/${post.slug}`}
+                      className="card group flex h-full flex-col overflow-hidden transition-[box-shadow,border-color] duration-300 hover:border-brand hover:shadow-raised"
+                    >
+                      <div className="aspect-video overflow-hidden bg-surface">
+                        <img
+                          src={post.coverImage || '/placeholder-image.jpg'}
+                          alt=""
+                          loading="lazy"
+                          className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                          onError={(e) => {
+                            e.currentTarget.src = '/placeholder-image.jpg';
+                          }}
+                        />
+                      </div>
 
-                      {/* Author and Date */}
-                      <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
-                        <div className="w-6 h-6 bg-gradient-to-br from-orange-400 to-orange-500 rounded-full flex items-center justify-center">
-                          <span className="text-white text-xs font-medium">
+                      <div className="flex flex-1 flex-col gap-3 p-5">
+                        {post.category && <span className="chip self-start text-deep">{post.category}</span>}
+                        <h2 className="t-heading line-clamp-2">{post.title || 'Untitled Article'}</h2>
+
+                        <div className="t-small mt-auto flex flex-wrap items-center gap-2.5 pt-2 text-ink/60">
+                          <span aria-hidden="true" className="grid size-7 place-items-center rounded-full bg-deep text-xs font-semibold text-white">
                             {(post.blogAuthor?.name || 'A').charAt(0).toUpperCase()}
                           </span>
+                          <span className="text-ink/80">{post.blogAuthor?.name || 'Anonymous'}</span>
+                          <span>{formatDate(post.createdAt)}</span>
                         </div>
-                        <span className="text-gray-600">{post.blogAuthor?.name || 'Anonymous'}</span>
-                        <span className="text-gray-400">{formatDate(post.createdAt)}</span>
                       </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
+                    </Link>
+                  </Reveal>
+                ))}
+              </ul>
 
-            {/* Pagination */}
-            {totalItems > 0 && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-8 pt-6 border-t border-gray-200">
-                  <p className="text-sm text-gray-600 mb-3 sm:mb-0">
+              {/* Pagination */}
+              {totalItems > 0 && (
+                <nav aria-label="Pagination" className="flex flex-col gap-3 border-t border-tint pt-6 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="t-small text-ink/70">
                     Showing {startIndex + 1}-{Math.min(endIndex, totalItems)} of {totalItems}
                   </p>
-                  <div className="flex items-center space-x-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className="w-8 h-8 p-0 border-gray-300 disabled:opacity-50"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                    disabled={currentPage === totalPages}
-                    className="w-8 h-8 p-0 border-gray-300 disabled:opacity-50"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                      disabled={currentPage === 1}
+                      aria-label="Previous page"
+                      className="icon-btn disabled:opacity-40"
+                    >
+                      <CaretLeft size={18} aria-hidden="true" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                      disabled={currentPage === totalPages}
+                      aria-label="Next page"
+                      className="icon-btn disabled:opacity-40"
+                    >
+                      <CaretRight size={18} aria-hidden="true" />
+                    </button>
+                  </div>
+                </nav>
+              )}
+            </>
+          )}
+        </div>
+      </section>
 
       <SharePopup isVisible={isShowing} />
-    </div>
+    </PageFrame>
   );
 };
 

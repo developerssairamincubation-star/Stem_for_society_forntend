@@ -1,20 +1,12 @@
 import { clientSafeText } from "@/lib/errors";
 import { useState, useCallback, useEffect } from "react";
 import { useParams, useNavigate, useLocation, Link } from "react-router-dom";
-import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
 import { PhoneInput } from "@/components1/ui/phone-input";
-import {
-  Calendar,
-  Clock,
-  CheckCircle2,
-  Users,
-  BookOpen,
-  Award,
-  ExternalLink,
-  MapPin,
-} from "lucide-react";
-import Header from "@/components1/Header";
+import { CalendarBlank, Clock, CheckCircle, Users, BookOpen, Certificate, ArrowSquareOut, MapPin } from "@phosphor-icons/react";
+import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
+import { PageLoading } from "@/sfs/components/page/PageStatus";
+import { Reveal } from "@/sfs/components/ui/Reveal";
 import { toast } from "react-toastify";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -31,7 +23,6 @@ import {
   mutationErrorHandler,
   initializeRazorpay,
 } from "@/lib/utils";
-import Loading from "@/components/Loading";
 import Errorbox from "@/components/Errorbox";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
@@ -187,7 +178,7 @@ function RatingAndFeedback({
 
   return (
     <div className="space-y-4">
-      <h4 className="text-lg font-semibold text-gray-900">Rate & Review</h4>
+      <h4 className="t-heading">Rate & Review</h4>
       <Rating
         value={rating}
         onChange={setRating}
@@ -200,13 +191,9 @@ function RatingAndFeedback({
         onChange={(event) => setFeedback(event.currentTarget.value)}
         placeholder="Enter feedback to apply for certificate"
       />
-      <Button
-        onClick={handleSubmit}
-        disabled={data.ratings?.length > 0 || mutation.isPending}
-        className="bg-[#0389FF] hover:bg-[#0389FF]/90 text-white"
-      >
+      <button type="button" className="btn btn-primary" onClick={handleSubmit} disabled={data.ratings?.length > 0 || mutation.isPending}>
         {data.ratings?.length > 0 ? "Already submitted" : "Submit feedback"}
-      </Button>
+      </button>
     </div>
   );
 }
@@ -452,204 +439,220 @@ const AcademyDetail = () => {
     await handlePayment();
   };
 
-  if (isLoading) return <Loading />;
-  if (error) return <Errorbox message={error.message} />;
+  const framed = (node: React.ReactNode) => (
+    <PageFrame tone="surface">
+      <div className="container-x pt-32 pb-16">{node}</div>
+    </PageFrame>
+  );
+  if (isLoading) return <PageLoading label="Loading course…" />;
+  if (error) return framed(<Errorbox message={error.message} />);
 
   if (!course) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold mb-4">Course not found</h2>
-          <Button onClick={() => navigate("/")}>Back to Courses</Button>
-        </div>
-      </div>
+    return framed(
+      <div className="card mx-auto max-w-xl px-6 py-14 text-center">
+        <h2 className="t-title">Course not found</h2>
+        <button type="button" className="btn btn-primary mt-6" onClick={() => navigate("/")}>
+          Back to Courses
+        </button>
+      </div>,
     );
   }
 
+  const dateText = `${formatDate(course.startDate)}${
+    course.endDate && formatDate(course.startDate) !== formatDate(course.endDate) ? ` to ${formatDate(course.endDate)}` : ""
+  }`;
+  const chip = "inline-flex items-center gap-2 rounded-full border border-white/25 px-3.5 py-1.5 text-white/90";
+  const panel = "card p-6 sm:p-7";
+  const terms: { dot: string; items: [string, string][] } =
+    course.type === "OFFLINE"
+      ? {
+          dot: "text-brand",
+          items: [
+            ["Attendance:", "Arrive at the venue 20 minutes early for check-in and material collection."],
+            ["Fees:", "Registration fees and refunds are processed strictly as per the Refund Policy."],
+            ["Property:", "Participants are liable for any damage caused to venue equipment or tools."],
+            ["Privacy:", "Personal info shared with STEM for Society and providers for registration."],
+            ["Safety:", "Must follow all onsite safety protocols and venue-specific guidelines."],
+          ],
+        }
+      : course.type === "HYBRID"
+        ? {
+            dot: "text-brand",
+            items: [
+              ["Access:", "Class link and venue details will be shared prior to the session. Join or arrive early."],
+              ["Requirements:", "Stable internet for online; follow onsite safety protocols for offline attendance."],
+              ["Fees:", "Registration fees and refunds are processed strictly as per the Refund Policy."],
+              ["Privacy:", "Data shared with STEM for Society and providers per data protection laws."],
+              ["Conduct:", "Unauthorized recording or distribution of digital content is prohibited."],
+            ],
+          }
+        : {
+            dot: "text-brand",
+            items: [
+              ["Access:", "Link shared on session day; join 10 minutes early for tech checks."],
+              ["Requirements:", "Stable internet connection and functional audio/video hardware required."],
+              ["Fees:", "Registration fees and refunds are processed strictly as per the Refund Policy."],
+              ["Privacy:", "Data shared with STEM for Society and providers per data protection laws."],
+              ["Conduct:", "Unauthorized recording or distribution of digital content is prohibited."],
+            ],
+          };
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <PageFrame tone="surface">
+      <PageHero
+        title={course.title}
+        description={
+          <>
+            <p>{course.category || "Professional Program"}</p>
+            <ul className="t-small mt-5 flex flex-wrap gap-3" aria-label="Course details">
+              <li className={chip}>
+                <BookOpen size={18} aria-hidden="true" />
+                English
+              </li>
+              <li className={chip}>
+                <Certificate size={18} aria-hidden="true" />
+                {getModeText()}
+              </li>
+              <li className={chip}>
+                <Users size={18} aria-hidden="true" />
+                Live
+              </li>
+            </ul>
+          </>
+        }
+      />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 md:py-8">
-        {/* Header Section */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-8 mb-6 md:mb-8 shadow-sm">
-          <div className="flex flex-col lg:flex-row justify-between items-start gap-4 md:gap-6 lg:gap-8">
-            <div className="flex-1 min-w-0">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-3 break-words">
-                {course.title}
-              </h1>
-              <p className="text-gray-600 mb-3 md:mb-4 text-sm md:text-base">
-                {course.category || "Professional Program"}
+      <section className="section" aria-label="Course information">
+        <div className="container-x grid gap-8 lg:grid-cols-[1fr_24rem] lg:gap-12">
+          <div className="grid content-start gap-6">
+            {/* Session Overview */}
+            <Reveal className={panel}>
+              <h2 className="t-heading">Session Overview</h2>
+              <p className="t-body mt-4 text-ink/75">{course.description}</p>
+            </Reveal>
+
+            <div className="grid gap-6 md:grid-cols-2">
+              {/* Who is it for? */}
+              <Reveal className={panel}>
+                <h3 className="t-heading">Who is it for?</h3>
+                <ul className="mt-4 grid gap-3">
+                  {whoIsItFor.map((item: string, index: number) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle size={22} weight="fill" className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
+                      <span className="t-body">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+
+              {/* What You'll Learn */}
+              <Reveal delay={0.06} className={panel}>
+                <h3 className="t-heading">What You'll Learn?</h3>
+                <ul className="mt-4 grid gap-3">
+                  {whatYouLearn.map((item: string, index: number) => (
+                    <li key={index} className="flex items-start gap-3">
+                      <CheckCircle size={22} weight="fill" className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
+                      <span className="t-body">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
+            </div>
+
+            {/* Terms & Conditions */}
+            <Reveal className={panel}>
+              <h3 className="t-heading">Terms & Conditions</h3>
+              <ul className="mt-5 grid gap-3">
+                {terms.items.map(([name, text]) => (
+                  <li key={name} className="flex items-start gap-3">
+                    <span aria-hidden="true" className={`mt-2 size-1.5 shrink-0 rounded-full bg-brand`} />
+                    <span className="t-body text-ink/75">
+                      <strong className="font-semibold text-ink">{name}</strong> {text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="t-small mt-6 text-ink/60">
+                By continuing, you agree to share your info with STEM for Society & the course provider, as per data protection laws.
               </p>
-              <div className="flex flex-wrap gap-2 md:gap-3 text-xs md:text-sm">
-                <span className="flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-1.5 md:py-2 bg-gray-100 rounded-full whitespace-nowrap">
-                  <BookOpen className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  English
-                </span>
-                <span className="flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-1.5 md:py-2 bg-blue-100 text-blue-700 rounded-full whitespace-nowrap">
-                  <Award className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  {getModeText()}
-                </span>
-                <span className="flex items-center gap-1.5 md:gap-2 px-2.5 md:px-4 py-1.5 md:py-2 bg-green-100 text-green-700 rounded-full whitespace-nowrap">
-                  <Users className="w-3.5 h-3.5 md:w-4 md:h-4" />
-                  Live
-                </span>
-              </div>
-            </div>
+            </Reveal>
 
-            {/* Date and Time Display (Static) */}
-            <div className="w-full lg:w-80 flex-shrink-0 space-y-2 md:space-y-3">
-              <div className="bg-gray-50 rounded-xl p-3 md:p-4 border border-gray-200">
-                <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
-                  <div className="w-8 md:w-10 h-8 md:h-10 bg-[#0D9488] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Calendar className="w-4 md:w-5 h-4 md:h-5 text-white" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-gray-500 font-medium">Date</p>
-                    <p className="text-sm md:text-base font-semibold text-gray-900 whitespace-normal leading-snug">
-                      {formatDate(course.startDate)}
-                      {course.endDate && formatDate(course.startDate) !== formatDate(course.endDate) ? ` to ${formatDate(course.endDate)}` : ''}
-                    </p>
-                  </div>
+            {/* Program Details */}
+            <dl className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+              {[
+                { Icon: BookOpen, label: "Duration", value: calculateDuration(course?.startDate, course?.endDate) },
+                { Icon: CalendarBlank, label: "Date", value: dateText },
+                { Icon: MapPin, label: "Location", value: formatCourseLocation(course.type, course.location) },
+                { Icon: Certificate, label: "Certification", value: "Industry Recognized" },
+              ].map(({ Icon, label, value }) => (
+                <div key={label} className="card p-5 text-center">
+                  <Icon size={30} className="mx-auto text-brand" aria-hidden="true" />
+                  <dt className="t-label mt-3">{label}</dt>
+                  <dd className="t-small mt-1 text-ink/70">{value}</dd>
                 </div>
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="w-8 md:w-10 h-8 md:h-10 bg-[#0389FF] rounded-full flex items-center justify-center flex-shrink-0">
-                    <Clock className="w-4 md:w-5 h-4 md:h-5 text-white" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs text-gray-500 font-medium">Time</p>
-                    <p className="text-sm md:text-base font-semibold text-gray-900 truncate">
-                      {getTimeRange()}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 md:gap-3 mt-2 md:mt-3 pt-2 md:pt-3 border-t border-gray-200">
-                  <div className="w-8 md:w-10 h-8 md:h-10 bg-[#8B5CF6] rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="w-4 md:w-5 h-4 md:h-5 text-white" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs text-gray-500 font-medium">Location</p>
-                    <p className="text-sm md:text-base font-semibold text-gray-900 whitespace-normal leading-snug">
-                      {formatCourseLocation(course.type, course.location)}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Session Overview */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-8 mb-6 md:mb-8 shadow-sm">
-          <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-            Session Overview
-          </h2>
-          <p className="text-gray-600 leading-relaxed text-sm md:text-base">
-            {course.description}
-          </p>
-        </div>
-
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 lg:gap-8">
-          {/* Left Column */}
-          <div className="space-y-4 md:space-y-6">
-            {/* Who is it for? */}
-            <div className="bg-gray-50 rounded-2xl p-4 md:p-6">
-              <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">
-                Who is it for?
-              </h3>
-              <ul className="space-y-2 md:space-y-3">
-                {whoIsItFor.map((item: string, index: number) => (
-                  <li key={index} className="flex items-start gap-2 md:gap-3">
-                    <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-[#0D9488] flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 text-sm md:text-base">
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* What You'll Learn */}
-            <div className="bg-gray-50 rounded-2xl p-4 md:p-6">
-              <h3 className="text-base md:text-lg font-bold text-gray-900 mb-3 md:mb-4">
-                What You'll Learn?
-              </h3>
-              <ul className="space-y-2 md:space-y-3">
-                {whatYouLearn.map((item: string, index: number) => (
-                  <li key={index} className="flex items-start gap-2 md:gap-3">
-                    <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-[#0389FF] flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700 text-sm md:text-base">
-                      {item}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Course Image */}
+              ))}
+            </dl>
           </div>
 
-          {/* Right Column - Booking Form / Enrollment Status */}
-          <div className=" lg:top-6 pb-6 h-fit space-y-3 md:space-y-4">
+          {/* Right column: date, time, location and the enrolment panel */}
+          <div className="grid content-start gap-5 max-lg:order-first lg:sticky lg:top-28 lg:self-start">
+            <dl className="card grid gap-4 p-6">
+              <div className="flex items-start gap-3">
+                <CalendarBlank size={22} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
+                <div className="min-w-0">
+                  <dt className="t-small text-ink/60">Date</dt>
+                  <dd className="t-body font-medium">{dateText}</dd>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 border-t border-tint pt-4">
+                <Clock size={22} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
+                <div className="min-w-0">
+                  <dt className="t-small text-ink/60">Time</dt>
+                  <dd className="t-body font-medium">{getTimeRange()}</dd>
+                </div>
+              </div>
+              <div className="flex items-start gap-3 border-t border-tint pt-4">
+                <MapPin size={22} className="mt-0.5 shrink-0 text-brand" aria-hidden="true" />
+                <div className="min-w-0">
+                  <dt className="t-small text-ink/60">Location</dt>
+                  <dd className="t-body font-medium">{formatCourseLocation(course.type, course.location)}</dd>
+                </div>
+              </div>
+            </dl>
+
             {!isEnrolled() ? (
-              <div className="bg-gradient-to-br from-[#0D9488] to-[#0389FF] rounded-2xl p-4 md:p-6 lg:p-8 text-white shadow-xl">
-                <div className="text-center mb-4 md:mb-6">
-                  <p className="text-lg md:text-xl font-medium mb-2">
-                    Interested in this course?
-                  </p>
-                  <p className="text-3xl md:text-4xl font-bold">
-                    {Number(course.cost || 0) > 0
-                      ? `₹${Number(course.cost || 0).toLocaleString()}`
-                      : "Free"}
-                  </p>
-                </div>
+              <div className="on-dark rounded-card bg-deep p-6 text-center text-white sm:p-7">
+                <p className="t-heading !text-white">Interested in this course?</p>
+                <p className="t-display mt-2 !text-white">
+                  {Number(course.cost || 0) > 0 ? `₹${Number(course.cost || 0).toLocaleString()}` : "Free"}
+                </p>
 
                 {/* The personal-details form that used to sit here asked a
                     signed-in visitor to retype the name, email and phone the
                     account already holds, and none of it was ever sent - the
                     enrolment endpoints read the session. The confirmation
                     dialog shows those details instead. */}
-                <Button
-                  onClick={handleContinue}
-                  disabled={isPending}
-                  className="w-full h-10 md:h-12 bg-white text-[#0D9488] hover:bg-gray-100 rounded-xl font-semibold md:font-bold text-sm md:text-base shadow-lg"
-                >
+                <button type="button" onClick={handleContinue} disabled={isPending} className="btn btn-inverse mt-6 w-full">
                   {isPending ? "Processing..." : "Enroll Now"}
-                </Button>
+                </button>
               </div>
             ) : (
-              <div className="space-y-3 md:space-y-4">
+              <div className="grid gap-5">
                 {/* Already Enrolled Card */}
-                <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-2xl p-4 md:p-6 lg:p-8 text-white shadow-xl">
-                  <div className="text-center mb-4 md:mb-6">
-                    <CheckCircle2 className="w-16 h-16 mx-auto mb-4" />
-                    <h3 className="text-2xl font-bold mb-2">
-                      You're Enrolled!
-                    </h3>
-                    <p className="text-green-100">
-                      You have successfully registered for this course
-                    </p>
-                  </div>
+                <div className="rounded-card bg-green-700 p-6 text-center text-white sm:p-7">
+                  <CheckCircle size={52} weight="fill" className="mx-auto mb-3" aria-hidden="true" />
+                  <h3 className="t-heading !text-white">You're Enrolled!</h3>
+                  <p className="t-small mt-1 text-white/85">You have successfully registered for this course</p>
 
-                  {/* Enrollment Details */}
                   {course.enrolments?.length > 0 && (
-                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 md:p-4 mb-3 md:mb-4">
-                      <p className="text-sm mb-2">
-                        Enrolled on:{" "}
-                        <span className="font-semibold">
-                          {formatDate(course.enrolments[0]?.createdAt)}
-                        </span>
+                    <div className="t-small mt-5 rounded-control bg-white/10 p-4 text-left">
+                      <p>
+                        Enrolled on: <span className="font-medium">{formatDate(course.enrolments[0]?.createdAt)}</span>
                       </p>
                       {course.link && (
-                        <p className="text-sm">
+                        <p className="mt-1">
                           Course Link:{" "}
-                          <a
-                            href={course.link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="underline font-semibold hover:text-green-100"
-                          >
+                          <a href={course.link} target="_blank" rel="noopener noreferrer" className="font-medium underline">
                             Access Course
                           </a>
                         </p>
@@ -657,207 +660,50 @@ const AcademyDetail = () => {
                     </div>
                   )}
 
-                  {/* Course Access Button */}
                   {course.link && (
-                    <Button
-                      variant="outline"
-                      className="w-full bg-white text-green-600 hover:bg-green-50 border-0 h-10 md:h-12 rounded-xl font-semibold text-sm md:text-base"
-                    >
-                      <a
-                        href={course.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center space-x-2 w-full"
-                      >
-                        <ExternalLink className="h-4 w-4" />
-                        <span>Access Course</span>
-                      </a>
-                    </Button>
+                    <a href={course.link} target="_blank" rel="noopener noreferrer" className="btn btn-inverse mt-5 w-full !text-green-800">
+                      <ArrowSquareOut size={18} aria-hidden="true" />
+                      Access Course
+                    </a>
                   )}
                 </div>
 
                 {/* Certificate Section */}
                 {course.enrolments?.[0]?.certificate && (
-                  <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm border-2 border-green-500">
-                    <div className="space-y-4">
-                      <div className="text-center">
-                        <Award className="w-12 h-12 text-green-600 mx-auto mb-3" />
-                        <h4 className="font-bold text-green-800 text-xl mb-2">
-                          🎉 Congratulations!
-                        </h4>
-                        <p className="text-gray-700 text-sm">
-                          You have successfully completed the training and
-                          earned a certificate!
-                        </p>
-                      </div>
-                      <div className="flex flex-col gap-2 md:gap-3">
-                        <Button className="bg-green-600 hover:bg-green-700 text-white h-10 md:h-12 rounded-xl text-sm md:text-base">
-                          <Link
-                            target="_blank"
-                            to={course.enrolments[0].certificate}
-                            className="flex items-center justify-center space-x-2 w-full"
-                          >
-                            <Award className="h-3.5 md:h-4 w-3.5 md:w-4" />
-                            <span>Download Certificate</span>
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          className="border-green-600 text-green-600 hover:bg-green-50 h-10 md:h-12 rounded-xl text-sm md:text-base"
-                        >
-                          <Link
-                            target="_blank"
-                            to={`https://www.linkedin.com/shareArticle?mini=true&url=${course.enrolments[0].certificate}&text=Hello connections! I have completed a course with STEM for society website and have earned a certificate on ${course.title}`}
-                            className="flex items-center justify-center space-x-2 w-full"
-                          >
-                            <FaLinkedin className="h-4 w-4" />
-                            <span>Share on LinkedIn</span>
-                          </Link>
-                        </Button>
-                      </div>
+                  <div className="card grid gap-4 border-green-600 p-6 text-center">
+                    <Certificate size={44} className="mx-auto text-green-700" aria-hidden="true" />
+                    <div>
+                      <h4 className="t-heading text-green-800">Congratulations!</h4>
+                      <p className="t-small mt-1 text-ink/70">You have successfully completed the training and earned a certificate!</p>
+                    </div>
+                    <div className="grid gap-3">
+                      <Link target="_blank" to={course.enrolments[0].certificate} className="btn btn-primary">
+                        <Certificate size={18} aria-hidden="true" />
+                        Download Certificate
+                      </Link>
+                      <Link
+                        target="_blank"
+                        to={`https://www.linkedin.com/shareArticle?mini=true&url=${course.enrolments[0].certificate}&text=Hello connections! I have completed a course with STEM for society website and have earned a certificate on ${course.title}`}
+                        className="btn btn-secondary"
+                      >
+                        <FaLinkedin size={16} aria-hidden="true" />
+                        Share on LinkedIn
+                      </Link>
                     </div>
                   </div>
                 )}
 
                 {/* Feedback Section */}
                 {course.displayFeedback && (
-                  <div className="bg-white rounded-2xl p-4 md:p-6 shadow-sm">
-                    <RatingAndFeedback
-                      data={course}
-                      id={courseId!}
-                      disabled={course.ratings?.length > 0}
-                    />
+                  <div className="card p-6">
+                    <RatingAndFeedback data={course} id={courseId!} disabled={course.ratings?.length > 0} />
                   </div>
                 )}
               </div>
             )}
           </div>
         </div>
-
-        {/* Terms & Conditions - Full Width */}
-        <div className="bg-white rounded-2xl p-4 md:p-6 lg:p-8 mb-8 md:mb-12 shadow-sm">
-          <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-3 md:mb-4">
-            Terms & Conditions
-          </h3>
-          <ul className="space-y-3 text-sm md:text-base text-gray-600 mb-6">
-            {course.type === "OFFLINE" ? (
-              <>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0D9488] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Attendance:</strong> Arrive at the venue 20 minutes early for check-in and material collection.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0D9488] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Fees:</strong> Registration fees and refunds are processed strictly as per the Refund Policy.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0D9488] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Property:</strong> Participants are liable for any damage caused to venue equipment or tools.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0D9488] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Privacy:</strong> Personal info shared with STEM for Society and providers for registration.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0D9488] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Safety:</strong> Must follow all onsite safety protocols and venue-specific guidelines.</span>
-                </li>
-              </>
-            ) : course.type === "HYBRID" ? (
-              <>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0389FF] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Access:</strong> Class link and venue details will be shared prior to the session. Join or arrive early.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0389FF] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Requirements:</strong> Stable internet for online; follow onsite safety protocols for offline attendance.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0389FF] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Fees:</strong> Registration fees and refunds are processed strictly as per the Refund Policy.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0389FF] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Privacy:</strong> Data shared with STEM for Society and providers per data protection laws.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#0389FF] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Conduct:</strong> Unauthorized recording or distribution of digital content is prohibited.</span>
-                </li>
-              </>
-            ) : (
-              <>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#8B5CF6] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Access:</strong> Link shared on session day; join 10 minutes early for tech checks.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#8B5CF6] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Requirements:</strong> Stable internet connection and functional audio/video hardware required.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#8B5CF6] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Fees:</strong> Registration fees and refunds are processed strictly as per the Refund Policy.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#8B5CF6] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Privacy:</strong> Data shared with STEM for Society and providers per data protection laws.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-[#8B5CF6] mt-0.5">•</span>
-                  <span><strong className="text-gray-900">Conduct:</strong> Unauthorized recording or distribution of digital content is prohibited.</span>
-                </li>
-              </>
-            )}
-          </ul>
-          <p className="text-xs md:text-sm text-gray-500">
-            By continuing, you agree to share your info with STEM for Society &
-            the course provider, as per data protection laws.
-          </p>
-        </div>
-
-        {/* Program Details */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 lg:gap-6">
-          <div className="bg-white rounded-2xl p-4 md:p-6 text-center shadow-sm">
-            <BookOpen className="w-8 md:w-12 h-8 md:h-12 text-[#0D9488] mx-auto mb-2 md:mb-3" />
-            <h4 className="font-bold text-gray-900 mb-1 md:mb-2 text-sm md:text-base">
-              Duration
-            </h4>
-            <p className="text-gray-600 text-xs md:text-sm">
-              {calculateDuration(course?.startDate, course?.endDate)}
-            </p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 md:p-6 text-center shadow-sm">
-            <Calendar className="w-8 md:w-12 h-8 md:h-12 text-[#0389FF] mx-auto mb-2 md:mb-3" />
-            <h4 className="font-bold text-gray-900 mb-1 md:mb-2 text-sm md:text-base">
-              Date
-            </h4>
-            <p className="text-gray-600 text-xs md:text-sm">
-              {formatDate(course.startDate)}
-              {course.endDate && formatDate(course.startDate) !== formatDate(course.endDate) ? ` to ${formatDate(course.endDate)}` : ''}
-            </p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 md:p-6 text-center shadow-sm">
-            <MapPin className="w-8 md:w-12 h-8 md:h-12 text-[#8B5CF6] mx-auto mb-2 md:mb-3" />
-            <h4 className="font-bold text-gray-900 mb-1 md:mb-2 text-sm md:text-base">
-              Location
-            </h4>
-            <p className="text-gray-600 text-xs md:text-sm px-2">
-              {formatCourseLocation(course.type, course.location)}
-            </p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 md:p-6 text-center shadow-sm">
-            <Award className="w-8 md:w-12 h-8 md:h-12 text-[#F59E0B] mx-auto mb-2 md:mb-3" />
-            <h4 className="font-bold text-gray-900 mb-1 md:mb-2 text-sm md:text-base">
-              Certification
-            </h4>
-            <p className="text-gray-600 text-xs md:text-sm">
-              Industry Recognized
-            </p>
-          </div>
-        </div>
-      </div>
+      </section>
 
       <EnrolmentConfirmDialog
         opened={confirmOpen}
@@ -870,7 +716,7 @@ const AcademyDetail = () => {
         isProcessing={isPending}
         loginUrl={loginUrl}
       />
-    </div>
+    </PageFrame>
   );
 };
 

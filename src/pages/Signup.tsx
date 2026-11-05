@@ -1,10 +1,8 @@
 import { mutationErrorHandler, toastError } from "@/lib/utils";
 import { useState } from "react";
-import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
 import { PhoneInput } from "@/components1/ui/phone-input";
 import { PasswordInput } from "@/components1/ui/password-input";
-import { Label } from "@/components1/ui/label";
 import { Checkbox } from "@/components1/ui/checkbox";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -13,6 +11,7 @@ import { toast } from "react-toastify";
 import { api, queryClient, clearAuthStorage } from "../lib/api";
 import { GenericError, GenericResponse } from "../lib/types";
 import { signInWithGoogle } from "../lib/supabaseAuth";
+import { AuthDivider, AuthField, AuthShell, GoogleMark } from "@/sfs/components/auth/AuthShell";
 
 type SignUpForm = {
   firstName: string;
@@ -131,395 +130,125 @@ const Signup = () => {
   const isAnyLoading = signUpMutation.isPending || isGoogleSigningUp;
 
   return (
-    <div className="min-h-screen relative overflow-hidden">
-      {/* Background */}
-      <div
-        className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-300 ${
-          isGoogleSigningUp ? 'blur-sm' : ''
-        }`}
-        style={{
-          backgroundImage: `url("/lovable-uploads/cc0094aa-ced3-4e50-b5f1-d61b7b6d2988.png")`,
-          backgroundPosition: "center 75%",
-        }}
-      />
-      <div className={`absolute inset-0 transition-all duration-300 ${
-        isGoogleSigningUp ? 'bg-black bg-opacity-60' : 'bg-black bg-opacity-20'
-      }`}></div>
-
-      {/* Global Loading Overlay for Google Sign-up */}
+    <AuthShell
+      title="Create an Account"
+      description="Enter your details to proceed further"
+      brandTitle="Join the community"
+      brandText="Join us to Innovate, Incubate and Impact the world together!"
+      footer={
+        <>
+          Already have an account?{" "}
+          <Link to="/login" className="font-medium text-deep underline-offset-4 hover:underline">
+            Login
+          </Link>
+        </>
+      }
+    >
+      {/* Global loading overlay for Google sign-up */}
       {isGoogleSigningUp && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="bg-white rounded-lg p-8 flex flex-col items-center space-y-4 shadow-2xl">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            <p className="text-lg font-medium text-gray-800">Signing up with Google...</p>
-            <p className="text-sm text-gray-600 text-center">Please complete the sign-up process in the popup window</p>
-            {/* Optional: Add cancel button for better UX */}
-            <button 
-              onClick={() => setIsGoogleSigningUp(false)}
-              className="mt-4 px-4 py-2 text-sm text-gray-600 hover:text-gray-800 underline transition-colors"
-            >
+        <div role="alertdialog" aria-modal="true" aria-label="Signing up with Google" className="fixed inset-0 z-50 flex items-center justify-center bg-ink/60 px-4 backdrop-blur-sm">
+          <div className="flex max-w-sm flex-col items-center rounded-card bg-white p-8 text-center shadow-overlay">
+            <div className="login-spinner size-10 rounded-full border-[3px] border-tint border-t-deep" aria-hidden="true" />
+            <p className="t-heading mt-5">Signing up with Google...</p>
+            <p className="t-small mt-2 text-ink/70">Please complete the sign-up process in the popup window</p>
+            <button type="button" onClick={() => setIsGoogleSigningUp(false)} className="t-small mt-5 text-deep underline underline-offset-4">
               Cancel
             </button>
           </div>
         </div>
       )}
 
-      {/* Desktop Layout */}
-      <div className="hidden lg:flex relative z-10 min-h-screen">
-        {/* Left Side */}
-        <div className={`lg:w-1/2 flex items-center justify-center transition-all duration-300 ${
-          isGoogleSigningUp ? 'opacity-30' : ''
-        }`}>
-          <div className="text-center text-white mt-16">
-            <img
-              src="/lovable-uploads/ceabc523-dba1-475b-b670-7ed6b88782a1.png"
-              alt="STEM for Society Logo"
-              className="h-32 w-32 mx-auto mb-4 opacity-50"
+      <form onSubmit={handleSubmit} className="grid gap-4">
+        <AuthField label="Name" htmlFor="signup-name">
+          <Input
+            id="signup-name"
+            name="firstName"
+            type="text"
+            placeholder="Enter your name"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+            disabled={isAnyLoading}
+          />
+        </AuthField>
+        <AuthField label="Email" htmlFor="signup-email">
+          <Input
+            id="signup-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            disabled={isAnyLoading}
+          />
+        </AuthField>
+        <AuthField label="Phone" htmlFor="signup-phone">
+          <PhoneInput
+            id="signup-phone"
+            name="mobile"
+            value={formData.mobile}
+            onChange={(mobile) => setFormData((prev) => ({ ...prev, mobile }))}
+            required
+            disabled={isAnyLoading}
+          />
+        </AuthField>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <AuthField label="Password" htmlFor="signup-password">
+            <PasswordInput
+              id="signup-password"
+              autoComplete="new-password"
+              name="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              disabled={isAnyLoading}
             />
-            <h1 className="text-4xl font-bold mb-4">STEM FOR SOCIETY</h1>
-            <p className="text-xl">
-              Join us to Innovate, Incubate and Impact the world together!
-            </p>
-          </div>
-        </div>
-
-        {/* Right Side */}
-        <div className={`lg:w-1/2 relative transition-all duration-300 ${
-          isGoogleSigningUp ? 'pointer-events-none' : ''
-        }`}>
-          <div className={`absolute inset-0 bg-white/70 rounded-l-3xl transition-all duration-300 ${
-            isGoogleSigningUp ? 'opacity-30' : ''
-          }`}></div>
-          <div className="relative z-10 flex items-center justify-center px-8 py-8">
-            <div className="w-full max-w-md">
-              <div className="text-center mb-6 pt-6">
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                  Create an Account
-                </h1>
-                <p className="text-gray-600 text-lg">
-                  Enter your details to proceed further
-                </p>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label>Name</Label>
-                  <Input
-                    name="firstName"
-                    type="text"
-                    placeholder="Enter your name"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-                <div>
-                  <Label>Email</Label>
-                  <Input
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    inputMode="email"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-                <div>
-                  <Label>Phone</Label>
-                  <PhoneInput
-                    name="mobile"
-                    value={formData.mobile}
-                    onChange={(mobile) =>
-                      setFormData((prev) => ({ ...prev, mobile }))
-                    }
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-                <div>
-                  <Label>Password</Label>
-                  <PasswordInput
-                    autoComplete="new-password"
-                    name="password"
-                                        placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-                <div>
-                  <Label>Confirm Password</Label>
-                  <PasswordInput
-                    autoComplete="new-password"
-                    name="confirmPassword"
-                                        placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2 py-2">
-                  <Checkbox
-                    id="terms"
-                    checked={formData.accept}
-                    onCheckedChange={handleCheckboxChange}
-                    disabled={isAnyLoading}
-                  />
-                  <Label htmlFor="terms" className="text-sm text-gray-600">
-                    I accept the terms and conditions
-                  </Label>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  disabled={isAnyLoading}
-                >
-                  {signUpMutation.isPending ? "Please wait..." : "Sign Up"}
-                </Button>
-              </form>
-
-              {/* Divider */}
-              <div className="relative my-6">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-gray-500">or sign up with</span>
-                </div>
-              </div>
-
-              {/* Google Sign Up Button */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleGoogleSignup}
-                className="w-full mb-4 border-gray-300 hover:bg-gray-50"
-                disabled={isAnyLoading}
-              >
-                <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  />
-                </svg>
-                {isGoogleSigningUp ? "Signing up..." : "Sign up with Google"}
-              </Button>
-
-              <div className="text-center mt-4">
-                <p className="text-sm text-gray-600">
-                  Already have an account?{" "}
-                  <Link
-                    to="/login"
-                    className="text-blue-600 hover:underline font-semibold"
-                  >
-                    Login
-                  </Link>
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Mobile Layout */}
-      <div className="lg:hidden relative z-10 min-h-screen flex flex-col">
-        <div className={`flex-1 flex items-center justify-center pt-16 transition-all duration-300 ${
-          isGoogleSigningUp ? 'opacity-30' : ''
-        }`}>
-          <div className="text-center text-white">
-            <img
-              src="/lovable-uploads/ceabc523-dba1-475b-b670-7ed6b88782a1.png"
-              alt="STEM for Society Logo"
-              className="h-24 w-24 mx-auto mb-4 opacity-50"
+          </AuthField>
+          <AuthField label="Confirm Password" htmlFor="signup-confirm">
+            <PasswordInput
+              id="signup-confirm"
+              autoComplete="new-password"
+              name="confirmPassword"
+              placeholder="Confirm your password"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              disabled={isAnyLoading}
             />
-            <h1 className="text-2xl font-bold mb-2">STEM FOR SOCIETY</h1>
-            <p className="text-sm">
-              Join us to Innovate, Incubate and Impact the world together!
-            </p>
-          </div>
+          </AuthField>
         </div>
-        
-        <div className={`flex-1 relative transition-all duration-300 ${
-          isGoogleSigningUp ? 'pointer-events-none' : ''
-        }`}>
-          <div className={`absolute inset-0 bg-white/70 rounded-t-3xl transition-all duration-300 ${
-            isGoogleSigningUp ? 'opacity-30' : ''
-          }`}></div>
-          <div className="relative z-10 max-h-[70vh] overflow-y-auto flex items-start justify-center px-4 pt-8 pb-4">
-            <div className="w-full max-w-sm">
-              <div className="text-center mb-6">
-                <h1 className="text-2xl font-bold text-gray-800 mb-2">
-                  Create an Account
-                </h1>
-                <p className="text-gray-600">
-                  Enter your details to proceed further
-                </p>
-              </div>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Label>Name</Label>
-                  <Input
-                    name="firstName"
-                    type="text"
-                    placeholder="Enter your name"
-                    value={formData.firstName}
-                    onChange={handleChange}
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-                <div>
-                  <Label>Email</Label>
-                  <Input
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    inputMode="email"
-                    autoCapitalize="none"
-                    autoCorrect="off"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-                <div>
-                  <Label>Phone</Label>
-                  <PhoneInput
-                    name="mobile"
-                    value={formData.mobile}
-                    onChange={(mobile) =>
-                      setFormData((prev) => ({ ...prev, mobile }))
-                    }
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-                <div>
-                  <Label>Password</Label>
-                  <PasswordInput
-                    autoComplete="new-password"
-                    name="password"
-                                        placeholder="Enter your password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-                <div>
-                  <Label>Confirm Password</Label>
-                  <PasswordInput
-                    autoComplete="new-password"
-                    name="confirmPassword"
-                                        placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    required
-                    disabled={isAnyLoading}
-                  />
-                </div>
-
-                <div className="flex items-center space-x-2 py-2">
-                  <Checkbox
-                    id="terms"
-                    checked={formData.accept}
-                    onCheckedChange={handleCheckboxChange}
-                    disabled={isAnyLoading}
-                  />
-                  <Label htmlFor="terms" className="text-sm text-gray-600">
-                    I accept the terms and conditions
-                  </Label>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  disabled={isAnyLoading}
-                >
-                  {signUpMutation.isPending ? "Please wait..." : "Sign Up"}
-                </Button>
-              </form>
-
-              {/* Divider */}
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-gray-500">or sign up with</span>
-                </div>
-              </div>
-
-              {/* Google Sign Up Button */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleGoogleSignup}
-                className="w-full mb-4 border-gray-300 hover:bg-gray-50"
-                disabled={isAnyLoading}
-              >
-                <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                  <path
-                    fill="#4285F4"
-                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                  />
-                  <path
-                    fill="#EA4335"
-                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                  />
-                </svg>
-                {isGoogleSigningUp ? "Signing up..." : "Sign up with Google"}
-              </Button>
-
-              <div className="text-center mt-4">
-                <p className="text-sm text-gray-600">
-                  Already have an account?{" "}
-                  <Link
-                    to="/login"
-                    className="text-blue-600 hover:underline font-semibold"
-                  >
-                    Login
-                  </Link>
-                </p>
-              </div>
-            </div>
-          </div>
+        <div className="flex items-center gap-3 py-1">
+          <Checkbox
+            id="terms"
+            checked={formData.accept}
+            onCheckedChange={handleCheckboxChange}
+            disabled={isAnyLoading}
+            className="size-5 rounded border-tint bg-white data-[state=checked]:border-deep data-[state=checked]:bg-deep data-[state=checked]:text-white"
+          />
+          <label htmlFor="terms" className="t-small text-ink/70">
+            I accept the terms and conditions
+          </label>
         </div>
-      </div>
-    </div>
+
+        <button type="submit" className="btn btn-primary w-full" disabled={isAnyLoading}>
+          {signUpMutation.isPending ? "Please wait..." : "Sign Up"}
+        </button>
+      </form>
+
+      <AuthDivider label="or sign up with" />
+
+      <button type="button" onClick={handleGoogleSignup} disabled={isAnyLoading} className="btn btn-secondary w-full !border-tint !text-ink hover:!bg-surface">
+        <GoogleMark />
+        {isGoogleSigningUp ? "Signing up..." : "Sign up with Google"}
+      </button>
+    </AuthShell>
   );
 };
 

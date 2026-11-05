@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { Button } from "@/components1/ui/button";
+import { motion } from "framer-motion";
+import { Phone } from "@phosphor-icons/react";
 import { PhoneInput } from "@/components1/ui/phone-input";
-import { Label } from "@/components1/ui/label";
 
 interface PhoneVerificationModalProps {
   isOpen: boolean;
@@ -47,74 +47,74 @@ const PhoneVerificationModal = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl animate-fadeIn">
+    <div className="sfs-ui sfs-skin fixed inset-0 z-50 flex items-center justify-center bg-ink/60 px-4 backdrop-blur-sm">
+      <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="phone-modal-title"
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className="w-full max-w-md rounded-panel bg-white p-8 shadow-overlay"
+      >
         {/* Header */}
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-            </svg>
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-4 grid size-16 place-items-center rounded-full bg-surface text-brand">
+            <Phone size={30} aria-hidden="true" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">Add Your Phone Number</h2>
-          <p className="text-gray-600 text-sm">
+          <h2 id="phone-modal-title" className="t-title">Add Your Phone Number</h2>
+          <p className="t-small mt-2 text-ink/70">
             We need your mobile number for booking sessions and notifications
           </p>
         </div>
 
         {/* Form */}
-        <div className="space-y-4">
+        <div className="grid gap-4">
           <div>
-            <Label htmlFor="phone" className="text-gray-700 font-medium">
+            <label htmlFor="phone" className="t-label mb-2 block">
               Mobile Number
-            </Label>
-            <div className="mt-1">
-              <PhoneInput
-                id="phone"
-                value={phoneNumber}
-                onChange={setPhoneNumber}
-                placeholder="9876543210"
-                disabled={isSubmitting}
-              />
-            </div>
-            <p className="text-xs text-gray-500 mt-1">
+            </label>
+            <PhoneInput
+              id="phone"
+              value={phoneNumber}
+              onChange={setPhoneNumber}
+              placeholder="9876543210"
+              disabled={isSubmitting}
+            />
+            <p className="t-small mt-1.5 text-ink/60">
               Enter your 10-digit mobile number (without +91)
             </p>
           </div>
 
-          <Button
+          <button
+            type="button"
             onClick={handleSubmit}
             disabled={isSubmitting || phoneNumber.length !== 10}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3"
+            className="btn btn-primary w-full"
           >
             {isSubmitting ? (
-              <span className="flex items-center justify-center">
-                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
+              <>
+                <span className="login-spinner size-4 rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
                 Adding Phone Number...
-              </span>
+              </>
             ) : (
               "Continue"
             )}
-          </Button>
-
-
+          </button>
         </div>
 
         {/* Info */}
-        <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-          <p className="text-xs text-gray-700">
+        <div className="mt-6 rounded-card bg-surface p-4">
+          <p className="t-small text-ink/80">
             <span className="font-semibold">Why we need this?</span> Your phone number helps us:
           </p>
-          <ul className="text-xs text-gray-600 mt-2 space-y-1 ml-4 list-disc">
+          <ul className="t-small mt-2 ml-4 list-disc space-y-1 text-ink/70">
             <li>Send booking confirmations via SMS</li>
             <li>Enable emergency communication</li>
             <li>Provide better support</li>
           </ul>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };

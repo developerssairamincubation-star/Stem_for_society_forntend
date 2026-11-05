@@ -14,16 +14,15 @@
   --color-brand: #0389ff;
   --color-deep: #00549f;
   --color-tint: #c0e1ff;
-  --color-ink: #0e1b2e;
-  --color-surface: #f5f8fb;
-  --radius-control: 0.375rem;
-  --radius-card: 0.875rem;
-  --radius-panel: 1.25rem;
+  --color-ink: #111827;
+  --color-surface: #f2f8ff;
+  --radius-control: 0.5rem;
+  --radius-card: 1rem;
+  --radius-panel: 1.5rem;
   --radius-full: 9999px;
-  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
-  color: #0e1b2e;
-  line-height: 1.6;
-  font-feature-settings: "tnum" 0;
+  font-family: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  color: #111827;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
@@ -32,21 +31,22 @@
     --gutter: 1.5rem;
   }
 }
-:where(.sfs-ui) h1,
-:where(.sfs-ui) h2,
-:where(.sfs-ui) h3 {
+/* Pages that opt in to .sfs-skin get the same resets at zero specificity (see sfs-skin.css) so utilities can override them;
+   the original pages keep these rules exactly as they were. */
+.sfs-ui:not(.sfs-skin) h1,
+.sfs-ui:not(.sfs-skin) h2,
+.sfs-ui:not(.sfs-skin) h3 {
   margin: 0;
-  color: #0e1b2e;
+  color: #111827;
   font-weight: 600;
 }
-/* :where() keeps these resets at zero specificity so margin and colour utilities (mt-4, text-white) can override them. */
-:where(.sfs-ui) p {
+.sfs-ui:not(.sfs-skin) p {
   margin: 0;
 }
 .sfs-ui :focus-visible {
   outline: 2px solid #0389ff;
   outline-offset: 3px;
-  border-radius: 0.375rem;
+  border-radius: 0.5rem;
 }
 .sfs-ui .on-dark :focus-visible,
 .sfs-ui .on-dark:focus-visible {
@@ -95,42 +95,41 @@
   }
 } /* ---- Type scale (weights: 400 body, 500 UI, 600 headings) ---------------- */
 :where(.sfs-ui) .t-display {
-  font-size: clamp(2.5rem, 1.5rem + 3.8vw, 4.25rem);
-  line-height: 1.04;
-  font-weight: 600;
-  letter-spacing: -0.028em;
-  text-wrap: balance;
-}
-:where(.sfs-ui) .t-title {
-  font-size: clamp(1.875rem, 1.4rem + 1.8vw, 2.75rem);
-  line-height: 1.12;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-}
-:where(.sfs-ui) .t-heading {
-  font-size: 1.375rem;
-  line-height: 1.3;
+  font-size: clamp(2.25rem, 1.5rem + 3.2vw, 3.75rem);
+  line-height: 1.1;
   font-weight: 600;
   letter-spacing: -0.01em;
   text-wrap: balance;
 }
+:where(.sfs-ui) .t-title {
+  font-size: clamp(1.75rem, 1.35rem + 1.6vw, 2.5rem);
+  line-height: 1.2;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  text-wrap: balance;
+}
+:where(.sfs-ui) .t-heading {
+  font-size: 1.25rem;
+  line-height: 1.35;
+  font-weight: 600;
+  text-wrap: balance;
+}
 :where(.sfs-ui) .t-lead {
-  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
-  line-height: 1.6;
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
+  line-height: 1.65;
   text-wrap: pretty;
 }
 :where(.sfs-ui) .t-body {
-  font-size: 1.0625rem;
+  font-size: 1rem;
   line-height: 1.65;
   text-wrap: pretty;
 }
 :where(.sfs-ui) .t-small {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   line-height: 1.55;
 }
 :where(.sfs-ui) .t-label {
-  font-size: 0.9375rem;
+  font-size: 0.875rem;
   line-height: 1.4;
   font-weight: 500;
 } /* ---- Buttons: one height, one radius, one weight ---------------------- */

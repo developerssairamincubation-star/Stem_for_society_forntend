@@ -1,18 +1,16 @@
 import {
-  Button,
   Checkbox,
   PasswordInput,
   SegmentedControl,
   TagsInput,
-  Text,
   TextInput,
-  Title,
 } from "@mantine/core";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { AuthShell } from "@/sfs/components/auth/AuthShell";
 import { api } from "../../lib/api";
 import { usePartner } from "../../lib/hooks";
 import { GenericError, GenericResponse } from "../../lib/types";
@@ -129,23 +127,28 @@ function PartnerSignUp() {
   if (user) return <Navigate to={"/partner"} />;
 
   return (
-    <div className="flex items-center justify-center flex-col w-full gap-7 my-10 rounded-lg">
-      <div className="lg:w-2/3 p-3 lg:p-0 flex items-center flex-col gap-6">
-        <Title order={1}>Partner with us!</Title>
-        We invite individuals, startups, and corporations to collaborate with
-        STEM for Society in developing an innovative course focused on enhancing
-        technological and Hands on experience. This partnership aims to create
-        educational opportunities that empower participants to address
-        real-world challenges. If you are interested in joining this impactful
-        initiative, please fill up the form below.
-      </div>
-      <div className="flex flex-col justify-center items-center p-3 w-full gap-2">
+    <AuthShell
+      wide
+      title="Partner with us!"
+      description="We invite individuals, startups, and corporations to collaborate with STEM for Society in developing an innovative course focused on enhancing technological and Hands on experience. This partnership aims to create educational opportunities that empower participants to address real-world challenges. If you are interested in joining this impactful initiative, please fill up the form below."
+      brandTitle="Innovate, Incubate and Impact"
+      brandText="Join us to Innovate, Incubate and Impact!"
+      footer={
+        <>
+          Have an account?{" "}
+          <Link to="/partner/signin" className="font-medium text-deep underline-offset-4 hover:underline">
+            Log In
+          </Link>
+        </>
+      }
+    >
+      <div className="grid gap-4 sm:grid-cols-2">
         <SegmentedControl
           data={[
             { label: "I'm an individual", value: "individual" },
             { label: "We're an institution / corporate", value: "institution" },
           ]}
-          className="lg:w-2/3 w-full"
+          className="sm:col-span-2"
           onChange={(e) =>
             setFormData((prev) => ({
               ...prev,
@@ -159,7 +162,7 @@ function PartnerSignUp() {
               label="Company Name"
               placeholder="Enter your company name"
               size="md"
-              className="lg:w-2/3 w-full"
+              className="sm:col-span-2"
               required
               name="companyName"
               value={formData.companyName}
@@ -171,14 +174,14 @@ function PartnerSignUp() {
               name="hasGst"
               checked={formData.hasGst}
               onChange={(e) => setFormData(prev => ({ ...prev, hasGst: e.currentTarget.checked }))}
-              className="lg:w-2/3 w-full"
+              className="sm:col-span-2"
             />
             {formData.hasGst && (
               <TextInput
                 label="GST No."
                 placeholder="Enter your GST"
                 size="md"
-                className="lg:w-2/3 w-full"
+                className="sm:col-span-2"
                 required
                 name="cinOrGst"
                 value={formData.cinOrGst}
@@ -191,7 +194,6 @@ function PartnerSignUp() {
           label="Instructor name"
           placeholder="Enter your name"
           size="md"
-          className="lg:w-2/3 w-full"
           required
           name="instructorName"
           value={formData.instructorName}
@@ -201,7 +203,6 @@ function PartnerSignUp() {
           label="Phone No."
           placeholder="Enter your phone"
           size="md"
-          className="lg:w-2/3 w-full"
           required
           name="phone"
           value={formData.phone}
@@ -213,7 +214,6 @@ function PartnerSignUp() {
               label="Address Line 1"
               placeholder=""
               size="md"
-              className="lg:w-2/3 w-full"
               required
               name="addressLine1"
               value={formData.addressLine1}
@@ -223,7 +223,6 @@ function PartnerSignUp() {
               label="Address Line 2"
               placeholder=""
               size="md"
-              className="lg:w-2/3 w-full"
               name="addressLine2"
               value={formData.addressLine2}
               onChange={handleInputChange}
@@ -234,7 +233,6 @@ function PartnerSignUp() {
           label="City"
           placeholder=""
           size="md"
-          className="lg:w-2/3 w-full"
           name="city"
           required
           value={formData.city}
@@ -244,7 +242,6 @@ function PartnerSignUp() {
           label="State"
           placeholder=""
           size="md"
-          className="lg:w-2/3 w-full"
           name="state"
           required
           value={formData.state}
@@ -254,7 +251,6 @@ function PartnerSignUp() {
           label="Pincode"
           placeholder=""
           size="md"
-          className="lg:w-2/3 w-full"
           name="pincode"
           type="number"
           required
@@ -267,7 +263,7 @@ function PartnerSignUp() {
           label="Topics that you will be teaching"
           description={"Press enter after each topic"}
           size="md"
-          className="lg:w-2/3 w-full"
+          className="sm:col-span-2"
           value={formData.trainingTopics}
           onChange={(values) =>
             setFormData((prev) => ({ ...prev, trainingTopics: values }))
@@ -278,7 +274,6 @@ function PartnerSignUp() {
           placeholder="Enter your email"
           size="md"
           type="email"
-          className="lg:w-2/3 w-full"
           required
           name="email"
           value={formData.email}
@@ -289,18 +284,17 @@ function PartnerSignUp() {
           label="Password"
           placeholder="••••••••"
           size="md"
-          className="lg:w-2/3 w-full"
           required
           name="password"
           value={formData.password}
           onChange={handleInputChange}
         />
-        <div className="lg:w-2/3 w-full">
+        <div className="sm:col-span-2">
           <Checkbox
             label={
-              <span className="font-semibold">
+              <span className="font-medium">
                 I accept the{" "}
-                <span className="text-blue-700 font-semibold">
+                <span className="text-deep underline decoration-tint decoration-2 underline-offset-4">
                   terms and conditions.
                 </span>
               </span>
@@ -311,27 +305,16 @@ function PartnerSignUp() {
             required
           />
         </div>
-        <Button
-          radius={999}
-          w="400"
+        <button
           type="submit"
           disabled={registerMutation.isPending}
           onClick={handleSubmit}
+          className="btn btn-primary w-full sm:col-span-2"
         >
           Sign Up
-        </Button>
-        <div className="w-2/3 flex flex-row gap-2 justify-center mb-3">
-          <Text ta="left" fw={500}>
-            Have an account?
-          </Text>
-          <Link to="/partner/signin">
-            <Text ta="left" c="blue" fw={500}>
-              Log In
-            </Text>
-          </Link>
-        </div>
+        </button>
       </div>
-    </div>
+    </AuthShell>
   );
 }
 

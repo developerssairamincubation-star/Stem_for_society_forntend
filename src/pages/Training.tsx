@@ -1,18 +1,17 @@
-import { Button, Input } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import dayjs from "dayjs";
-import { ChevronLeft, Filter, Search } from "lucide-react";
+import { CaretLeft, Funnel, MagnifyingGlass } from "@phosphor-icons/react";
 import { parseAsBoolean, useQueryState } from "nuqs";
 import React, { useMemo, useState } from "react";
 import Errorbox from "../components/Errorbox";
 import EventCard from "../components/EventCard";
-import Loading from "../components/Loading";
 import { api } from "../lib/api";
 import { courseCategories } from "../lib/data";
 import { GenericError, GenericResponse } from "../lib/types";
 import { formatDate } from "../lib/utils";
-import Header from "@/components1/Header";
+import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
+import { PageLoading } from "@/sfs/components/page/PageStatus";
 
 export type StudentTraining = {
   id: string;
@@ -168,96 +167,91 @@ const Training: React.FC = () => {
   }, [search, trainings, trainingFilter, filterByMe]);
 
   if (isLoading) {
-    return <Loading />;
+    return <PageLoading label="Loading seminars…" />;
   }
 
   if (error) {
-    return <Errorbox message={error.message} />;
+    return (
+      <PageFrame tone="surface">
+        <div className="container-x pt-32 pb-16">
+          <Errorbox message={error.message} />
+        </div>
+      </PageFrame>
+    );
   }
 
-  return (
-    
-    <div className="w-full mt-4 px-6">
-      <Header />
-      <div className="max-w-7xl mx-auto flex flex-col justify-center items-center">
-        <div className="mt-5">
-          <h1 className="font-semibold text-[20px] sm:text-2xl md:text-2xl lg:text-3xl relative inline-block">
-            Upcoming Seminars & Webinars
-          </h1>
-        </div>
-        <div className="flex justify-between lg:flex-row flex-col gap-3 items-center w-full py-5">
-          {!filterByMe ? (
-            <div className="filters flex lg:flex-row flex-col gap-2 text-sm">
-              <Filter color="gray" />
-              <div className="lg:flex grid grid-cols-2 w-full gap-2">
-                {courseCategories.map((category) => (
-                  <Button
-                    variant={
-                      !trainingFilter?.includes(category) ? "outline" : "filled"
-                    }
-                    size="compact-xs"
-                    key={category}
-                    className="lg:w-[unset] w-full"
-                    onClick={() =>
-                      setTrainingFilter((prev) =>
-                        !prev
-                          ? [category]
-                          : prev.includes(category)
-                            ? prev.filter((x) => x !== category)
-                            : [...prev, category],
-                      )
-                    }
-                  >
-                    {category}
-                  </Button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <Button radius={999} onClick={() => setFilterByMe(null)}>
-              <ChevronLeft size={16} />
-              Show all
-            </Button>
-          )}
-          <Input
-            leftSection={<Search size={16} />}
-            classNames={{ wrapper: "lg:ml-auto w-full lg:w-72" }}
-            placeholder="Search for training..."
-            type="search"
-            radius={999}
-            value={search}
-            onChange={(e) => setSearch(e.currentTarget.value)}
-          />
-        </div>
-        <div className="w-full flex flex-col items-center justify-center mt-2">
-          {!filteredTrainings ? (
-            <Errorbox message="Something went wrong!" />
-          ) : Object.keys(filteredTrainings).length === 0 ? (
-            <p>No search results found!</p>
-          ) : (
-            Object.keys(filteredTrainings).map((month) => (
-              <div key={month} className="w-full">
-                <h2 className="font-semibold text-xl sm:text-xl md:text-2xl lg:text-3xl md:ml-20 md:mb-5 mt-5 text-left mb-4 relative inline-block">
-                  {month}
-                  <span className="underline absolute bottom-0 left-0 w-full h-[3px] bg-blue-500 rounded-sm"></span>
-                </h2>
+  const chipBase =
+    "t-small inline-flex min-h-9 items-center rounded-full border px-4 py-1.5 font-medium transition-colors duration-200";
 
-                <div className="flex flex-wrap gap-4 justify-center">
-                  {(
-                    filteredTrainings[
-                      month as keyof typeof filteredTrainings
-                    ] as StudentTraining[]
-                  )
-                    // .filter((event) =>
-                    //   event.enrolments.some(
-                    //     (enr) =>
-                    //       enr.transactions &&
-                    //       enr.transactions.filter(
-                    //         (tr) => tr.status === "success",
-                    //       ).length > 0,
-                    //   ),
-                    // )
-                    .map((event) => (
+  return (
+    <PageFrame tone="surface">
+      <PageHero title="Upcoming Seminars & Webinars" />
+
+      <section className="section" aria-label="Seminars and webinars">
+        <div className="container-x">
+          <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+            {!filterByMe ? (
+              <div role="group" aria-label="Filter by category" className="flex flex-wrap items-center gap-2">
+                <Funnel size={20} className="mr-1 text-ink/50" aria-hidden="true" />
+                {courseCategories.map((category) => {
+                  const active = !!trainingFilter?.includes(category);
+                  return (
+                    <button
+                      type="button"
+                      key={category}
+                      aria-pressed={active}
+                      className={`${chipBase} ${
+                        active ? "border-deep bg-deep text-white" : "border-tint bg-white text-deep hover:border-brand"
+                      }`}
+                      onClick={() =>
+                        setTrainingFilter((prev) =>
+                          !prev
+                            ? [category]
+                            : prev.includes(category)
+                              ? prev.filter((x) => x !== category)
+                              : [...prev, category],
+                        )
+                      }
+                    >
+                      {category}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <button type="button" className="btn btn-secondary nudge self-start" onClick={() => setFilterByMe(null)}>
+                <CaretLeft size={16} aria-hidden="true" />
+                Show all
+              </button>
+            )}
+            <div className="relative w-full lg:w-80">
+              <label htmlFor="training-search" className="sr-only">
+                Search for training
+              </label>
+              <MagnifyingGlass size={18} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-ink/50" aria-hidden="true" />
+              <input
+                id="training-search"
+                type="search"
+                className="!pl-10"
+                placeholder="Search for training..."
+                value={search}
+                onChange={(e) => setSearch(e.currentTarget.value)}
+              />
+            </div>
+          </div>
+
+          <div className="grid gap-12">
+            {!filteredTrainings ? (
+              <Errorbox message="Something went wrong!" />
+            ) : Object.keys(filteredTrainings).length === 0 ? (
+              <p className="card mx-auto max-w-xl px-6 py-14 text-center t-lead text-ink/70">No search results found!</p>
+            ) : (
+              Object.keys(filteredTrainings).map((month) => (
+                <section key={month} aria-label={month} className="grid gap-6">
+                  <h2 className="t-title border-b-2 border-brand pb-4">{month}</h2>
+
+                  <div className="grid gap-5">
+                    {(filteredTrainings[month as keyof typeof filteredTrainings] as StudentTraining[]).map((event) => (
                       <EventCard
                         key={event.id}
                         id={event.id}
@@ -270,19 +264,18 @@ const Training: React.FC = () => {
                         isEnrolled={event.enrolments.some(
                           (enr) =>
                             enr.transactions &&
-                            enr.transactions.filter(
-                              (tr) => tr.status === "success",
-                            ).length > 0,
+                            enr.transactions.filter((tr) => tr.status === "success").length > 0,
                         )}
                       />
                     ))}
-                </div>
-              </div>
-            ))
-          )}
+                  </div>
+                </section>
+              ))
+            )}
+          </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </PageFrame>
   );
 };
 

@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { PhoneInput } from "@/components1/ui/phone-input";
-import Header from '@/components1/Header';
-import { Button } from '@/components1/ui/button';
+import { PageFrame, PageHero } from '@/sfs/components/page/PageFrame';
 import { Input } from '@/components1/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components1/ui/select';
-import { ArrowLeft, Share2, AlertTriangle, CheckCircle, Check } from 'lucide-react';
+import { ArrowLeft, Warning, CheckCircle, Check } from '@phosphor-icons/react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -256,29 +255,21 @@ const CampusAmbassadorBooking = () => {
   ];
 
   const renderStepIndicator = () => (
-    <div className="flex items-center justify-center space-x-8 mb-12">
+    <ol className="mb-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3" aria-label="Progress">
       {[1, 2, 3].map((step) => (
-        <div key={step} className="flex items-center">
-          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-            step === currentStep 
-              ? 'bg-blue-500 text-white' 
-              : step < currentStep 
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-200 text-gray-500'
-          }`}>
-            {step < currentStep ? <Check className="h-4 w-4" /> : step}
-          </div>
-          {step === currentStep && (
-            <div className="text-blue-500 text-sm font-medium ml-3">
-              {stepTitles[step - 1]}
-            </div>
-          )}
-          {step < 3 && (
-            <div className="w-16 h-px bg-gray-300 ml-3"></div>
-          )}
-        </div>
+        <li key={step} aria-current={step === currentStep ? 'step' : undefined} className="flex items-center gap-3">
+          <span
+            className={`flex size-10 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-300 ${
+              step === currentStep ? 'bg-deep text-white' : step < currentStep ? 'bg-brand text-white' : 'bg-tint text-deep'
+            }`}
+          >
+            {step < currentStep ? <Check size={16} weight="bold" aria-hidden="true" /> : step}
+          </span>
+          {step === currentStep && <span className="t-label text-deep">{stepTitles[step - 1]}</span>}
+          {step < 3 && <span aria-hidden="true" className="hidden h-px w-10 bg-tint sm:block" />}
+        </li>
       ))}
-    </div>
+    </ol>
   );
 
   const renderStep1 = () => (
@@ -288,21 +279,19 @@ const CampusAmbassadorBooking = () => {
           placeholder="First Name *"
           value={formData.firstName}
           onChange={(e) => handleInputChange('firstName', e.target.value)}
-          className="h-12 bg-gray-100 border-0 placeholder:text-gray-500"
           required
         />
         <Input
           placeholder="Last Name *"
           value={formData.lastName}
           onChange={(e) => handleInputChange('lastName', e.target.value)}
-          className="h-12 bg-gray-100 border-0 placeholder:text-gray-500"
           required
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Select onValueChange={(value) => handleInputChange('educationLevel', value)}>
-          <SelectTrigger className="h-12 bg-gray-100 border-0 text-gray-500">
+          <SelectTrigger className="h-11 rounded-control border-tint bg-white text-ink/70">
             <SelectValue placeholder="Education Level *" />
           </SelectTrigger>
           <SelectContent>
@@ -313,7 +302,7 @@ const CampusAmbassadorBooking = () => {
         </Select>
 
         <Select onValueChange={(value) => handleInputChange('department', value)}>
-          <SelectTrigger className="h-12 bg-gray-100 border-0 text-gray-500">
+          <SelectTrigger className="h-11 rounded-control border-tint bg-white text-ink/70">
             <SelectValue placeholder="Department *" />
           </SelectTrigger>
           <SelectContent>
@@ -334,12 +323,11 @@ const CampusAmbassadorBooking = () => {
           placeholder="Date of Birth *"
           value={formData.dateOfBirth}
           onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
-          className="h-12 bg-gray-100 border-0 placeholder:text-gray-500"
           required
         />
 
         <Select onValueChange={(value) => handleInputChange('currentYear', value)}>
-          <SelectTrigger className="h-12 bg-gray-100 border-0 text-gray-500">
+          <SelectTrigger className="h-11 rounded-control border-tint bg-white text-ink/70">
             <SelectValue placeholder="Your Current Year *" />
           </SelectTrigger>
           <SelectContent>
@@ -357,7 +345,6 @@ const CampusAmbassadorBooking = () => {
           placeholder="LinkedIn Profile *"
           value={formData.linkedinProfile}
           onChange={(e) => handleInputChange('linkedinProfile', e.target.value)}
-          className="h-12 bg-gray-100 border-0 placeholder:text-gray-500"
           required
         />
       </div>
@@ -376,28 +363,23 @@ const CampusAmbassadorBooking = () => {
           autoCorrect="off"
           value={formData.email}
           onChange={(e) => handleInputChange('email', e.target.value)}
-          className="h-12 bg-gray-100 border-0 placeholder:text-gray-500 pr-12"
           required
         />
         {otpVerified && (
-          <CheckCircle className="absolute right-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-green-500" />
+          <CheckCircle size={20} weight="fill" className="absolute top-1/2 right-3 -translate-y-1/2 text-green-600" aria-hidden="true" />
         )}
       </div>
 
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-center justify-between">
+      <div className="bg-yellow-50 border border-yellow-200 rounded-control p-4 flex items-center justify-between">
         <div className="flex items-center space-x-3">
-          <AlertTriangle className="h-5 w-5 text-yellow-600 flex-shrink-0" />
+          <Warning size={20} className="shrink-0 text-yellow-600" aria-hidden="true" />
           <span className="text-yellow-800 text-sm">
             {otpVerified ? 'Email verified!' : 'Send an OTP to verify your email address.'}
           </span>
         </div>
-        <Button 
-          className={`px-6 ${otpSent ? 'bg-gray-500' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
-          onClick={handleSendOtp}
-          disabled={otpSent}
-        >
+        <button type="button" className="btn btn-primary shrink-0" onClick={handleSendOtp} disabled={otpSent}>
           {otpSent ? 'OTP Sent' : 'Send OTP'}
-        </Button>
+        </button>
       </div>
 
       <div className="flex gap-4">
@@ -405,16 +387,17 @@ const CampusAmbassadorBooking = () => {
           placeholder="Enter Email OTP *"
           value={formData.otp}
           onChange={(e) => handleInputChange('otp', e.target.value)}
-          className="h-12 bg-gray-100 border-0 placeholder:text-gray-500 flex-1"
+          className="flex-1"
           disabled={!otpSent}
         />
-        <Button 
-          className={`px-6 ${otpVerified ? 'bg-green-500 hover:bg-green-600' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+        <button
+          type="button"
+          className={`btn shrink-0 ${otpVerified ? 'bg-green-700 text-white' : 'btn-primary'}`}
           onClick={handleVerifyOtp}
           disabled={!otpSent || otpVerified || isVerifyingOtp}
         >
           {otpVerified ? 'Verified' : isVerifyingOtp ? 'Verifying...' : 'Verify'}
-        </Button>
+        </button>
       </div>
 
       <div>
@@ -422,7 +405,6 @@ const CampusAmbassadorBooking = () => {
           placeholder="Mobile Number *"
           value={formData.mobileNumber}
           onChange={(mobile) => handleInputChange('mobileNumber', mobile)}
-          className="h-12 bg-gray-100 border-0 placeholder:text-gray-500"
           required
         />
       </div>
@@ -433,7 +415,7 @@ const CampusAmbassadorBooking = () => {
     <div className="space-y-6">
       <div>
         <Select onValueChange={(value) => handleInputChange('institutionName', value)}>
-          <SelectTrigger className="w-full h-12 bg-gray-100 border-0 text-gray-500">
+          <SelectTrigger className="h-11 w-full rounded-control border-tint bg-white text-ink/70">
             <SelectValue placeholder="Select Institution Name *" />
           </SelectTrigger>
           <SelectContent>
@@ -453,11 +435,10 @@ const CampusAmbassadorBooking = () => {
             placeholder="Enter the Institution Name *"
             value={formData.manualInstitutionName}
             onChange={(e) => handleInputChange('manualInstitutionName', e.target.value)}
-            className="h-12 bg-gray-100 border-0 placeholder:text-gray-500"
           />
           
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 flex items-center space-x-2">
-            <AlertTriangle className="h-4 w-4 text-yellow-600 flex-shrink-0" />
+          <div className="bg-yellow-50 border border-yellow-200 rounded-control p-3 flex items-center space-x-2">
+            <Warning size={16} className="shrink-0 text-yellow-600" aria-hidden="true" />
             <span className="text-yellow-800 text-xs">
               Select your institution from list or enter manually if not listed.
             </span>
@@ -470,19 +451,17 @@ const CampusAmbassadorBooking = () => {
           placeholder="Address Line 1"
           value={formData.addressLine1}
           onChange={(e) => handleInputChange('addressLine1', e.target.value)}
-          className="h-12 bg-gray-100 border-0 placeholder:text-gray-500"
         />
         <Input
           placeholder="Address Line 2"
           value={formData.addressLine2}
           onChange={(e) => handleInputChange('addressLine2', e.target.value)}
-          className="h-12 bg-gray-100 border-0 placeholder:text-gray-500"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Select onValueChange={(value) => handleInputChange('city', value)}>
-          <SelectTrigger className="h-12 bg-gray-100 border-0 text-gray-500">
+          <SelectTrigger className="h-11 rounded-control border-tint bg-white text-ink/70">
             <SelectValue placeholder="City *" />
           </SelectTrigger>
           <SelectContent>
@@ -497,7 +476,7 @@ const CampusAmbassadorBooking = () => {
         </Select>
 
         <Select onValueChange={(value) => handleInputChange('state', value)}>
-          <SelectTrigger className="h-12 bg-gray-100 border-0 text-gray-500">
+          <SelectTrigger className="h-11 rounded-control border-tint bg-white text-ink/70">
             <SelectValue placeholder="State" />
           </SelectTrigger>
           <SelectContent>
@@ -512,27 +491,27 @@ const CampusAmbassadorBooking = () => {
       </div>
 
       {/* Summary Section */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-        <h4 className="text-lg font-semibold text-gray-900 mb-4">Application Summary</h4>
+      <div className="bg-surface border border-tint rounded-control p-6 mt-6">
+        <h4 className="text-lg font-semibold text-ink mb-4">Application Summary</h4>
         <div className="space-y-2 text-sm">
           <div className="flex justify-between">
-            <span className="text-gray-600">Name:</span>
+            <span className="text-ink/75">Name:</span>
             <span className="font-medium">{formData.firstName} {formData.lastName}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Education:</span>
+            <span className="text-ink/75">Education:</span>
             <span className="font-medium">{formData.eduType} - {formData.department}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Institution:</span>
+            <span className="text-ink/75">Institution:</span>
             <span className="font-medium">{formData.collegeName}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Email:</span>
+            <span className="text-ink/75">Email:</span>
             <span className="font-medium">{formData.email}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-gray-600">Date of Birth:</span>
+            <span className="text-ink/75">Date of Birth:</span>
             <span className="font-medium">{formData.dob ? formData.dob.toLocaleDateString() : 'Not provided'}</span>
           </div>
         </div>
@@ -541,79 +520,48 @@ const CampusAmbassadorBooking = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="relative overflow-hidden min-h-screen" style={{ height: '100%', minHeight: '100%' }}>
+    <PageFrame tone="surface">
+      <PageHero
+        kicker={
+          <Link to="/campus-ambassador" className="nudge inline-flex items-center gap-2 text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">
+            <ArrowLeft size={16} aria-hidden="true" />
+            Back
+          </Link>
+        }
+        title={<span className="text-tint">Campus Ambassador Program</span>}
+        description="Apply for"
+      />
 
-        {/* Content above grid */}
-        <div className="relative z-10">
-          <Header />
+      <section className="section" aria-label="Application">
+        <div className="container-x">
+          <div className="mx-auto max-w-4xl">
+            {renderStepIndicator()}
 
-          {/* Navigation Bar */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <Link to="/campus-ambassador">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-2 bg-[#0389FF] text-white border-[#0389FF] rounded-full px-4 hover:bg-[#0389FF]/90"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>Back</span>
-                </Button>
-              </Link>
+            <div className="card min-h-96 p-6 sm:p-8">
+              {currentStep === 1 && renderStep1()}
+              {currentStep === 2 && renderStep2()}
+              {currentStep === 3 && renderStep3()}
+            </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center space-x-2 bg-[#0389FF] text-white border-[#0389FF] rounded-full px-4 hover:bg-[#0389FF]/90"
+            <div className="mt-8 flex items-center justify-between gap-4">
+              <button
+                type="button"
+                onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
+                className="btn btn-secondary"
+                disabled={currentStep === 1}
               >
-                <Share2 className="h-4 w-4" />
-                <span>Share</span>
-              </Button>
+                <ArrowLeft size={16} aria-hidden="true" />
+                BACK
+              </button>
+
+              <button type="button" onClick={nextStep} className="btn btn-primary" disabled={isPending}>
+                {currentStep === 3 ? (isPending ? 'SUBMITTING...' : 'SUBMIT APPLICATION') : 'CONTINUE'}
+              </button>
             </div>
           </div>
-          
-          <div className="text-center mb-8">
-            <h1 className="text-xl font-medium text-gray-900 mb-2">Apply for</h1>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">
-              <span className="text-yellow-500">Campus Ambassador Program</span>
-            </h2>
-          </div>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {renderStepIndicator()}
-
-        <div className="bg-white rounded-2xl p-8 shadow-sm min-h-96">
-          {currentStep === 1 && renderStep1()}
-          {currentStep === 2 && renderStep2()}
-          {currentStep === 3 && renderStep3()}
-        </div>
-
-        <div className="flex justify-between items-center mt-8">
-          <Button 
-            onClick={() => setCurrentStep(Math.max(1, currentStep - 1))}
-            variant="outline"
-            className="border-gray-300 text-gray-700 hover:bg-gray-50 px-8 py-3 text-lg font-semibold"
-            disabled={currentStep === 1}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            BACK
-          </Button>
-
-          <Button 
-            onClick={nextStep}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-3 font-medium"
-            disabled={isPending}
-          >
-            {currentStep === 3 ? (isPending ? 'SUBMITTING...' : 'SUBMIT APPLICATION') : 'CONTINUE'}
-          </Button>
-        </div>
-      </div>
-
-    </div>
+      </section>
+    </PageFrame>
   );
 };
 

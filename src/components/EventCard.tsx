@@ -1,8 +1,7 @@
-import { Badge, Button } from "@mantine/core";
-import { Calendar, ChevronRight } from "lucide-react";
+import { ArrowRight, CalendarBlank, MapPin } from "@phosphor-icons/react";
+import { motion } from "framer-motion";
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaLocationDot } from "react-icons/fa6";
 import { COURSE_IMAGE_FALLBACK, handleCourseImageError } from "@/lib/courseImage";
 
 interface EventCardProps {
@@ -17,96 +16,71 @@ interface EventCardProps {
   category?: string;
 }
 
-const EventCard: React.FC<EventCardProps> = ({
-  title,
-  date,
-  location,
-  id,
-  posterUrl,
-  price,
-  isEnrolled,
-  isExpired,
-  category,
-}) => {
+/** Seminar / webinar row in the SFS style. Same props and the same two links as before. */
+const EventCard: React.FC<EventCardProps> = ({ title, date, location, id, posterUrl, price, isEnrolled, isExpired, category }) => {
   return (
-    <div className="flex lg:flex-row flex-col shadow-md p-4 mb-4 w-full lg:gap-0 gap-3 max-w-5xl rounded-lg border">
-      {/* Left Section: Poster */}
-      <div className="flex-shrink-0 lg:w-[unset] w-full h-52 aspect-video mr-6 bg-gray-100 flex items-center justify-center">
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "0px 0px -10% 0px" }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="card group flex w-full flex-col overflow-hidden transition-[box-shadow,border-color] duration-300 hover:border-brand hover:shadow-raised lg:flex-row"
+    >
+      <div className="aspect-video w-full shrink-0 overflow-hidden bg-surface lg:w-80">
         <img
           src={posterUrl || COURSE_IMAGE_FALLBACK}
           alt={title}
-          className="w-full h-auto max-h-full object-contain object-center rounded-lg"
+          loading="lazy"
+          className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
           onError={handleCourseImageError}
         />
       </div>
 
-      {/* Right Section: Event Details */}
-      <div className="details flex flex-col gap-2 w-full justify-start">
-        <span className="title font-medium flex lg:flex-row flex-col justify-between text-xl sm:text-2xl md:text-xl mb-2 line-clamp-2 overflow-hidden text-ellipsis">
-          {title}
-          <Badge
-            variant="dot"
-            color={!category ? "gray" : "blue"}
-            className={!category ? "text-gray-600" : "text-blue-500"}
-          >
-            {category || "Uncategorized"}
-          </Badge>
-        </span>
-        <span className="text-green-600 flex items-center gap-2 font-semibold text-xs sm:text-sm md:text-base mb-1">
-          <Calendar size={18} /> Date:{" "}
-          <span className="date text-black font-normal">{date}</span>
-        </span>
-        <span className="text-green-600 flex items-center gap-2 font-semibold text-xs sm:text-sm md:text-base mb-1">
-          <FaLocationDot /> Mode:{" "}
-          <span className=" text-black font-normal">
-            <Badge variant="dot" color={location ? "red" : "green"}>
-              {location ? "Offline" : "Online"}
-            </Badge>
-          </span>
-        </span>
-        {location && (
-          <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base mb-2 line-clamp-2">
-            Location:{" "}
-            <span className="location text-black font-normal">{location}</span>
-          </span>
-        )}
-        <div className="w-full mt-auto flex lg:flex-row flex-col gap-2">
-          <h3 className="text-lg font-medium">₹ {price}</h3>
-          <div className="flex gap-2 lg:ml-auto">
+      <div className="flex w-full flex-col gap-3 p-5 sm:p-6">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <h3 className="t-heading line-clamp-2">{title}</h3>
+          <span className="chip shrink-0 self-start text-deep">{category || "Uncategorized"}</span>
+        </div>
+
+        <dl className="t-small grid gap-2">
+          <div className="flex items-center gap-2.5">
+            <CalendarBlank size={20} className="text-brand" aria-hidden="true" />
+            <dt className="text-ink/60">Date:</dt>
+            <dd className="font-medium">{date}</dd>
+          </div>
+          <div className="flex items-center gap-2.5">
+            <MapPin size={20} className="text-brand" aria-hidden="true" />
+            <dt className="text-ink/60">Mode:</dt>
+            <dd className="font-medium">{location ? "Offline" : "Online"}</dd>
+          </div>
+          {location && (
+            <div className="flex gap-2.5 pl-[30px]">
+              <dt className="text-ink/60">Location:</dt>
+              <dd className="line-clamp-2 font-medium">{location}</dd>
+            </div>
+          )}
+        </dl>
+
+        <div className="mt-auto flex flex-col gap-4 pt-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="t-heading">₹ {price}</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             {!isEnrolled && !isExpired ? (
-              <Button radius={999} px={20} className="lg:w-[unset] w-full">
-                <Link to={`/training/${id}`}>Register now</Link>
-              </Button>
+              <Link to={`/training/${id}`} className="btn btn-primary">
+                Register now
+              </Link>
             ) : (
-              <Button
-                radius={999}
-                px={20}
-                className="lg:w-[unset] w-full"
-                disabled
-              >
+              <button type="button" className="btn btn-primary" disabled>
                 Already Registered
-              </Button>
+              </button>
             )}
-            <Link
-              to={`/training/${id}`}
-              className="text-blue-500 text-xs sm:text-sm md:text-base lg:w-[unset] w-full"
-            >
-              <Button
-                radius={999}
-                classNames={{
-                  label: "flex items-center justify-center gap-1",
-                }}
-                className="lg:w-[unset] w-full"
-                variant="outline"
-              >
-                <span>View details</span>
-                <ChevronRight size={12} />
-              </Button>
+            <Link to={`/training/${id}`} className="btn btn-secondary nudge">
+              View details
+              <ArrowRight size={16} aria-hidden="true" />
             </Link>
           </div>
         </div>
       </div>
-    </div>
+    </motion.article>
   );
 };
 

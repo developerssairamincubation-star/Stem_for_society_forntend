@@ -5,7 +5,6 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { Button } from "@/components1/ui/button";
 import { Input } from "@/components1/ui/input";
 import {
   Select,
@@ -14,9 +13,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components1/ui/select";
-import { ArrowLeft, Share2, Upload, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Upload, Warning } from "@phosphor-icons/react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import Header from "@/components1/Header";
+import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { toast } from "react-toastify";
@@ -414,7 +413,6 @@ const BlogCreateContent = () => {
                 placeholder="Full Name"
                 value={formData.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                className="bg-gray-100 border-0 rounded-lg p-4 h-14"
               />
               <Input
                 aria-label="Phone number"
@@ -423,7 +421,6 @@ const BlogCreateContent = () => {
                 onChange={(e) =>
                   handleInputChange("phoneNumber", e.target.value)
                 }
-                className="bg-gray-100 border-0 rounded-lg p-4 h-14"
               />
             </div>
 
@@ -436,7 +433,6 @@ const BlogCreateContent = () => {
                 onChange={(e) =>
                   handleInputChange("emailAddress", e.target.value)
                 }
-                className="bg-gray-100 border-0 rounded-lg p-4 h-14"
               />
               <Input
                 aria-label="LinkedIn profile URL"
@@ -446,7 +442,6 @@ const BlogCreateContent = () => {
                 onChange={(e) =>
                   handleInputChange("linkedInProfileUrl", e.target.value)
                 }
-                className="bg-gray-100 border-0 rounded-lg p-4 h-14"
               />
             </div>
 
@@ -457,7 +452,7 @@ const BlogCreateContent = () => {
                 }
                 value={formData.educationLevel}
               >
-                <SelectTrigger className="bg-gray-100 border-0 rounded-lg p-4 h-14">
+                <SelectTrigger className="h-11 rounded-control border-tint bg-white">
                   <SelectValue placeholder="Education Level" />
                 </SelectTrigger>
                 <SelectContent
@@ -479,7 +474,7 @@ const BlogCreateContent = () => {
                   handleInputChange("department", value)
                 }
               >
-                <SelectTrigger className="bg-gray-100 border-0 rounded-lg p-4 h-14">
+                <SelectTrigger className="h-11 rounded-control border-tint bg-white">
                   <SelectValue placeholder="Department" />
                 </SelectTrigger>
                 <SelectContent
@@ -505,7 +500,7 @@ const BlogCreateContent = () => {
                 }
                 value={formData.designation}
               >
-                <SelectTrigger className="bg-gray-100 border-0 rounded-lg p-4 h-14">
+                <SelectTrigger className="h-11 rounded-control border-tint bg-white">
                   <SelectValue placeholder="Designation" />
                 </SelectTrigger>
                 <SelectContent
@@ -536,7 +531,6 @@ const BlogCreateContent = () => {
                 onChange={(e) =>
                   handleInputChange("fieldExperience", e.target.value)
                 }
-                className="bg-gray-100 border-0 rounded-lg p-4 h-14"
               />
             </div>
           </div>
@@ -547,7 +541,7 @@ const BlogCreateContent = () => {
           <div className="space-y-6">
             <div className="text-center">
               <h3 className="text-xl font-semibold mb-4">Article Content</h3>
-              <p className="text-gray-600">
+              <p className="text-ink/75">
                 Add your article content, title, category, and abstract
               </p>
             </div>
@@ -556,14 +550,13 @@ const BlogCreateContent = () => {
                 placeholder="Article Title"
                 value={formData.title}
                 onChange={(e) => handleInputChange("title", e.target.value)}
-                className="bg-gray-100 border-0 rounded-lg p-4 h-14"
               />
 
               <Select
                 onValueChange={(value) => handleInputChange("category", value)}
                 value={formData.category}
               >
-                <SelectTrigger className="bg-gray-100 border-0 rounded-lg p-4 h-14">
+                <SelectTrigger className="h-11 rounded-control border-tint bg-white">
                   <SelectValue placeholder="Select Category" />
                 </SelectTrigger>
                 <SelectContent
@@ -582,7 +575,7 @@ const BlogCreateContent = () => {
                 </SelectContent>
               </Select>
 
-              <div className="bg-gray-100 rounded-lg p-4 min-h-[300px]">
+              <div className="min-h-[300px] rounded-control border border-tint bg-white p-4">
                 <RichTextEditorNew
                   value={formData.content}
                   onChange={(val) => handleInputChange("content", val)}
@@ -597,7 +590,7 @@ const BlogCreateContent = () => {
                     e.target.value.split("\n").filter((ref) => ref.trim()),
                   )
                 }
-                className="w-full bg-gray-100 border-0 rounded-lg p-4 h-32 resize-none"
+                className="h-32 resize-none"
               />
               <p className="text-red-600 text-sm">
                 *Do not upload any copyrighted images, as they will be taken
@@ -612,7 +605,7 @@ const BlogCreateContent = () => {
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center mb-8">
               <h3 className="text-xl font-semibold mb-2">Upload Cover Image</h3>
-              <p className="text-gray-600">
+              <p className="text-ink/75">
                 Choose an eye-catching cover photo for your article.
               </p>
             </div>
@@ -620,18 +613,18 @@ const BlogCreateContent = () => {
             <div className="space-y-6">
               <label
                 htmlFor="cover-upload"
-                className="block border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-lg p-10 text-center bg-gray-50 cursor-pointer transition-colors"
+                className="block border-2 border-dashed border-tint hover:border-brand rounded-control p-10 text-center bg-surface cursor-pointer transition-colors"
               >
                 <div className="mb-4 pointer-events-none">
-                  <div className="w-16 h-16 mx-auto bg-gray-200 rounded-full flex items-center justify-center mb-4">
-                    <Upload className="w-8 h-8 text-gray-500" />
+                  <div className="w-16 h-16 mx-auto bg-tint rounded-full flex items-center justify-center mb-4">
+                    <Upload size={32} className="text-brand" aria-hidden="true" />
                   </div>
-                  <p className="text-gray-700 font-medium text-lg mb-1">
+                  <p className="text-ink/75 font-medium text-lg mb-1">
                     {formData.coverPhoto
                       ? formData.coverPhoto.name
                       : "Click or drag image to upload"}
                   </p>
-                  <p className="text-gray-500 text-sm">
+                  <p className="text-ink/60 text-sm">
                     SVG, PNG, JPG or GIF (max. 5MB)
                   </p>
                 </div>
@@ -649,23 +642,23 @@ const BlogCreateContent = () => {
                   <img
                     src={URL.createObjectURL(formData.coverPhoto)}
                     alt="Cover Preview"
-                    className="w-full h-64 object-cover rounded-lg shadow-sm"
+                    className="w-full h-64 object-cover rounded-control shadow-sm"
                   />
-                  <Button
-                    variant="outline"
-                    className="mt-4 text-red-600 border-red-200 hover:bg-red-50"
+                  <button
+                    type="button"
+                    className="btn btn-secondary mt-4 !border-red-200 !text-red-600 hover:!bg-red-50"
                     onClick={(e) => {
                       e.preventDefault();
                       handleInputChange("coverPhoto", null);
                     }}
                   >
                     Remove Image
-                  </Button>
+                  </button>
                 </div>
               )}
 
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex items-start space-x-3">
-                <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" />
+              <div className="bg-yellow-50 border border-yellow-200 rounded-control p-4 flex items-start space-x-3">
+                <Warning size={20} className="mt-0.5 shrink-0 text-yellow-600" aria-hidden="true" />
                 <div className="text-sm">
                   <p className="text-yellow-800 font-medium">
                     Copyright Notice
@@ -678,9 +671,9 @@ const BlogCreateContent = () => {
               </div>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 flex items-center space-x-3 mt-6">
+            <div className="bg-surface border border-tint rounded-control p-4 flex items-center space-x-3 mt-6">
               <span className="text-2xl">ℹ️</span>
-              <p className="text-sm text-blue-800">
+              <p className="text-sm text-deep">
                 Your article will be reviewed and published within 48 hours
                 after submission.
               </p>
@@ -696,19 +689,16 @@ const BlogCreateContent = () => {
                 <span className="text-white text-xl">✓</span>
               </div>
             </div>
-            <h3 className="text-2xl font-bold text-gray-900">
+            <h3 className="text-2xl font-semibold text-ink">
               Article Submitted Successfully!
             </h3>
-            <p className="text-gray-600 max-w-md mx-auto">
+            <p className="text-ink/75 max-w-md mx-auto">
               Your article has been submitted for review. Our team will review
               it and publish within 48 hours.
             </p>
-            <Button
-              className="bg-blue-600 hover:bg-blue-700"
-              onClick={() => (window.location.href = "/blogs")}
-            >
+            <button type="button" className="btn btn-primary" onClick={() => (window.location.href = "/blogs")}>
               View My Articles
-            </Button>
+            </button>
           </div>
         );
 
@@ -718,120 +708,71 @@ const BlogCreateContent = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div
-        className="relative overflow-hidden min-h-screen"
-        style={{ height: "100%", minHeight: "100%" }}
-      >
-
-        {/* Content above grid */}
-        <div className="relative z-10">
-          <Header />
-
-          {/* Navigation Bar */}
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-            <div className="flex items-center justify-between">
-              <Link to="/">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center space-x-2 bg-[#0389FF] text-white border-[#0389FF] rounded-full px-4 hover:bg-[#0389FF]/90"
-                >
-                  <ArrowLeft className="h-4 w-4" />
-                  <span>Back</span>
-                </Button>
-              </Link>
-
-              <Button
-                variant="outline"
-                size="sm"
-                className="flex items-center space-x-2 bg-[#0389FF] text-white border-[#0389FF] rounded-full px-4 hover:bg-[#0389FF]/90"
-              >
-                <Share2 className="h-4 w-4" />
-                <span>Share</span>
-              </Button>
-            </div>
-          </div>
-
-          <div className="text-center mb-12">
-            <p className="text-gray-600 mb-2">Scientific communication</p>
-            <h1 className="text-4xl md:text-5xl font-bold">
-              Create your <span className="text-yellow-400">Article!</span>
-            </h1>
-
+    <PageFrame tone="surface">
+      <PageHero
+        kicker={
+          <Link to="/" className="nudge inline-flex items-center gap-2 text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">
+            <ArrowLeft size={16} aria-hidden="true" />
+            Back
+          </Link>
+        }
+        title={
+          <>
+            Create your <span className="text-tint">Article!</span>
+          </>
+        }
+        description={
+          <>
+            <p>Scientific communication</p>
             {/* Publishing requires an account. Saying so here avoids letting
                 someone complete every step only to be refused at the end. */}
             {!user && (
-              <p
-                role="status"
-                className="mx-auto mt-4 max-w-xl rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900 ring-1 ring-amber-200"
-              >
+              <p role="status" className="t-small mt-4 max-w-xl rounded-control bg-white/10 px-4 py-3 text-white">
                 You will need to{" "}
-                <Link
-                  to="/login?returnTo=%2Fblog-article"
-                  className="font-semibold underline"
-                >
+                <Link to="/login?returnTo=%2Fblog-article" className="font-medium underline">
                   sign in
                 </Link>{" "}
                 before you can publish this article.
               </p>
             )}
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
-      <div className="pt-24 pb-12">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="section">
+        <div className="container-x">
           {/* Progress Steps */}
-          <div className="flex justify-center mb-12">
-            <div className="flex items-center space-x-8">
-              {steps.map((step, index) => (
-                <div key={step.number} className="flex items-center">
-                  <div
-                    className={`
-                    w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium
-                    ${
-                      step.active
-                        ? "bg-blue-600 text-white"
-                        : currentStep > step.number
-                          ? "bg-green-600 text-white"
-                          : "bg-gray-200 text-gray-600"
-                    }
-                  `}
-                  >
-                    {currentStep > step.number ? "✓" : step.number}
-                  </div>
-                  {step.active && (
-                    <span className="ml-3 text-sm font-medium text-blue-600">
-                      {step.title}
-                    </span>
-                  )}
-                  {index < steps.length - 1 && (
-                    <div className="w-16 h-px bg-gray-300 ml-4"></div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+          <ol className="mb-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-3" aria-label="Progress">
+            {steps.map((step, index) => (
+              <li key={step.number} aria-current={step.active ? "step" : undefined} className="flex items-center gap-3">
+                <span
+                  className={`flex size-10 items-center justify-center rounded-full text-sm font-semibold transition-colors duration-300 ${
+                    step.active
+                      ? "bg-deep text-white"
+                      : currentStep > step.number
+                        ? "bg-brand text-white"
+                        : "bg-tint text-deep"
+                  }`}
+                >
+                  {currentStep > step.number ? "✓" : step.number}
+                </span>
+                {step.active && <span className="t-label text-deep">{step.title}</span>}
+                {index < steps.length - 1 && <span aria-hidden="true" className="hidden h-px w-10 bg-tint sm:block" />}
+              </li>
+            ))}
+          </ol>
 
           {/* Form Content */}
-          <div className="max-w-4xl mx-auto">
-            <div className="bg-white rounded-2xl p-8 mb-8">
-              {renderStepContent()}
-            </div>
+          <div className="mx-auto max-w-4xl">
+            <div className="card mb-8 p-6 sm:p-8">{renderStepContent()}</div>
 
             {/* Action Buttons - Updated layout with Back and Continue buttons */}
-            <div className="flex justify-between items-center">
+            <div className="flex items-center justify-between">
               {/* Back Button - Only show from step 2 onwards */}
               {currentStep > 1 && currentStep < 4 && (
-                <Button
-                  onClick={handleBack}
-                  variant="outline"
-                  className="px-8 py-3 text-lg font-semibold border-gray-300 text-gray-700 hover:bg-gray-50"
-                  disabled={isPending}
-                >
+                <button type="button" onClick={handleBack} className="btn btn-secondary" disabled={isPending}>
                   BACK
-                </Button>
+                </button>
               )}
 
               {/* Empty div to maintain space when back button is not shown */}
@@ -839,27 +780,19 @@ const BlogCreateContent = () => {
 
               {/* Continue/Publish Button */}
               {currentStep === 3 ? (
-                <Button
-                  onClick={handleContinue}
-                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg font-semibold"
-                  disabled={isPending}
-                >
+                <button type="button" onClick={handleContinue} className="btn btn-primary" disabled={isPending}>
                   {isPending ? "PUBLISHING..." : "PUBLISH"}
-                </Button>
+                </button>
               ) : currentStep < 4 ? (
-                <Button
-                  onClick={handleContinue}
-                  className="bg-blue-600 hover:bg-blue-700 px-8 py-3 text-lg text-white font-semibold"
-                >
+                <button type="button" onClick={handleContinue} className="btn btn-primary">
                   CONTINUE
-                </Button>
+                </button>
               ) : null}
             </div>
           </div>
         </div>
-      </div>
-
-    </div>
+      </section>
+    </PageFrame>
   );
 };
 

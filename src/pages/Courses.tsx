@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
-import Header from "@/components1/Header";
+import { MagnifyingGlass } from "@phosphor-icons/react";
 import CourseCard from "@/components1/CourseCard";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -9,7 +8,8 @@ import dayjs from "dayjs";
 import { api } from "@/lib/api";
 import { GenericError, GenericResponse } from "@/lib/types";
 import { formatDate } from "@/lib/utils";
-import Loading from "@/components/Loading";
+import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
+import { PageLoading } from "@/sfs/components/page/PageStatus";
 import Errorbox from "@/components/Errorbox";
 
 // Student training data structure
@@ -168,74 +168,78 @@ const Courses = () => {
     }, {} as { [key: string]: StudentTraining[] });
   }, [trainings, search]);
 
-  if (isLoading) return <Loading />;
-  if (error) return <Errorbox message={error.message} />;
+  if (isLoading) return <PageLoading label="Loading your courses…" />;
+  if (error)
+    return (
+      <PageFrame tone="surface">
+        <div className="container-x pt-32 pb-16">
+          <Errorbox message={error.message} />
+        </div>
+      </PageFrame>
+    );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
-            My Courses
-          </h1>
-          <p className="text-gray-600">Your enrolled training programs and courses</p>
-        </div>
+    <PageFrame tone="surface">
+      <PageHero title="My Courses" description="Your enrolled training programs and courses" />
 
-        {/* Search Bar */}
-        <div className="mb-8">
-          <div className="relative max-w-md">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-            <input
-              type="text"
-              placeholder="Search your courses..."
-              value={search}
-              onChange={(e) => setSearch(e.currentTarget.value)}
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#0D9488] bg-white text-gray-900"
-            />
+      <section className="section" aria-label="Your courses">
+        <div className="container-x">
+          {/* Search Bar */}
+          <div className="mb-10">
+            <div className="relative max-w-md">
+              <label htmlFor="course-search" className="sr-only">
+                Search your courses
+              </label>
+              <MagnifyingGlass size={20} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-ink/50" aria-hidden="true" />
+              <input
+                id="course-search"
+                type="text"
+                placeholder="Search your courses..."
+                value={search}
+                onChange={(e) => setSearch(e.currentTarget.value)}
+                className="!pl-11"
+              />
+            </div>
+          </div>
+
+          {/* Course Listings by Month */}
+          <div className="grid gap-12">
+            {Object.keys(filteredTrainings).length > 0 ? (
+              Object.entries(filteredTrainings).map(([monthKey, monthTrainings]) => (
+                <section key={monthKey} aria-label={monthKey} className="grid gap-6">
+                  <h2 className="t-title border-b-2 border-brand pb-4">{monthKey}</h2>
+
+                  <div className="grid grid-cols-1 gap-5 md:gap-6">
+                    {(monthTrainings as StudentTraining[]).map((training) => (
+                      <CourseCard
+                        key={training.id}
+                        image={training.coverImg}
+                        category={training.category || 'Course'}
+                        tags={[training.category || 'Course', 'For Individuals']}
+                        title={training.title}
+                        description={training.description}
+                        startDate={formatDate(training.startDate)}
+                        mode={training.type}
+                        instructor={`${training.instructor?.firstName || ''} ${training.instructor?.lastName || ''}`.trim() || 'Instructor'}
+                        instructorImage={undefined}
+                        trainingId={training.id}
+                        isEnrolled={isUserEnrolled(training)}
+                        onRegister={() => navigate(`/course-detail/${training.id}`)}
+                        onMoreDetails={() => navigate(`/course-detail/${training.id}`)}
+                      />
+                    ))}
+                  </div>
+                </section>
+              ))
+            ) : (
+              <div className="card mx-auto max-w-xl px-6 py-14 text-center">
+                <p className="t-lead text-ink/70">No enrolled courses found. Explore available courses to get started.</p>
+              </div>
+            )}
           </div>
         </div>
-
-        {/* Course Listings by Month */}
-        <div className="space-y-8">
-          {Object.keys(filteredTrainings).length > 0 ? (
-            Object.entries(filteredTrainings).map(([monthKey, monthTrainings]) => (
-              <div key={monthKey} className="space-y-6">
-                <div className="pb-4 border-b-2 border-[#0D9488]">
-                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{monthKey}</h2>
-                </div>
-
-                <div className="grid grid-cols-1 gap-4 md:gap-6">
-                  {(monthTrainings as StudentTraining[]).map((training) => (
-                    <CourseCard
-                      key={training.id}
-                      image={training.coverImg}
-                      category={training.category || 'Course'}
-                      tags={[training.category || 'Course', 'For Individuals']}
-                      title={training.title}
-                      description={training.description}
-                      startDate={formatDate(training.startDate)}
-                      mode={training.type}
-                      instructor={`${training.instructor?.firstName || ''} ${training.instructor?.lastName || ''}`.trim() || 'Instructor'}
-                      instructorImage={undefined}
-                      trainingId={training.id}
-                      isEnrolled={isUserEnrolled(training)}
-                      onRegister={() => navigate(`/course-detail/${training.id}`)}
-                      onMoreDetails={() => navigate(`/course-detail/${training.id}`)}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600 text-lg">No enrolled courses found. Explore available courses to get started.</p>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+      </section>
+    </PageFrame>
   );
 };
 

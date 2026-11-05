@@ -5,7 +5,7 @@ interface RevealProps {
   children: ReactNode
   delay?: number
   className?: string
-  as?: 'div' | 'li' | 'p' | 'span'
+  as?: 'div' | 'li' | 'p' | 'span' | 'section'
 }
 
 /** Scroll-triggered fade and short rise. Reduced motion is handled by <MotionConfig reducedMotion="user">. */

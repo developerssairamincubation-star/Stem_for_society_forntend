@@ -1,7 +1,8 @@
-import { Badge, Button, Card, Image, Skeleton, TextInput } from "@mantine/core";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { Search } from "lucide-react";
+import { MagnifyingGlass } from "@phosphor-icons/react";
+import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
+import { Reveal } from "@/sfs/components/ui/Reveal";
 import React from "react";
 import { Link } from "react-router-dom";
 import Errorbox from "../components/Errorbox";
@@ -39,113 +40,97 @@ const BlogListing: React.FC = () => {
   const { data, isPending, error } = useBlogs();
 
   if (error) {
-    // @ts-expect-error - error is of type AxiosError
-    return <Errorbox message={error.response?.data.error} />;
+    return (
+      <PageFrame tone="surface">
+        <div className="container-x pt-32 pb-16">
+          {/* @ts-expect-error - error is of type AxiosError */}
+          <Errorbox message={error.response?.data.error} />
+        </div>
+      </PageFrame>
+    );
   }
 
   const blogs = isPending ? [] : data.data;
 
   return (
-    <div className="container mx-auto px-4 w-[90%] my-12 grid gap-7">
-      <div className="mb-10 space-y-3">
-        <h1 className="text-4xl font-semibold mb-4">
-          Scientific Communication
-        </h1>
-        <p className="text-lg text-justify text-pretty text-gray-600">
-          Stem for Society invites Scientist, Postdoc, PhD, masters, bachelor
-          students and researchers to share their research journey by writing
-          blogs about their publication or scientific information aimed at the
-          general public and society! By sharing insights and engaging with
-          readers, you can foster community connections and encourage meaningful
-          discussions around your research.
-        </p>
-        <p className="text-lg text-justify text-gray-600 mt-4">
-          Join us in making your research matter to everyone—let's empower
-          society with knowledge and encourage curiosity about the world around
-          us! Every month for the best scientific communication and Outstanding
-          contributions will be rewarded with prizes and certificates of
-          appreciation, recognizing your efforts to make science accessible and
-          engaging for all.
-        </p>
+    <PageFrame tone="surface">
+      <PageHero
+        title="Scientific Communication"
+        description={
+          <>
+            <p>
+              Stem for Society invites Scientist, Postdoc, PhD, masters, bachelor students and researchers to share their research journey by
+              writing blogs about their publication or scientific information aimed at the general public and society! By sharing insights and
+              engaging with readers, you can foster community connections and encourage meaningful discussions around your research.
+            </p>
+            <p className="mt-4">
+              Join us in making your research matter to everyone—let's empower society with knowledge and encourage curiosity about the world
+              around us! Every month for the best scientific communication and Outstanding contributions will be rewarded with prizes and
+              certificates of appreciation, recognizing your efforts to make science accessible and engaging for all.
+            </p>
+          </>
+        }
+      />
 
-        <div className="w-full bg-[#228be6]/20 gap-3 flex justify-center rounded-md p-8 items-center flex-col">
-          <p className="font-medium">
-            Getting your article published typically takes about a day to get
-            verified
-          </p>
-          <Link to={"/blogs/new"}>
-            <Button radius={999} classNames={{ label: "text-white" }}>
+      <section className="section" aria-label="Articles">
+        <div className="container-x grid gap-10">
+          <Reveal className="card flex flex-col items-center gap-4 p-8 text-center">
+            <p className="t-body font-medium">Getting your article published typically takes about a day to get verified</p>
+            <Link to={"/blogs/new"} className="btn btn-primary">
               Create article
-            </Button>
-          </Link>
-        </div>
-      </div>
+            </Link>
+          </Reveal>
 
-      <div className="flex flex-col-reverse md:flex-col lg:flex-row gap-8">
-        <div className="lg:w-3/4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isPending ? (
-            <>
-              <Skeleton width={300} height={250} radius={"md"} />
-              <Skeleton width={300} height={250} radius={"md"} />
-              <Skeleton width={300} height={250} radius={"md"} />
-            </>
-          ) : (
-            blogs.map((blog, index) => (
-              <Link
-                to={`/blogs/${blog.slug}`}
-                className="text-lg text-gray-800 mb-2"
-              >
-                <Card
-                  key={index}
-                  shadow="sm"
-                  padding="xs"
-                  className="bg-gray-100"
-                  radius="md"
-                >
-                  <Card.Section h={"70%"} className="overflow-hidden">
-                    <Image
-                      src={blog.coverImage}
-                      className="aspect-video w-auto"
-                      alt="Cover"
-                    />
-                  </Card.Section>
-                  <div className="p-1 flex flex-col gap-1 mt-1">
-                    {blog.category && (
-                      <Badge color="green" variant="light">
-                        {blog.category}
-                      </Badge>
-                    )}
+          <div className="grid gap-8 lg:grid-cols-[1fr_18rem] lg:gap-12">
+            <ul className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3" aria-busy={isPending}>
+              {isPending
+                ? [0, 1, 2].map((i) => (
+                    <li key={i} aria-hidden="true" className="card aspect-[4/3] animate-pulse bg-white" />
+                  ))
+                : blogs.map((blog) => (
+                    <Reveal as="li" key={blog.id ?? blog.slug} className="h-full">
+                      <Link
+                        to={`/blogs/${blog.slug}`}
+                        className="card group flex h-full flex-col overflow-hidden transition-[box-shadow,border-color] duration-300 hover:border-brand hover:shadow-raised"
+                      >
+                        <div className="aspect-video overflow-hidden bg-surface">
+                          <img
+                            src={blog.coverImage}
+                            alt=""
+                            loading="lazy"
+                            className="size-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                          />
+                        </div>
+                        <div className="flex flex-1 flex-col gap-2 p-5">
+                          {blog.category && <span className="chip self-start text-deep">{blog.category}</span>}
+                          <h2 className="t-heading mt-1 line-clamp-3">{blog.title}</h2>
+                          <p className="t-small mt-auto pt-3 text-ink/70">by {blog.blogAuthor.name}</p>
+                          <p className="text-xs text-ink/60">{formatDate(blog.createdAt)}</p>
+                        </div>
+                      </Link>
+                    </Reveal>
+                  ))}
+            </ul>
 
-                    {blog.title}
-                    <p className="text-sm">by {blog.blogAuthor.name}</p>
-                    <p className="text-xs text-gray-500">
-                      {formatDate(blog.createdAt)}
-                    </p>
-                  </div>
-                </Card>
-              </Link>
-            ))
-          )}
-        </div>
+            <aside className="grid content-start gap-6" aria-label="Search and categories">
+              <div className="relative">
+                <label htmlFor="blog-search" className="sr-only">
+                  Search blogs
+                </label>
+                <MagnifyingGlass size={18} className="pointer-events-none absolute top-1/2 left-3.5 -translate-y-1/2 text-ink/50" aria-hidden="true" />
+                <input id="blog-search" placeholder="Search blogs..." type="search" className="!pl-10" />
+              </div>
 
-        <div className="lg:w-1/4">
-          <TextInput
-            placeholder="Search blogs..."
-            type="search"
-            leftSection={<Search size={13} />}
-            className="mb-6"
-          />
-
-          <div className="bg-gray-100 p-4 rounded-lg">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Blog Categories
-            </h3>
-            <i className="text-gray-400">No data</i>
-            {/* Future categories can be listed here */}
+              <div className="card p-5">
+                <h3 className="t-heading">Blog Categories</h3>
+                <p className="t-small mt-3 italic text-ink/60">No data</p>
+                {/* Future categories can be listed here */}
+              </div>
+            </aside>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+    </PageFrame>
   );
 };
 

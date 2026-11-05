@@ -170,7 +170,7 @@ const AuthCallback = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="sfs-ui sfs-skin flex min-h-screen items-center justify-center bg-surface px-4">
       <PhoneVerificationModal
         isOpen={showPhoneVerification}
         onClose={() => {
@@ -181,9 +181,10 @@ const AuthCallback = () => {
         userEmail={pendingEmail}
       />
       {!showPhoneVerification && (
-        <div className="text-center">
-          <div className="inline-block h-10 w-10 animate-spin rounded-full border-2 border-gray-300 border-t-blue-600" />
-          <p className="mt-4 text-gray-700">Completing sign-in...</p>
+        <div role="status" aria-live="polite" className="card flex flex-col items-center px-10 py-10 text-center shadow-raised">
+          <img src="/images/brand/sfs-logo.png" alt="" width={56} height={56} className="mb-6 size-14 object-contain" />
+          <div className="login-spinner size-9 rounded-full border-[3px] border-tint border-t-deep" aria-hidden="true" />
+          <p className="t-body mt-5 font-medium">Completing sign-in...</p>
         </div>
       )}
     </div>
