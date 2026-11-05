@@ -46,17 +46,22 @@ export function HomeHero() {
 
       {/* Route line: Campus → Industry */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 hidden h-28 sm:block">
-        <svg className="h-full w-full" viewBox="0 0 1440 112" preserveAspectRatio="none" fill="none">
-          <motion.path
-            d="M0 104 C 380 104, 640 100, 900 70 S 1280 30, 1440 24"
-            stroke="#0389ff"
-            strokeWidth="2"
-            vectorEffect="non-scaling-stroke"
-            initial={{ pathLength: reduced ? 1 : 0 }}
-            animate={{ pathLength: 1 }}
-            transition={{ duration: 1.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          />
-        </svg>
+        {/* Revealed with a clip, not a dash offset: dash maths drifts when the SVG is stretched non-uniformly. */}
+        <motion.div
+          className="h-full w-full"
+          initial={{ clipPath: reduced ? 'inset(0 0% 0 0)' : 'inset(0 100% 0 0)' }}
+          animate={{ clipPath: 'inset(0 0% 0 0)' }}
+          transition={{ duration: 1.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <svg className="h-full w-full" viewBox="0 0 1440 112" preserveAspectRatio="none" fill="none">
+            <path
+              d="M0 104 C 380 104, 640 100, 900 70 S 1280 30, 1440 24"
+              stroke="#0389ff"
+              strokeWidth="2"
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+        </motion.div>
         <span className="t-small absolute bottom-3 left-[var(--gx)] translate-y-0 text-ink/60">Campus</span>
         <span className="t-small absolute top-1 right-[var(--gx)] text-ink/60">Industry</span>
       </div>
