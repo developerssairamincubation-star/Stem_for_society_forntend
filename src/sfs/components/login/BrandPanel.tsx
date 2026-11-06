@@ -32,6 +32,9 @@ export function BrandPanel({ title = 'Start Your Journey', text = 'Explore, inno
       <motion.img
         src={photo.src}
         alt=""
+        // The biggest thing on the first screen: ask the browser to fetch it first. (React 18 has no typed prop for this.)
+        {...({ fetchpriority: 'high' } as object)}
+        decoding="async"
         width={photo.width}
         height={photo.height}
         initial={{ scale: 1.06 }}
