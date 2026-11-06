@@ -2,7 +2,6 @@ import { ArrowDown, ArrowRight } from '@phosphor-icons/react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { partnerHero } from '../../data/partnerPage'
 import { scrollToId } from '../../lib/scrollToId'
-import { Pill } from './Pill'
 
 const ease = [0.16, 1, 0.3, 1] as const
 
@@ -47,16 +46,13 @@ export function PartnerHero() {
 
       <div className="container-x grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-6">
         <div className="lg:pb-24">
-          <motion.div {...rise(0)}>
-            <Pill>{partnerHero.label}</Pill>
-          </motion.div>
-          <motion.h1 id="partner-title" {...rise(0.06)} className="!mt-6 text-[2.75rem] leading-[1.05] !font-bold tracking-[-0.03em] text-ink sm:text-[4rem]">
+          <motion.h1 id="partner-title" {...rise(0)} className="text-[2.75rem] leading-[1.05] !font-bold tracking-[-0.03em] text-ink sm:text-[4rem]">
             Partner <span className="text-brand">With Us</span>
           </motion.h1>
-          <motion.p {...rise(0.14)} className="t-lead !mt-6 max-w-lg text-ink/80">
+          <motion.p {...rise(0.08)} className="t-lead !mt-6 max-w-lg text-ink/80">
             {partnerHero.description}
           </motion.p>
-          <motion.div {...rise(0.22)} className="mt-9 flex flex-wrap items-center gap-4">
+          <motion.div {...rise(0.16)} className="mt-9 flex flex-wrap items-center gap-4">
             <a href="#register" onClick={(e) => (e.preventDefault(), scrollToId('register'))} className="btn btn-primary nudge !h-12 !rounded-full !px-7">
               Register Your Organisation
               <ArrowRight size={18} aria-hidden="true" />

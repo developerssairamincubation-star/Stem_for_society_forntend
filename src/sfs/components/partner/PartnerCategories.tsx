@@ -2,7 +2,6 @@ import { ArrowRight } from '@phosphor-icons/react'
 import { partnerCategories, partnerCategoriesIntro } from '../../data/partnerPage'
 import { scrollToId } from '../../lib/scrollToId'
 import { Reveal } from '../ui/Reveal'
-import { Pill } from './Pill'
 
 /** The photograph melts into the card from below, as on the reference. */
 const PHOTO_FADE = {
@@ -16,10 +15,7 @@ export function PartnerCategories({ onChoose }: { onChoose: (type: string) => vo
       <div className="container-x grid gap-10 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,3.1fr)] lg:gap-8">
         <div className="lg:pt-6">
           <Reveal x={-16}>
-            <Pill>{partnerCategoriesIntro.label}</Pill>
-          </Reveal>
-          <Reveal x={-16} delay={0.06}>
-            <h2 id="categories-title" className="!mt-5 text-[2.25rem] leading-[1.08] !font-bold tracking-[-0.02em] text-ink sm:text-[2.75rem]">
+            <h2 id="categories-title" className="text-[2.25rem] leading-[1.08] !font-bold tracking-[-0.02em] text-ink sm:text-[2.75rem]">
               {partnerCategoriesIntro.title}
             </h2>
           </Reveal>

@@ -1,7 +1,6 @@
 import { registerIntro } from '../../data/partnerPage'
 import { Reveal } from '../ui/Reveal'
 import { OrganisationForm } from './OrganisationForm'
-import { Pill } from './Pill'
 
 interface Props {
   type: string
@@ -21,8 +20,7 @@ export function RegisterSection({ type, onTypeChange, interest, onInterestChange
       <div className="container-x">
         <Reveal className="relative isolate grid overflow-hidden rounded-[2.5rem] border border-white bg-gradient-to-br from-white via-surface to-tint/70 shadow-[0_30px_70px_-30px_rgb(0_84_159/0.4)] lg:grid-cols-[0.82fr_1.18fr]">
           <div className="relative flex min-h-[34rem] flex-col p-8 sm:p-10 lg:min-h-[36rem] lg:p-12">
-            <Pill>{registerIntro.label}</Pill>
-            <h2 id="register-title" className="!mt-5 text-[2.25rem] leading-[1.08] !font-bold tracking-[-0.02em] text-ink sm:text-[3rem]">
+            <h2 id="register-title" className="text-[2.25rem] leading-[1.08] !font-bold tracking-[-0.02em] text-ink sm:text-[3rem]">
               {registerIntro.title}
             </h2>
             <p className="t-body !mt-5 max-w-sm text-ink/80">
