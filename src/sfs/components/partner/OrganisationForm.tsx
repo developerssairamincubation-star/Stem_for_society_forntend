@@ -50,16 +50,25 @@ function Field({ id, label, required, error, hint, children }: { id: string; lab
   )
 }
 
-export function OrganisationForm({ type, onTypeChange }: { type: string; onTypeChange: (type: string) => void }) {
+export function OrganisationForm({
+  type,
+  onTypeChange,
+  interest,
+  onInterestChange,
+}: {
+  type: string
+  onTypeChange: (type: string) => void
+  interest: string
+  onInterestChange: (interest: string) => void
+}) {
   const uid = useId()
   const formRef = useRef<HTMLFormElement>(null)
-  const [values, setValues] = useState<Omit<Values, 'type'>>({
+  const [values, setValues] = useState<Omit<Values, 'type' | 'interest'>>({
     organisation: '',
     email: '',
     countryCode: '+91',
     phone: '',
     website: '',
-    interest: '',
     activities: '',
     location: '',
     details: '',
@@ -67,10 +76,10 @@ export function OrganisationForm({ type, onTypeChange }: { type: string; onTypeC
   const [touched, setTouched] = useState<Partial<Record<keyof Values, boolean>>>({})
   const [status, setStatus] = useState<Status>('idle')
 
-  const all: Values = { ...values, type }
+  const all: Values = { ...values, type, interest }
   const errors = validate(all)
   const id = (name: keyof Values) => `${uid}-${name}`
-  const set = (name: keyof Omit<Values, 'type'>) => (e: { target: { value: string } }) => setValues((v) => ({ ...v, [name]: e.target.value }))
+  const set = (name: keyof Omit<Values, 'type' | 'interest'>) => (e: { target: { value: string } }) => setValues((v) => ({ ...v, [name]: e.target.value }))
   const blur = (name: keyof Values) => () => setTouched((t) => ({ ...t, [name]: true }))
   const shown = (name: keyof Values) => (touched[name] ? errors[name] : undefined)
   const aria = (name: keyof Values, hint = false) => ({
@@ -196,7 +205,7 @@ export function OrganisationForm({ type, onTypeChange }: { type: string; onTypeC
       </Field>
 
       <Field id={id('interest')} label="Collaboration Interest" required error={shown('interest')}>
-        <select id={id('interest')} name="interest" value={values.interest} onChange={set('interest')} onBlur={blur('interest')} className={control} {...aria('interest')}>
+        <select id={id('interest')} name="interest" value={interest} onChange={(e) => onInterestChange(e.target.value)} onBlur={blur('interest')} className={control} {...aria('interest')}>
           <option value="">Select an area</option>
           {collaborationInterests.map((t) => (
             <option key={t} value={t}>

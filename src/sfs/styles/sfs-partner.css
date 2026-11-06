@@ -33,3 +33,18 @@
     animation: none;
   }
 }
+
+/* The opener's ribbon drifts slowly sideways. */
+.sfs-ui .ribbon-drift {
+  animation: sfs-ribbon 26s ease-in-out infinite alternate;
+}
+@keyframes sfs-ribbon {
+  to {
+    transform: translate3d(-90px, 0, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sfs-ui .ribbon-drift {
+    animation: none;
+  }
+}

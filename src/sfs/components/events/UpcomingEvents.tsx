@@ -107,12 +107,12 @@ export function UpcomingEvents({ limit = 3, id = 'events' }: { limit?: number; i
               <p className="t-label text-deep">{upcomingEventsIntro.label}</p>
             </Reveal>
             <Reveal delay={0.05}>
-              <h2 id={`${id}-title`} className="t-title mt-3">
+              <h2 id={`${id}-title`} className="t-title !mt-3">
                 {upcomingEventsIntro.title}
               </h2>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="t-lead mt-4 text-ink/70">{upcomingEventsIntro.description}</p>
+              <p className="t-lead !mt-4 text-ink/70">{upcomingEventsIntro.description}</p>
             </Reveal>
           </div>
           <Reveal delay={0.12} className="shrink-0">
@@ -132,7 +132,7 @@ export function UpcomingEvents({ limit = 3, id = 'events' }: { limit?: number; i
         ) : isError ? (
           <div role="status" className="card mx-auto max-w-xl p-8 text-center">
             <p className="t-heading">We could not load events right now</p>
-            <p className="t-body mt-2 text-ink/70">Please check your connection and try again.</p>
+            <p className="t-body !mt-2 text-ink/70">Please check your connection and try again.</p>
             <button type="button" onClick={() => refetch()} className="btn btn-secondary mt-5">
               Try again
             </button>
@@ -150,8 +150,8 @@ export function UpcomingEvents({ limit = 3, id = 'events' }: { limit?: number; i
             <span aria-hidden="true" className="mx-auto grid size-14 place-items-center rounded-full bg-surface text-deep">
               <CalendarBlank size={28} />
             </span>
-            <p className="t-heading mt-4">New training programmes and events will be announced soon</p>
-            <p className="t-body mt-2 text-ink/70">Follow our community channels or check back shortly for upcoming sessions, webinars and workshops.</p>
+            <p className="t-heading !mt-4">New training programmes and events will be announced soon</p>
+            <p className="t-body !mt-2 text-ink/70">Follow our community channels or check back shortly for upcoming sessions, webinars and workshops.</p>
             <Button href="/community" variant="secondary" className="mt-6">
               Join our community
             </Button>

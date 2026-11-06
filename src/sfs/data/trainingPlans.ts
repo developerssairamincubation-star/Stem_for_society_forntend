@@ -110,6 +110,6 @@ export const trainingPlans: readonly TrainingPlan[] = [
     image: '/images/institutions/entrepreneurship.jpg',
     alt: 'Two people planning an idea on a whiteboard',
     icon: Lightbulb,
-    accent: { main: '#7c5cff', soft: '#f3f0ff', text: '#5b3fd1' },
+    accent: { main: '#9333ea', soft: '#f6ecff', text: '#7e22ce' },
   },
 ]

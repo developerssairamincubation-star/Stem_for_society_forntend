@@ -27,11 +27,11 @@ export function TrainingPlanModal({ plan: p, onClose, onInquire }: { plan: Train
               </span>
               {p.category}
             </p>
-            <p aria-hidden="true" className="t-title mt-3">
+            <p aria-hidden="true" className="t-title !mt-3">
               {p.title}
             </p>
-            <p className="t-body mt-1 font-medium text-[var(--plan-text)]">{p.subtitle}</p>
-            <p className="t-lead mt-3 text-ink/70">{p.description}</p>
+            <p className="t-body !mt-1 font-medium text-[var(--plan-text)]">{p.subtitle}</p>
+            <p className="t-lead !mt-3 text-ink/70">{p.description}</p>
 
             <dl className="mt-6 grid gap-3 sm:grid-cols-3">
               {facts.map((f) => (
@@ -45,7 +45,7 @@ export function TrainingPlanModal({ plan: p, onClose, onInquire }: { plan: Train
               ))}
             </dl>
 
-            <h3 className="t-heading mt-8">What this plan covers</h3>
+            <h3 className="t-heading !mt-8">What this plan covers</h3>
             <ul className="mt-3 grid gap-3 p-0 sm:grid-cols-2">
               {p.skills.map((s) => (
                 <li key={s} className="t-body flex list-none items-start gap-2.5 text-ink/80">

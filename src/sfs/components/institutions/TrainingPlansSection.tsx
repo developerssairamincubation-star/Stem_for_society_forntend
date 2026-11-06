@@ -40,9 +40,9 @@ function PlanCard({ p, onOpen }: { p: TrainingPlan; onOpen: () => void }) {
 
       <div className="flex flex-1 flex-col px-6 pt-10 pb-6">
         <p className="t-label text-[var(--plan-text)]">{p.category}</p>
-        <h3 className="t-heading mt-1">{p.title}</h3>
-        <p className="t-small mt-0.5 font-medium text-[var(--plan-text)]">{p.subtitle}</p>
-        <p className="t-small mt-3 text-ink/70">{p.description}</p>
+        <h3 className="t-heading !mt-1">{p.title}</h3>
+        <p className="t-small !mt-0.5 font-medium text-[var(--plan-text)]">{p.subtitle}</p>
+        <p className="t-small !mt-3 text-ink/70">{p.description}</p>
 
         <ul className="mt-5 grid gap-2 p-0" aria-label={`${p.title} skills`}>
           {p.skills.map((s) => (
@@ -113,12 +113,12 @@ export function TrainingPlansSection({ onOpen, onRequestCurriculum }: Props) {
               <p className="t-label text-deep">{trainingPlansIntro.label}</p>
             </Reveal>
             <Reveal delay={0.05}>
-              <h2 id="plans-title" className="t-title mt-3">
+              <h2 id="plans-title" className="t-title !mt-3">
                 {trainingPlansIntro.title}
               </h2>
             </Reveal>
             <Reveal delay={0.1}>
-              <p className="t-lead mt-4 text-ink/70">{trainingPlansIntro.description}</p>
+              <p className="t-lead !mt-4 text-ink/70">{trainingPlansIntro.description}</p>
             </Reveal>
           </div>
 

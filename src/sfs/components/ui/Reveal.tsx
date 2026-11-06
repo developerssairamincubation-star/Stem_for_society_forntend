@@ -6,16 +6,18 @@ interface RevealProps {
   delay?: number
   className?: string
   as?: 'div' | 'li' | 'p' | 'span' | 'section'
+  /** Optional sideways travel in px (negative comes from the left). Default 0: a plain rise. */
+  x?: number
 }
 
 /** Scroll-triggered fade and short rise. Reduced motion is handled by <MotionConfig reducedMotion="user">. */
-export function Reveal({ children, delay = 0, className, as = 'div' }: RevealProps) {
+export function Reveal({ children, delay = 0, className, as = 'div', x = 0 }: RevealProps) {
   const Tag = motion[as]
   return (
     <Tag
       className={className}
-      initial={{ opacity: 0, y: 16 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, y: 16, x }}
+      whileInView={{ opacity: 1, y: 0, x: 0 }}
       viewport={{ once: true, margin: '0px 0px -10% 0px' }}
       transition={{ duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] }}
     >
