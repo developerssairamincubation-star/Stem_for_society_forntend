@@ -1,4 +1,5 @@
 import { Academy } from "@/sfs/components/Academy";
+import { UpcomingEvents } from "@/sfs/components/events/UpcomingEvents";
 import { Hero } from "@/sfs/components/Hero";
 import { NetworkBeyondCampus } from "@/sfs/components/NetworkBeyondCampus";
 import { PartnerCTA } from "@/sfs/components/PartnerCTA";
@@ -12,6 +13,7 @@ function Home() {
     <SfsPage>
       <Hero />
       <Academy />
+      <UpcomingEvents />
       <NetworkBeyondCampus />
       <Testimonials />
       <Partners />

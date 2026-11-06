@@ -63,3 +63,11 @@ The five reference pages (`/`, `/institutions`, `/community`, `/campus-ambassado
 `src/sfs/lib/motion/` (`motion.css`, `autoMotion.ts`) gives the public pages a soft entrance: cards, tables and section headings fade and rise 20px over 650ms as they scroll into view, 60ms apart within a group. It marks elements with `data-reveal` and removes it when the entrance ends, skips anything framer-motion already animates, and does nothing under `prefers-reduced-motion`. Hover and press changes are 160 to 200ms on the same ease. The home page and the Partner and Admin dashboards are never marked.
 
 Timing was taken from a Riff capture of a calm product site (150 to 200ms hovers, 600 to 700ms entrances). Only numbers were used, never its colours, type, copy or assets.
+
+## Partner With Us, Training Plans and Training & Events
+
+* `/partner-with-us` (`pages/PartnerCollaboration.tsx`, `sfs/components/partner/`): hero, four partner categories, organisation registration, trusted partners. The header link, footer link and home call-to-actions point here (`links.partner` in `sfs/config.ts`). The platform's own partner account sign-up is unchanged at `/partner-institution-signup`.
+* The registration form submits like the Institutions enquiry forms: POST to `VITE_ENQUIRY_ENDPOINT` when set (success shown only on an OK answer), otherwise a pre-filled email to the published address, and the page says so. Validation lives in `sfs/lib/organisationValidation.ts` (tested).
+* `/institutions`: the Modules section is replaced by four Training Plans (`sfs/data/trainingPlans.ts`, 24 skills, tested). Each card opens a detail dialog with an enquiry button. Set `VITE_CURRICULUM_URL` to turn the "Request Detailed Curriculum" button into "Download Detailed Curriculum". `/insituion-individual` (the old site's URL) redirects to `/institutions`.
+* "Upcoming Training & Events" (`sfs/components/events/UpcomingEvents.tsx`) reads the platform's `/trainings` list and is used on the home page; `/training` carries the same name. Event type labels are shown only when the event's own title names one (`sfs/lib/eventKind.ts`).
+* `sfs/lib/usePageMeta.ts` sets the page title, description and social tags per page.

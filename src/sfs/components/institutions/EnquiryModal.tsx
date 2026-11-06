@@ -2,7 +2,8 @@ import { Check, PaperPlaneTilt } from '@phosphor-icons/react'
 import { useState, type FormEvent, type ReactNode } from 'react'
 import { enquiryEndpoint } from '../../config'
 import { contact } from '../../data/content'
-import { institutionProgrammes, meetingSlots } from '../../data/institutions'
+import { meetingSlots } from '../../data/institutions'
+import { trainingPlans } from '../../data/trainingPlans'
 import { ModalContent, ModalFrame, ModalPanel } from '../ui/Modal'
 
 export type EnquiryMode = 'partner' | 'custom'
@@ -143,11 +144,11 @@ export function EnquiryModal({ request, onClose }: { request: EnquiryRequest; on
                 <Field label="Area of Interest" required className="sm:col-span-2">
                   <select name="Area of Interest" required defaultValue={area ?? ''} className={inputCls}>
                     <option value="" disabled>
-                      Select a programme
+                      Select a training plan
                     </option>
-                    {institutionProgrammes.map((p) => (
+                    {trainingPlans.map((p) => (
                       <option key={p.id} value={p.title}>
-                        {p.title}
+                        {p.category}: {p.title}
                       </option>
                     ))}
                   </select>

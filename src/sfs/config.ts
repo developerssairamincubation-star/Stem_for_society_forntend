@@ -11,9 +11,11 @@ const pick = (value: string | undefined, fallback: string) =>
 export const links = {
   /** Separate website — not a fourth academy program. */
   network: pick(env.VITE_NETWORK_URL, 'https://networkingbeyondcampus.com/'),
-  /** Partner With Us: the existing partner onboarding flow of the platform. */
-  partner: pick(env.VITE_PARTNER_URL, '/partner-institution-signup'),
+  /** Partner With Us: the public collaboration page (organisation registration). The platform's own partner account sign-up stays at /partner-institution-signup. */
+  partner: pick(env.VITE_PARTNER_URL, '/partner-with-us'),
   enquire: pick(env.VITE_ENQUIRE_URL, '#partner'),
+  /** Detailed curriculum document. Empty until the team supplies one: the Institutions page then offers a request form instead of a download. */
+  curriculum: pick(env.VITE_CURRICULUM_URL, ''),
   /** Header and footer Login: the platform's student sign-in page. */
   login: '/login',
   /** Scientific Communications (blog) lives on the current platform at /blog; set VITE_BLOG_URL when hosted elsewhere. */

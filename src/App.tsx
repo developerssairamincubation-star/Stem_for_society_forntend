@@ -3,7 +3,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { useEffect, useState, Suspense } from "react";
 import type { ComponentType } from "react";
-import { Outlet, Route, Routes } from "react-router-dom";
+import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { Slide, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ErrorBoundary from "./components/ErrorBoundary";
@@ -60,6 +60,7 @@ const PartnerRole = lazyWithRetry(() => import("./pages/PartnerRole"));
 const CampusAmbassadorSignup = lazyWithRetry(() => import("./pages/CampusAmbassadorSignup"));
 const InstitutionPortal = lazyWithRetry(() => import("./pages/PartnerInstitutionPortal"));
 const Institutions = lazyWithRetry(() => import("./pages/Institutions"));
+const PartnerCollaboration = lazyWithRetry(() => import("./pages/PartnerCollaboration"));
 const InstitutionLogin = lazyWithRetry(() => import("./pages/InstitutionLogin"));
 const Courses = lazyWithRetry(() => import("./pages/Courses"));
 const CourseDetail = lazyWithRetry(() => import("./pages/CourseDetail"));
@@ -231,6 +232,9 @@ function App() {
                   element={<ExploreProgramDashboard />}
                 />
                 <Route path="/institutions" element={<Institutions />} />
+                {/* The old site's institution URL (including its spelling) keeps working. */}
+                <Route path="/insituion-individual" element={<Navigate to="/institutions" replace />} />
+                <Route path="/partner-with-us" element={<PartnerCollaboration />} />
                 <Route path="/training" element={<Training />} />
                 <Route path="/training/:id" element={<TrainingSpotlight />} />
                 <Route path="/blogs" element={<BlogListing />} />

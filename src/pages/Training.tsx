@@ -168,7 +168,7 @@ const Training: React.FC = () => {
   }, [search, trainings, trainingFilter, filterByMe]);
 
   if (isLoading) {
-    return <PageLoading label="Loading seminars…" />;
+    return <PageLoading label="Loading training and events…" />;
   }
 
   if (error) {
@@ -186,9 +186,12 @@ const Training: React.FC = () => {
 
   return (
     <PageFrame tone="surface">
-      <PageHero title="Upcoming Seminars & Webinars" />
+      <PageHero
+        title="Upcoming Training & Events"
+        description="Discover upcoming learning opportunities, expert-led sessions, webinars and professional development events organised by STEM for Society."
+      />
 
-      <section className="section" aria-label="Seminars and webinars">
+      <section className="section" aria-label="Upcoming training and events">
         <div className="container-x">
           <div className="mb-10 flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             {!filterByMe ? (

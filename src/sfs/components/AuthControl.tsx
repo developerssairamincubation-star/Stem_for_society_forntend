@@ -34,7 +34,7 @@ export function AuthControl({ blue = false }: { blue?: boolean }) {
   if (!user) {
     const returnTo = encodeURIComponent(`${pathname}${search}${hash}`)
     return (
-      <Button href={`${links.login}?returnTo=${returnTo}`} size="sm" className={blue ? '!bg-brand hover:!bg-[#0277e0]' : ''}>
+      <Button href={`${links.login}?returnTo=${returnTo}`} size="sm" className={blue ? '!bg-[#0369c9] ring-1 ring-white/40 hover:!bg-[#035cb0]' : ''}>
         Login
       </Button>
     )

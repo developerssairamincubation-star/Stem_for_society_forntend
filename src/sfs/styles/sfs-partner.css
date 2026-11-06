@@ -1,0 +1,35 @@
+/*
+ * Motion for the Partner With Us page: a slow floating double helix behind the hero and soft drifting dots.
+ * Decorative only. Everything stops when the visitor asks for reduced motion.
+ */
+.sfs-ui .dna-float {
+  animation: sfs-dna-float 9s ease-in-out infinite;
+}
+.sfs-ui .dna-float-slow {
+  animation: sfs-dna-float 13s ease-in-out infinite reverse;
+}
+.sfs-ui .dna-dash {
+  stroke-dasharray: 6 10;
+  animation: sfs-dna-dash 24s linear infinite;
+}
+@keyframes sfs-dna-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -14px, 0);
+  }
+}
+@keyframes sfs-dna-dash {
+  to {
+    stroke-dashoffset: -320;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sfs-ui .dna-float,
+  .sfs-ui .dna-float-slow,
+  .sfs-ui .dna-dash {
+    animation: none;
+  }
+}

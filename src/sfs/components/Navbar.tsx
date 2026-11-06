@@ -5,7 +5,7 @@ import { useLocation } from 'react-router-dom'
 import { useActiveSection } from '../hooks/useActiveSection'
 import { isExternal } from '../config'
 import { academyLinks, navLeft, navRight, resourceLinks } from '../data/content'
-import { CAMPUS_AMBASSADOR_PATH, COMMUNITY_PATH, INSTITUTIONS_PATH, SKILL_DEVELOPMENT_PATH, currentPath, isHomePath, sectionHref } from '../lib/route'
+import { CAMPUS_AMBASSADOR_PATH, COMMUNITY_PATH, INSTITUTIONS_PATH, PARTNER_WITH_US_PATH, SKILL_DEVELOPMENT_PATH, currentPath, isHomePath, sectionHref } from '../lib/route'
 import { AuthControl } from './AuthControl'
 import { NavDropdown, NavMobileGroup } from './NavDropdown'
 import { ScrollToHash } from './ScrollToHash'
@@ -68,7 +68,8 @@ export function Navbar() {
   const isActive = (id: string) => {
     if (id === 'resources') return resourcePage
     if (id === 'academy') return currentPath() === SKILL_DEVELOPMENT_PATH
-    if (id === 'network' || id === 'partner') return false
+    if (id === 'partner') return currentPath() === PARTNER_WITH_US_PATH
+    if (id === 'network') return false
     return onHome ? id === active : currentPath() === INSTITUTIONS_PATH && id === 'institutions'
   }
   const close = () => setOpen(false)
