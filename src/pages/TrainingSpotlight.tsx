@@ -3,7 +3,9 @@ import { clientSafeText } from "@/lib/errors";
 import { Alert, Rating, Textarea } from "@mantine/core";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-import { CalendarBlank, CaretLeft, MapPin, NotePencil, ShareNetwork, Certificate } from "@phosphor-icons/react";
+import { Buildings, CalendarBlank, CaretLeft, Clock, Envelope, MapPin, Monitor, NotePencil, ShareNetwork, Certificate, UserCircle } from "@phosphor-icons/react";
+import { contact } from "@/sfs/data/content";
+import { timeRange } from "@/lib/sessionTime";
 import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
 import { PageLoading } from "@/sfs/components/page/PageStatus";
 import { useCallback, useState } from "react";
@@ -15,6 +17,7 @@ import { SharePopup } from "@/components1/ui/SharePopup";
 import Errorbox from "../components/Errorbox";
 import { RZPY_KEYID } from "../Constants";
 import { api, queryClient } from "../lib/api";
+import { withDevPreview } from "@/preview/devPreview";
 import { useUser } from "../lib/hooks";
 import EnrolmentConfirmDialog from "@/components1/EnrolmentConfirmDialog";
 import RazorpayInstance, {
@@ -33,7 +36,7 @@ import ReactPlayer from "react-player";
 function useTraining(id?: string) {
   return useQuery<GenericResponse<StudentTraining>, AxiosError<GenericError>>({
     queryKey: ["trainings", id],
-    queryFn: async () => (await api().get(`/trainings/${id}`)).data,
+    queryFn: async () => (await withDevPreview(() => api().get(`/trainings/${id}`), "training", id)).data,
     staleTime: 1000 * 60 * 10,
   });
 }
@@ -229,8 +232,20 @@ function TrainingSpotlight() {
     return framed(<Errorbox message="Something went wrong!" />);
   }
 
-  const detail = "grid gap-1 border-b border-tint py-4 sm:grid-cols-[10rem_1fr] sm:gap-6";
-  const label = "t-small text-ink/60";
+  const time = timeRange(event.startDate, event.endDate);
+  const mode = event.type ? event.type.charAt(0) + event.type.slice(1).toLowerCase() : event.location ? "Offline" : "Online";
+  const free = !Number(event.cost);
+  const instructor = `${event.instructor.firstName} ${event.instructor.lastName ?? ""}`.trim();
+  const sameDay = formatDate(event.startDate) === formatDate(event.endDate);
+  const detail = "flex items-start justify-between gap-4 border-b border-tint/70 py-3 last:border-0";
+  const label = "t-small shrink-0 text-ink/60";
+  const value = "t-small text-right font-medium text-ink";
+  const facts = [
+    { icon: CalendarBlank, label: "Date", value: sameDay ? formatDate(event.startDate) : `${formatDate(event.startDate)} to ${formatDate(event.endDate)}` },
+    { icon: Clock, label: "Time", value: time ?? "To be announced" },
+    { icon: Monitor, label: "Mode", value: mode },
+    { icon: UserCircle, label: "Instructor", value: instructor },
+  ];
 
   return (
     <PageFrame tone="surface">
@@ -242,30 +257,60 @@ function TrainingSpotlight() {
           </Link>
         }
         title={event.title}
-        description={event.description}
+        description={<span className="line-clamp-3">{event.description}</span>}
+        image={{ src: event.coverImg, alt: event.title }}
         actions={
-          <button type="button" onClick={handleShare} className="btn btn-inverse">
-            <ShareNetwork size={18} aria-hidden="true" />
-            Share
-          </button>
+          <>
+            {event.category && <span className="chip !bg-white/10 !text-white">{event.category}</span>}
+            <span className="chip !bg-white/10 !text-white">{mode}</span>
+            <button type="button" onClick={handleShare} className="btn btn-inverse">
+              <ShareNetwork size={18} aria-hidden="true" />
+              Share
+            </button>
+          </>
         }
       />
 
-      <section className="section" aria-label="Event details">
-        <div className="container-x grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:gap-14">
+      {/* The key facts sit on the edge of the opener, like a ticket. */}
+      <div className="container-x relative z-10 -mt-8 sm:-mt-10">
+        <dl className="card grid gap-px overflow-hidden bg-tint/60 shadow-raised sm:grid-cols-2 lg:grid-cols-4">
+          {facts.map((f) => (
+            <div key={f.label} className="flex items-center gap-4 bg-white p-5">
+              <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-full bg-surface text-deep">
+                <f.icon size={22} />
+              </span>
+              <div className="min-w-0">
+                <dt className="t-small text-ink/60">{f.label}</dt>
+                <dd className="t-label mt-0.5 break-words">{f.value}</dd>
+              </div>
+            </div>
+          ))}
+        </dl>
+      </div>
+
+      <section className="section !pt-12 sm:!pt-14" aria-label="Session details">
+        <div className="container-x grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
           <div className="grid content-start gap-8">
-            <img src={event.coverImg} alt={event.title} className="aspect-video w-full rounded-card bg-white object-contain" />
+            <div className="card p-6 sm:p-8">
+              <h2 className="t-heading">About this session</h2>
+              <p className="t-body mt-3 whitespace-pre-line text-ink/80">{event.description}</p>
+            </div>
 
             {event.lessons && event.lessons.length > 0 && (
               <div className="grid gap-4">
-                <h2 className="t-title">Course Content</h2>
-                {event.lessons.map((l) => (
+                <h2 className="t-title">Course content</h2>
+                {event.lessons.map((l, i) => (
                   <div className="card p-5 sm:p-6" key={l.id}>
                     <div className="mb-3 flex items-start justify-between gap-3">
-                      <h3 className="t-heading">{l.title}</h3>
+                      <div className="flex items-start gap-3">
+                        <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-surface text-sm font-semibold text-deep">
+                          {i + 1}
+                        </span>
+                        <h3 className="t-heading">{l.title}</h3>
+                      </div>
                       <span className="chip shrink-0 text-deep">{l.type}</span>
                     </div>
-                    {l.content && <div className="ql-snow" dangerouslySetInnerHTML={{ __html: sanitizeHtml(l.content) }}></div>}
+                    {l.content && <div className="ql-snow prose-sfs" dangerouslySetInnerHTML={{ __html: sanitizeHtml(l.content) }}></div>}
                     <div className="mt-3 flex flex-col gap-3">
                       <span className="t-small inline-flex items-center gap-2 text-ink/70">
                         <CalendarBlank size={16} aria-hidden="true" />
@@ -300,111 +345,145 @@ function TrainingSpotlight() {
           </div>
 
           <div className="grid content-start gap-6 max-lg:order-first lg:sticky lg:top-28 lg:self-start">
-            <dl className="card px-6 py-2">
-              <div className={detail}>
-                <dt className={label}>Instructor</dt>
-                <dd className="t-body font-medium">{event.instructor.firstName + " " + (event.instructor.lastName ?? "")}</dd>
+            <div className="card overflow-hidden shadow-raised">
+              <div className="on-dark bg-deep px-6 py-5 text-white">
+                <h2 className="t-heading text-white">Register for this session</h2>
+                <p className="t-small mt-1 text-white/75">{event.isEnrolled ? "You are registered for this session." : "Reserve your place and join the session."}</p>
               </div>
-              {event.instructor.institutionName && (
-                <div className={detail}>
-                  <dt className={label}>Institution</dt>
-                  <dd className="t-body font-medium">{event.instructor.institutionName}</dd>
-                </div>
-              )}
-              {event.enrolments?.length === 1 && event.link && (
-                <div className={detail}>
-                  <dt className={label}>Enrolled On</dt>
-                  <dd className="t-body font-medium">{formatDate(event.enrolments?.[0]?.createdAt)}</dd>
-                </div>
-              )}
-              <div className={detail}>
-                <dt className={label}>Dates</dt>
-                <dd className="t-body font-medium">{formatDate(event.startDate) + " to " + formatDate(event.endDate)}</dd>
-              </div>
-              <div className={detail}>
-                <dt className={label}>Mode</dt>
-                <dd className="t-body font-medium">{event.type ?? (event.location ? "Offline" : "Online")}</dd>
-              </div>
-              {event.location && (
-                <div className={detail}>
-                  <dt className={label}>Location</dt>
-                  <dd className="t-body font-medium">{event.location}</dd>
-                </div>
-              )}
-              {event.isEnrolled && (
-                <div className={detail}>
-                  <dt className={label}>Event Link</dt>
-                  <dd className="t-body break-all font-medium">
-                    <a href={event.link} target="_blank" rel="noreferrer" className="text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep">
-                      {event.link}
-                    </a>
-                  </dd>
-                </div>
-              )}
-              <div className="grid gap-1 py-4 sm:grid-cols-[10rem_1fr] sm:gap-6">
-                <dt className={label}>Price</dt>
-                <dd className="t-body font-medium">₹{event.cost}</dd>
-              </div>
-            </dl>
+              <div className="grid gap-5 p-6">
+                <p className="text-3xl font-semibold">{free ? "Free" : `₹${Number(event.cost).toLocaleString("en-IN")}`}</p>
 
-            <div className="grid gap-4">
-              {!user ? (
-                <Link to={loginUrl} className="btn btn-primary">
-                  <NotePencil size={18} aria-hidden="true" />
-                  Sign in to register
-                </Link>
-              ) : !event.isEnrolled ? (
-                <button type="button" className="btn btn-primary" onClick={() => setConfirmOpen(true)} disabled={isPending}>
-                  <NotePencil size={18} aria-hidden="true" />
-                  {isPending ? "Please wait..." : "Enroll Now"}
-                </button>
-              ) : (
-                <div className="grid gap-4">
+                {!user ? (
+                  <Link to={loginUrl} className="btn btn-primary">
+                    <NotePencil size={18} aria-hidden="true" />
+                    Sign in to register
+                  </Link>
+                ) : !event.isEnrolled ? (
+                  <button type="button" className="btn btn-primary" onClick={() => setConfirmOpen(true)} disabled={isPending}>
+                    <NotePencil size={18} aria-hidden="true" />
+                    {isPending ? "Please wait..." : "Enroll Now"}
+                  </button>
+                ) : (
                   <button type="button" className="btn btn-primary" disabled>
                     <NotePencil size={18} aria-hidden="true" />
                     You are already registered
                   </button>
-                  {event.displayFeedback && (
-                    <div className="card grid gap-3 p-5">
-                      <RatingAndFeedback data={event} id={id!} disabled={event.ratings.length > 0} />
+                )}
+
+                <dl>
+                  {event.instructor.institutionName && (
+                    <div className={detail}>
+                      <dt className={label}>Institution</dt>
+                      <dd className={value}>{event.instructor.institutionName}</dd>
                     </div>
                   )}
-                </div>
-              )}
-              <EnrolmentConfirmDialog
-                opened={confirmOpen}
-                onClose={() => setConfirmOpen(false)}
-                onConfirm={() => {
-                  setConfirmOpen(false);
-                  void handlePayment();
-                }}
-                user={user?.user ?? null}
-                courseTitle={event.title}
-                cost={event.cost}
-                startDate={event.startDate ? formatDate(event.startDate) : null}
-                isProcessing={isPending}
-                loginUrl={loginUrl}
-              />
-
-              {event.enrolments?.[0]?.certificate && (
-                <Alert color="green" radius="md">
-                  <h3 className="t-heading text-green-700">Congratulations! You have successfully completed the training</h3>
-                  <p className="t-body mt-1 text-green-800">You have earned a certificate and is now available for you to download!</p>
-                  <div className="mt-4 flex flex-wrap gap-3">
-                    <Link target="_blank" to={event.enrolments?.[0]?.certificate} className="btn btn-primary">
-                      <Certificate size={18} aria-hidden="true" />
-                      Download now
-                    </Link>
-                    <Link
-                      target="_blank"
-                      className="btn btn-secondary"
-                      to={`https://www.linkedin.com/shareArticle?mini=true&url=${event.enrolments?.[0]?.certificate}&text=Hello connections! I have completed a course with STEM for society website and have earned a certificate on ${event.title}`}
-                    >
-                      <FaLinkedin aria-hidden="true" /> Share
-                    </Link>
+                  {event.enrolments?.length === 1 && event.link && (
+                    <div className={detail}>
+                      <dt className={label}>Enrolled on</dt>
+                      <dd className={value}>{formatDate(event.enrolments?.[0]?.createdAt)}</dd>
+                    </div>
+                  )}
+                  <div className={detail}>
+                    <dt className={label}>Dates</dt>
+                    <dd className={value}>{formatDate(event.startDate) + " to " + formatDate(event.endDate)}</dd>
                   </div>
-                </Alert>
-              )}
+                  <div className={detail}>
+                    <dt className={label}>Mode</dt>
+                    <dd className={value}>{mode}</dd>
+                  </div>
+                  {event.location && (
+                    <div className={detail}>
+                      <dt className={label}>Location</dt>
+                      <dd className={value}>{event.location}</dd>
+                    </div>
+                  )}
+                  {event.isEnrolled && (
+                    <div className={detail}>
+                      <dt className={label}>Event link</dt>
+                      <dd className={`${value} break-all`}>
+                        <a href={event.link} target="_blank" rel="noreferrer" className="text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep">
+                          {event.link}
+                        </a>
+                      </dd>
+                    </div>
+                  )}
+                </dl>
+              </div>
+            </div>
+
+            {event.isEnrolled && event.displayFeedback && (
+              <div className="card grid gap-3 p-5">
+                <RatingAndFeedback data={event} id={id!} disabled={event.ratings.length > 0} />
+              </div>
+            )}
+
+            <EnrolmentConfirmDialog
+              opened={confirmOpen}
+              onClose={() => setConfirmOpen(false)}
+              onConfirm={() => {
+                setConfirmOpen(false);
+                void handlePayment();
+              }}
+              user={user?.user ?? null}
+              courseTitle={event.title}
+              cost={event.cost}
+              startDate={event.startDate ? formatDate(event.startDate) : null}
+              isProcessing={isPending}
+              loginUrl={loginUrl}
+            />
+
+            {event.enrolments?.[0]?.certificate && (
+              <Alert color="green" radius="md">
+                <h3 className="t-heading text-green-700">Congratulations! You have successfully completed the training</h3>
+                <p className="t-body mt-1 text-green-800">You have earned a certificate and is now available for you to download!</p>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <Link target="_blank" to={event.enrolments?.[0]?.certificate} className="btn btn-primary">
+                    <Certificate size={18} aria-hidden="true" />
+                    Download now
+                  </Link>
+                  <Link
+                    target="_blank"
+                    className="btn btn-secondary"
+                    to={`https://www.linkedin.com/shareArticle?mini=true&url=${event.enrolments?.[0]?.certificate}&text=Hello connections! I have completed a course with STEM for society website and have earned a certificate on ${event.title}`}
+                  >
+                    <FaLinkedin aria-hidden="true" /> Share
+                  </Link>
+                </div>
+              </Alert>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Who hosts it, where it happens and who to ask. */}
+      <section className="pb-16 sm:pb-20" aria-label="Hosting and contact">
+        <div className="container-x">
+          <div className="card grid gap-px overflow-hidden bg-tint/60 md:grid-cols-3">
+            <div className="flex items-start gap-4 bg-white p-6">
+              <Buildings size={24} className="mt-0.5 shrink-0 text-deep" aria-hidden="true" />
+              <div>
+                <h3 className="t-label">Hosted by</h3>
+                <p className="t-small mt-1 text-ink/70">{event.instructor.institutionName ? `${event.instructor.institutionName}, ${instructor}` : instructor}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 bg-white p-6">
+              <MapPin size={24} className="mt-0.5 shrink-0 text-deep" aria-hidden="true" />
+              <div>
+                <h3 className="t-label">Location and access</h3>
+                <p className="t-small mt-1 text-ink/70">{event.location ? event.location : "The event link appears on this page once you are registered."}</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-4 bg-white p-6">
+              <Envelope size={24} className="mt-0.5 shrink-0 text-deep" aria-hidden="true" />
+              <div>
+                <h3 className="t-label">Questions</h3>
+                <p className="t-small mt-1 text-ink/70">
+                  Write to{" "}
+                  <a href={`mailto:${contact.email}`} className="text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep">
+                    {contact.email}
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
         </div>

@@ -14,11 +14,11 @@ export const navRight = [
   { label: 'Partner With Us', href: links.partner, id: 'partner' },
 ] as const
 
-/** Items of the Our Academy dropdown. All of them lead to the platform's existing Skill Development page. */
+/** Items of the Our Academy dropdown. All of them open the platform's existing Skill Development page, with their topic chosen in its category filter. */
 export const academyLinks = [
-  { label: 'Industry Skills', href: SKILL_DEVELOPMENT_PATH },
-  { label: 'Professional Skills', href: SKILL_DEVELOPMENT_PATH },
-  { label: 'Finishing School', href: SKILL_DEVELOPMENT_PATH },
+  { label: 'Industry Skills', href: `${SKILL_DEVELOPMENT_PATH}?category=${encodeURIComponent('Industry Skills')}` },
+  { label: 'Professional Skills', href: `${SKILL_DEVELOPMENT_PATH}?category=${encodeURIComponent('Professional Skills')}` },
+  { label: 'Finishing School', href: `${SKILL_DEVELOPMENT_PATH}?category=${encodeURIComponent('Finishing School')}` },
 ] as const
 
 /** Items of the Resources dropdown in the header. */

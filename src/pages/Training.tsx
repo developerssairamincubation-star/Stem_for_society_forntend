@@ -7,6 +7,7 @@ import React, { useMemo, useState } from "react";
 import Errorbox from "../components/Errorbox";
 import EventCard from "../components/EventCard";
 import { api } from "../lib/api";
+import { withDevPreview } from "@/preview/devPreview";
 import { courseCategories } from "../lib/data";
 import { GenericError, GenericResponse } from "../lib/types";
 import { formatDate } from "../lib/utils";
@@ -74,7 +75,7 @@ function useTrainings() {
     queryKey: ["trainings"],
     queryFn: async () => {
       const raw = (
-        await api().get<GenericResponse<StudentTraining[]>>("/trainings")
+        await withDevPreview(() => api().get<GenericResponse<StudentTraining[]>>("/trainings"), "trainings")
       ).data;
       if (!raw || !raw.data || !(raw.data.length > 0)) return {};
 
@@ -97,7 +98,7 @@ function useTrainings() {
 
       const arranged = dated.reduce(
         (acc, tra) => {
-          const date = dayjs(tra.startDate).format("MMM, YYYY");
+          const date = dayjs(tra.startDate).format("MMMM YYYY");
           if (!acc[date]) acc[date] = [];
           acc[date].push(tra);
           return acc;
@@ -248,7 +249,14 @@ const Training: React.FC = () => {
             ) : (
               Object.keys(filteredTrainings).map((month) => (
                 <section key={month} aria-label={month} className="grid gap-6">
-                  <h2 className="t-title border-b-2 border-brand pb-4">{month}</h2>
+                  <div className="flex items-center gap-5">
+                    <h2 className="t-title shrink-0">{month}</h2>
+                    <span aria-hidden="true" className="h-px flex-1 bg-tint" />
+                    <span className="t-small shrink-0 text-ink/60">
+                      {(filteredTrainings[month as keyof typeof filteredTrainings] as StudentTraining[]).length} session
+                      {(filteredTrainings[month as keyof typeof filteredTrainings] as StudentTraining[]).length === 1 ? "" : "s"}
+                    </span>
+                  </div>
 
                   <div className="grid gap-5">
                     {(filteredTrainings[month as keyof typeof filteredTrainings] as StudentTraining[]).map((event) => (
@@ -257,6 +265,10 @@ const Training: React.FC = () => {
                         id={event.id}
                         title={event.title}
                         date={formatDate(event.startDate)}
+                        startIso={event.startDate}
+                        endIso={event.endDate}
+                        mode={event.type}
+                        description={event.description}
                         location={event.location}
                         posterUrl={event.coverImg}
                         price={event.cost}

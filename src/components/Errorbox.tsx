@@ -2,7 +2,8 @@ import { messageError } from "../lib/errors";
 import AppErrorFallback from "./error/AppErrorFallback";
 
 type Props = {
-  message: string;
+  /** Optional: a network failure has no server message, and a missing one used to crash this panel. */
+  message?: string;
   onRetry?: () => void;
 };
 
@@ -17,7 +18,7 @@ type Props = {
 export default function Errorbox({ message, onRetry }: Props) {
   return (
     <AppErrorFallback
-      error={messageError(message)}
+      error={messageError(message ?? "We could not load this right now.")}
       onRetry={onRetry}
       variant="inline"
       showHome={false}

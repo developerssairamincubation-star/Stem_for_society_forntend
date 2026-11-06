@@ -13,7 +13,7 @@ import { SmartLink } from './ui/SmartLink'
 
 const sectionIds = ['testimonials', 'partners'] as const
 
-function NavLink({ href, active, children, onClick }: { href: string; active: boolean; children: string; onClick?: () => void }) {
+function NavLink({ href, active, children, onClick, blue = false }: { href: string; active: boolean; children: string; onClick?: () => void; blue?: boolean }) {
   return (
     <SmartLink
       href={href}
@@ -22,7 +22,13 @@ function NavLink({ href, active, children, onClick }: { href: string; active: bo
       target={isExternal(href) ? '_self' : undefined}
       aria-current={active ? 'true' : undefined}
       className={`t-label inline-flex h-10 items-center rounded-full px-4 whitespace-nowrap transition-colors duration-200 ${
-        active ? 'bg-tint/60 text-deep' : 'text-ink/80 hover:bg-white hover:text-ink'
+        blue
+          ? active
+            ? 'bg-white text-deep'
+            : 'text-white/90 hover:bg-white/15 hover:text-white'
+          : active
+            ? 'bg-tint/60 text-deep'
+            : 'text-ink/80 hover:bg-white hover:text-ink'
       }`}
     >
       {children}
@@ -30,13 +36,17 @@ function NavLink({ href, active, children, onClick }: { href: string; active: bo
   )
 }
 
-/** The one place glass is used: the bar floats over changing content, so it needs the blur to stay legible. */
+/**
+ * The one place glass is used: the bar floats over changing content, so it needs the blur to stay legible.
+ * The home page keeps the light bar; every other page gets the same bar in deep blue, with the current page as a white pill.
+ */
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [open, setOpen] = useState(false)
   const active = useActiveSection(sectionIds)
   useLocation() // re-render on navigation so active states follow the route
   const onHome = isHomePath()
+  const blue = !onHome
   const to = sectionHref
 
   useEffect(() => {
@@ -69,15 +79,15 @@ export function Navbar() {
       <div className="container-x pointer-events-auto relative">
         <nav
           aria-label="Primary"
-          className={`grid grid-cols-[1fr_auto_1fr] items-center rounded-full border border-white/70 bg-white/85 px-3 py-1.5 backdrop-blur-xl transition-shadow duration-300 min-[1180px]:px-5 ${
-            scrolled ? 'shadow-overlay' : 'shadow-raised'
-          }`}
+          className={`grid grid-cols-[1fr_auto_1fr] items-center rounded-full border px-3 py-1.5 backdrop-blur-xl transition-shadow duration-300 min-[1180px]:px-5 ${
+            blue ? 'on-dark border-white/15 bg-deep/95' : 'border-white/70 bg-white/85'
+          } ${scrolled ? 'shadow-overlay' : 'shadow-raised'}`}
         >
           {/* Left */}
           <div className="flex items-center justify-start min-[1180px]:justify-end min-[1180px]:pr-3">
             <button
               type="button"
-              className="icon-btn !border-transparent !bg-transparent min-[1180px]:hidden"
+              className={`icon-btn !border-transparent !bg-transparent min-[1180px]:hidden ${blue ? '!text-white' : ''}`}
               aria-expanded={open}
               aria-controls="mobile-menu"
               aria-label={open ? 'Close menu' : 'Open menu'}
@@ -88,10 +98,10 @@ export function Navbar() {
             <ul className="hidden items-center gap-1 min-[1180px]:flex">
               {navLeft.map((l) =>
                 l.id === 'academy' ? (
-                  <NavDropdown key={l.id} label={l.label} items={academyLinks} active={isActive(l.id)} />
+                  <NavDropdown key={l.id} label={l.label} items={academyLinks} active={isActive(l.id)} blue={blue} />
                 ) : (
                   <li key={l.id}>
-                    <NavLink href={to(l.href)} active={isActive(l.id)}>
+                    <NavLink href={to(l.href)} active={isActive(l.id)} blue={blue}>
                       {l.label}
                     </NavLink>
                   </li>
@@ -102,7 +112,7 @@ export function Navbar() {
 
           {/* Centre: the grid keeps the logo centred on the whole bar */}
           <SmartLink href={onHome ? '#home' : '/'} aria-label="STEM for Society, home" className="justify-self-center rounded-card px-2">
-            <img src="/images/brand/sfs-logo.png" alt="STEM for Society" width={64} height={64} className="size-14 object-contain sm:size-16" />
+            <img src="/images/brand/sfs-logo.png" alt="STEM for Society" width={64} height={64} className={`size-14 object-contain sm:size-16 ${blue ? 'brightness-0 invert' : ''}`} />
           </SmartLink>
 
           {/* Right */}
@@ -110,17 +120,17 @@ export function Navbar() {
             <ul className="hidden items-center gap-1 min-[1180px]:flex">
               {navRight.map((l) =>
                 l.id === 'resources' ? (
-                  <NavDropdown key={l.id} label={l.label} items={resourceLinks} active={isActive(l.id)} />
+                  <NavDropdown key={l.id} label={l.label} items={resourceLinks} active={isActive(l.id)} blue={blue} />
                 ) : (
                   <li key={l.id}>
-                    <NavLink href={to(l.href)} active={isActive(l.id)}>
+                    <NavLink href={to(l.href)} active={isActive(l.id)} blue={blue}>
                       {l.label}
                     </NavLink>
                   </li>
                 ),
               )}
             </ul>
-            <AuthControl />
+            <AuthControl blue={blue} />
           </div>
         </nav>
 
@@ -132,14 +142,14 @@ export function Navbar() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-              className="absolute inset-x-0 top-full mt-2 rounded-panel border border-tint bg-white p-3 shadow-overlay min-[1180px]:hidden"
+              className={`absolute inset-x-0 top-full mt-2 rounded-panel border p-3 shadow-overlay min-[1180px]:hidden ${blue ? 'on-dark border-white/15 bg-deep' : 'border-tint bg-white'}`}
             >
               <ul className="flex flex-col gap-1">
                 {[...navLeft, ...navRight].map((l) =>
                   l.id === 'academy' ? (
-                    <NavMobileGroup key={l.id} label={l.label} items={academyLinks} onNavigate={close} />
+                    <NavMobileGroup key={l.id} label={l.label} items={academyLinks} onNavigate={close} blue={blue} />
                   ) : l.id === 'resources' ? (
-                    <NavMobileGroup key={l.id} label={l.label} items={resourceLinks} onNavigate={close} />
+                    <NavMobileGroup key={l.id} label={l.label} items={resourceLinks} onNavigate={close} blue={blue} />
                   ) : (
                   <li key={l.id}>
                     <SmartLink
@@ -148,7 +158,13 @@ export function Navbar() {
                       target={isExternal(l.href) ? '_self' : undefined}
                       aria-current={isActive(l.id) ? 'true' : undefined}
                       className={`t-label flex h-12 items-center rounded-control px-4 transition-colors duration-200 ${
-                        isActive(l.id) ? 'bg-tint/60 text-deep' : 'text-ink hover:bg-surface'
+                        blue
+                          ? isActive(l.id)
+                            ? 'bg-white text-deep'
+                            : 'text-white hover:bg-white/10'
+                          : isActive(l.id)
+                            ? 'bg-tint/60 text-deep'
+                            : 'text-ink hover:bg-surface'
                       }`}
                     >
                       {l.label}

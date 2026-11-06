@@ -12,7 +12,7 @@ import { SmartLink } from './ui/SmartLink'
  * signed out shows Login (with the same `returnTo` the old header used); signed in shows the account menu
  * with "My trainings" and Logout.
  */
-export function AuthControl() {
+export function AuthControl({ blue = false }: { blue?: boolean }) {
   const { user, signOut } = useUser()
   const { pathname, search, hash } = useLocation()
   const [, setFilterByMe] = useQueryState<boolean>('me', parseAsBoolean)
@@ -34,7 +34,7 @@ export function AuthControl() {
   if (!user) {
     const returnTo = encodeURIComponent(`${pathname}${search}${hash}`)
     return (
-      <Button href={`${links.login}?returnTo=${returnTo}`} size="sm">
+      <Button href={`${links.login}?returnTo=${returnTo}`} size="sm" className={blue ? '!bg-brand hover:!bg-[#0277e0]' : ''}>
         Login
       </Button>
     )
@@ -47,7 +47,7 @@ export function AuthControl() {
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="t-label inline-flex h-10 items-center gap-2 rounded-full bg-tint/60 px-3 text-deep transition-colors duration-200 hover:bg-tint"
+        className={`t-label inline-flex h-10 items-center gap-2 rounded-full px-3 transition-colors duration-200 ${blue ? 'bg-white/15 text-white hover:bg-white/25' : 'bg-tint/60 text-deep hover:bg-tint'}`}
       >
         <UserCircle size={22} aria-hidden="true" />
         <span className="hidden max-w-28 truncate sm:inline">{user.user.firstName}</span>

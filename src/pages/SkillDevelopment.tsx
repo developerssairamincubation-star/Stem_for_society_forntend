@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useMemo, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   Select,
   SelectContent,
@@ -14,6 +14,7 @@ import FinishingSchoolCard from "@/components1/FinishingSchoolCard";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { api } from "@/lib/api";
+import { withDevPreview } from "@/preview/devPreview";
 import { GenericError, GenericResponse } from "@/lib/types";
 import { calculateDuration, formatDate } from "@/lib/utils";
 import Errorbox from "@/components/Errorbox";
@@ -78,7 +79,7 @@ function useSkillDevelopmentCourses() {
   return useQuery<StudentTraining[], AxiosError<GenericError>>({
     queryKey: ["trainings", "skill-development"],
     queryFn: async () => {
-      const response = await api().get<GenericResponse<StudentTraining[]>>("/trainings/skill-developments");
+      const response = await withDevPreview(() => api().get<GenericResponse<StudentTraining[]>>("/trainings/skill-developments"), "courses");
       console.log("🚀 Skill Development courses:", response.data);
       if (!response.data?.data?.length) return [];
       
@@ -104,13 +105,21 @@ interface FilterState {
 const SkillDevelopment = () => {
   const navigate = useNavigate();
   const { data: courses, isLoading, error } = useSkillDevelopmentCourses();
-  
+
+  // The Our Academy menu opens this page with a topic (?category=...), which is chosen in the existing category filter.
+  const [searchParams] = useSearchParams();
+  const topic = searchParams.get("category") ?? "";
+
   const [filters, setFilters] = useState<FilterState>({
-    category: "",
+    category: topic,
  
     mode: "",
     searchQuery: "",
   });
+
+  useEffect(() => {
+    setFilters((prev) => (prev.category === topic ? prev : { ...prev, category: topic }));
+  }, [topic]);
 
   // Handle filter changes
   const handleFilterChange = (key: keyof FilterState, value: string) => {

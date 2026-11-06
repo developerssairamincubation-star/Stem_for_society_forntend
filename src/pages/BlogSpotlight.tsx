@@ -1,9 +1,10 @@
 import BlogContent from "../components/BlogContent";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { CaretLeft } from "@phosphor-icons/react";
-import { PageFrame } from "@/sfs/components/page/PageFrame";
+import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
 import { PageLoading } from "@/sfs/components/page/PageStatus";
 import { api } from "../lib/api";
+import { withDevPreview } from "@/preview/devPreview";
 import { GenericError, GenericResponse } from "../lib/types";
 import { Blog } from "./BlogListing";
 import { AxiosError } from "axios";
@@ -15,7 +16,7 @@ function useBlog(slug: string) {
   return useQuery<GenericResponse<Blog>, AxiosError<GenericError>>({
     queryKey: ["blogs", slug],
     queryFn: async () => {
-      return (await api().get(`/blogs/${slug}`)).data;
+      return (await withDevPreview(() => api().get(`/blogs/${slug}`), "blog", slug)).data;
     },
     staleTime: 1000 * 60 * 300,
   });
@@ -46,49 +47,67 @@ function BlogSpotlight() {
 
   const blog = data?.data;
 
+  if (!blog) {
+    return (
+      <PageFrame tone="surface">
+        <div className="container-x pt-32 pb-16">
+          <h1 className="t-title">Invalid blog!</h1>
+        </div>
+      </PageFrame>
+    );
+  }
+
+  const initials = blog.blogAuthor.name
+    .split(" ")
+    .map((x) => x[0].toUpperCase())
+    .join("");
+
   return (
     <PageFrame>
-      <article className="container-x pt-28 pb-16 sm:pb-20 lg:pt-32">
-        <div className="mx-auto max-w-3xl">
-          {/* @ts-expect-error back navigation, as before */}
-          <Link to={-1} className="t-label nudge mb-8 inline-flex items-center gap-2 text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep">
+      <PageHero
+        kicker={
+          // @ts-expect-error back navigation, as before
+          <Link to={-1} className="nudge inline-flex items-center gap-2 text-white/80 underline decoration-white/30 underline-offset-4 hover:text-white">
             <CaretLeft size={16} aria-hidden="true" />
             Back
           </Link>
+        }
+        title={blog.title}
+        description={
+          <span className="flex flex-wrap items-center gap-3">
+            {blog.category && <span className="chip !bg-white/10 !text-white">{blog.category}</span>}
+            <span className="t-small text-white/75">
+              {blog.blogAuthor.name} · {formatDate(blog.createdAt)}
+            </span>
+          </span>
+        }
+        image={blog.coverImage ? { src: blog.coverImage, alt: "" } : undefined}
+      />
 
-          {!blog ? (
-            <h1 className="t-title">Invalid blog!</h1>
-          ) : (
-            <>
-              {blog.category && <p className="chip mb-4 text-deep">{blog.category}</p>}
-              <h1 className="t-display">{blog.title}</h1>
+      <article className="section">
+        <div className="container-x grid gap-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-16">
+          <div className="content prose-sfs">
+            <BlogContent markdownContent={blog.content}></BlogContent>
+          </div>
 
-              <div className="mt-6 flex flex-wrap items-center gap-3 border-b border-tint pb-6">
-                <span
-                  aria-hidden="true"
-                  className="grid size-10 place-items-center rounded-full bg-deep text-sm font-semibold text-white"
-                >
-                  {blog.blogAuthor.name
-                    .split(" ")
-                    .map((x) => x[0].toUpperCase())
-                    .join("")}
-                </span>
-                <div className="t-small">
-                  <p className="font-medium">{blog.blogAuthor.name}</p>
-                  <p className="text-ink/60">
-                    {blog.blogAuthor.designation ? `${blog.blogAuthor.designation} • ` : ""}
-                    {formatDate(blog.createdAt)}
-                  </p>
-                </div>
+          <aside className="lg:sticky lg:top-28 lg:self-start" aria-label="About the author">
+            <div className="card grid gap-4 p-6">
+              <span aria-hidden="true" className="grid size-12 place-items-center rounded-full bg-deep text-base font-semibold text-white">
+                {initials}
+              </span>
+              <div>
+                <p className="t-label text-ink/60">Written by</p>
+                <p className="t-heading mt-1">{blog.blogAuthor.name}</p>
+                {blog.blogAuthor.designation && <p className="t-small mt-1 text-ink/70">{blog.blogAuthor.designation}</p>}
               </div>
-
-              <img src={blog.coverImage} alt="" className="mt-8 aspect-video w-full rounded-card bg-surface object-cover" />
-
-              <div className="content prose-sfs mt-10">
-                <BlogContent markdownContent={blog.content}></BlogContent>
-              </div>
-            </>
-          )}
+              {blog.blogAuthor.linkedin && (
+                <a href={blog.blogAuthor.linkedin} target="_blank" rel="noreferrer" className="btn btn-secondary btn-sm">
+                  LinkedIn profile
+                </a>
+              )}
+              <p className="t-small text-ink/60">Published {formatDate(blog.createdAt)}</p>
+            </div>
+          </aside>
         </div>
       </article>
     </PageFrame>

@@ -12,6 +12,8 @@ interface NavDropdownProps {
   label: string
   items: readonly NavDropdownItem[]
   active?: boolean
+  /** Deep-blue bar: light text, and the open or current item becomes a white pill. */
+  blue?: boolean
 }
 
 /**
@@ -19,7 +21,7 @@ interface NavDropdownProps {
  * Opens on hover or click; closes on Escape (focus returns to the trigger), outside click, blur or selecting an item.
  * Keyboard: Enter/Space/ArrowDown open and focus the first item, arrows/Home/End move between items, Tab leaves.
  */
-export function NavDropdown({ label, items, active = false }: NavDropdownProps) {
+export function NavDropdown({ label, items, active = false, blue = false }: NavDropdownProps) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLLIElement>(null)
   const trigger = useRef<HTMLButtonElement>(null)
@@ -94,7 +96,13 @@ export function NavDropdown({ label, items, active = false }: NavDropdownProps) 
         // With a mouse the hover has already opened the menu, so a click must not close it again.
         onClick={() => setOpen((v) => (pointerType.current === 'mouse' ? true : !v))}
         className={`t-label inline-flex h-10 items-center gap-1.5 rounded-full px-4 whitespace-nowrap transition-colors duration-200 ${
-          active || open ? 'bg-tint/60 text-deep' : 'text-ink/80 hover:bg-white hover:text-ink'
+          blue
+            ? active || open
+              ? 'bg-white text-deep'
+              : 'text-white/90 hover:bg-white/15 hover:text-white'
+            : active || open
+              ? 'bg-tint/60 text-deep'
+              : 'text-ink/80 hover:bg-white hover:text-ink'
         }`}
       >
         {label}
@@ -135,17 +143,17 @@ export function NavDropdown({ label, items, active = false }: NavDropdownProps) 
 }
 
 /** Mobile menu version: a label followed by the same links. */
-export function NavMobileGroup({ label, items, onNavigate }: { label: string; items: readonly NavDropdownItem[]; onNavigate: () => void }) {
+export function NavMobileGroup({ label, items, onNavigate, blue = false }: { label: string; items: readonly NavDropdownItem[]; onNavigate: () => void; blue?: boolean }) {
   return (
     <li>
-      <p className="t-label flex h-12 items-center px-4 text-ink/60">{label}</p>
+      <p className={`t-label flex h-12 items-center px-4 ${blue ? 'text-white/70' : 'text-ink/60'}`}>{label}</p>
       <ul className="flex flex-col gap-1 pl-4">
         {items.map((l) => (
           <li key={l.label}>
             <SmartLink
               href={l.href}
               onClick={onNavigate}
-              className="t-label flex h-12 items-center rounded-control px-4 text-ink transition-colors duration-200 hover:bg-surface"
+              className={`t-label flex h-12 items-center rounded-control px-4 transition-colors duration-200 ${blue ? 'text-white hover:bg-white/10' : 'text-ink hover:bg-surface'}`}
             >
               {l.label}
             </SmartLink>

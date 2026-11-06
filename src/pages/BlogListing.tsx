@@ -3,10 +3,11 @@ import { AxiosError } from "axios";
 import { MagnifyingGlass } from "@phosphor-icons/react";
 import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
 import { Reveal } from "@/sfs/components/ui/Reveal";
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Errorbox from "../components/Errorbox";
 import { api } from "../lib/api";
+import { withDevPreview } from "@/preview/devPreview";
 import { GenericError, GenericResponse } from "../lib/types";
 import { formatDate } from "../lib/utils";
 
@@ -30,14 +31,23 @@ function useBlogs() {
   return useQuery<GenericResponse<Blog[]>, AxiosError<GenericError>>({
     queryKey: ["blogs"],
     queryFn: async () => {
-      return (await api().get("/blogs")).data;
+      return (await withDevPreview(() => api().get("/blogs"), "blogs")).data;
     },
     staleTime: 1000 * 60 * 300,
   });
 }
 
+type SortKey = "newest" | "oldest" | "title";
+
 const BlogListing: React.FC = () => {
   const { data, isPending, error } = useBlogs();
+  const [sort, setSort] = useState<SortKey>("newest");
+  const sortedBlogs = useMemo(() => {
+    const list = [...(data?.data ?? [])];
+    if (sort === "title") return list.sort((a, b) => a.title.localeCompare(b.title));
+    const by = (a: Blog, b: Blog) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+    return sort === "oldest" ? list.sort(by) : list.sort((a, b) => by(b, a));
+  }, [data, sort]);
 
   if (error) {
     return (
@@ -50,7 +60,7 @@ const BlogListing: React.FC = () => {
     );
   }
 
-  const blogs = isPending ? [] : data.data;
+  const blogs = isPending ? [] : sortedBlogs;
 
   return (
     <PageFrame tone="surface">
@@ -72,11 +82,23 @@ const BlogListing: React.FC = () => {
 
       <section className="section" aria-label="Articles">
         <div className="container-x grid gap-10">
-          <Reveal className="card flex flex-col items-center gap-4 p-8 text-center">
-            <p className="t-body font-medium">Getting your article published typically takes about a day to get verified</p>
-            <Link to={"/blogs/new"} className="btn btn-primary">
-              Create article
-            </Link>
+          <Reveal className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <label htmlFor="blog-sort" className="t-label shrink-0">
+                Sort by
+              </label>
+              <select id="blog-sort" value={sort} onChange={(e) => setSort(e.target.value as SortKey)} className="sm:!w-52">
+                <option value="newest">Newest first</option>
+                <option value="oldest">Oldest first</option>
+                <option value="title">Title, A to Z</option>
+              </select>
+            </div>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+              <p className="t-small text-ink/60 sm:max-w-[16rem] sm:text-right">Getting your article published typically takes about a day to get verified</p>
+              <Link to={"/blogs/new"} className="btn btn-primary shrink-0">
+                Create article
+              </Link>
+            </div>
           </Reveal>
 
           <div className="grid gap-8 lg:grid-cols-[1fr_18rem] lg:gap-12">

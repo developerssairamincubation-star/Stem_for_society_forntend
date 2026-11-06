@@ -14,6 +14,7 @@ import FinishingSchoolCard from "@/components1/FinishingSchoolCard";
 import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 import { api } from "@/lib/api";
+import { withDevPreview } from "@/preview/devPreview";
 import { GenericError, GenericResponse } from "@/lib/types";
 import { calculateDuration, formatDate } from "@/lib/utils";
 import Errorbox from "@/components/Errorbox";
@@ -78,7 +79,7 @@ function useSkillDevelopmentCourses() {
   return useQuery<StudentTraining[], AxiosError<GenericError>>({
     queryKey: ["trainings", "finishing-school"],
     queryFn: async () => {
-      const response = await api().get<GenericResponse<StudentTraining[]>>("/trainings/finishing-schools");
+      const response = await withDevPreview(() => api().get<GenericResponse<StudentTraining[]>>("/trainings/finishing-schools"), "courses");
       console.log("🚀 Skill Development courses:", response.data);
       if (!response.data?.data?.length) return [];
       
@@ -104,7 +105,7 @@ interface FilterState {
 const FinishingSchool = () => {
   const navigate = useNavigate();
   const { data: courses, isLoading, error } = useSkillDevelopmentCourses();
-  
+
   const [filters, setFilters] = useState<FilterState>({
     category: "",
     level: "",
