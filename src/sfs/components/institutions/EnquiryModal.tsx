@@ -43,7 +43,7 @@ function Field({ label, required, children, className = '' }: { label: string; r
 export function EnquiryModal({ request, onClose }: { request: EnquiryRequest; onClose: () => void }) {
   const { mode, area, layoutId } = request
   const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'mailed' | 'error'>('idle')
-  const copy = COPY[mode]
+  const copy = { ...COPY[mode], title: area && mode === 'partner' ? `Enquire: ${area}` : COPY[mode].title }
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()

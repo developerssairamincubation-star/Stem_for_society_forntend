@@ -9,7 +9,7 @@ export default function Institutions() {
     description: "Four structured training plans covering 24 essential professional skills, from foundational workplace basics to entrepreneurship, for schools, colleges and universities.",
   });
   return (
-    <SfsPage polish>
+    <SfsPage>
       <InstitutionsPage />
     </SfsPage>
   );
