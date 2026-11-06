@@ -1,4 +1,4 @@
-import { Check, PaperPlaneRight, WarningCircle } from '@phosphor-icons/react'
+import { ArrowRight, Check, WarningCircle } from '@phosphor-icons/react'
 import { useId, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { enquiryEndpoint } from '../../config'
@@ -16,7 +16,7 @@ type Status = 'idle' | 'sending' | 'sent' | 'mailed' | 'error'
 
 const control =
   'field !h-12 !border-[var(--sfs-edge)] hover:!border-deep focus-visible:!outline-2 focus-visible:!outline-offset-[-3px] focus-visible:!outline-brand aria-[invalid=true]:!border-[#b42318]'
-const area = `${control} !h-auto min-h-24 py-3 leading-relaxed`
+const area = `${control} !h-auto min-h-20 py-3 leading-relaxed`
 
 function Field({ id, label, required, error, hint, children }: { id: string; label: string; required?: boolean; error?: string; hint?: string; children: ReactNode }) {
   return (
@@ -165,15 +165,14 @@ export function OrganisationForm({
   }
 
   return (
-    <form ref={formRef} onSubmit={submit} noValidate className="grid gap-5" aria-label="Organisation registration">
-      <div className="grid gap-5 sm:grid-cols-2">
+    <form ref={formRef} onSubmit={submit} noValidate className="grid gap-x-5 gap-y-5 sm:grid-cols-2" aria-label="Organisation registration">
       <Field id={id('organisation')} label="Organisation Name" required error={shown('organisation')}>
-        <input id={id('organisation')} name="organisation" autoComplete="organization" placeholder="Name of your organisation" value={values.organisation} onChange={set('organisation')} onBlur={blur('organisation')} className={control} {...aria('organisation')} />
+        <input id={id('organisation')} name="organisation" autoComplete="organization" placeholder="Enter your organisation name" value={values.organisation} onChange={set('organisation')} onBlur={blur('organisation')} className={control} {...aria('organisation')} />
       </Field>
 
       <Field id={id('type')} label="Organisation Type" required error={shown('type')}>
         <select id={id('type')} name="type" value={type} onChange={(e) => onTypeChange(e.target.value)} onBlur={blur('type')} className={control} {...aria('type')}>
-          <option value="">Select organisation type</option>
+          <option value="">Select type</option>
           {organisationTypes.map((t) => (
             <option key={t} value={t}>
               {t}
@@ -182,48 +181,30 @@ export function OrganisationForm({
         </select>
       </Field>
 
-      </div>
+      <Field id={id('email')} label="Email Address" required error={shown('email')}>
+        <input id={id('email')} name="email" type="email" inputMode="email" autoComplete="email" placeholder="you@organisation.com" value={values.email} onChange={set('email')} onBlur={blur('email')} className={control} {...aria('email')} />
+      </Field>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field id={id('email')} label="Email Address" required error={shown('email')}>
-          <input id={id('email')} name="email" type="email" inputMode="email" autoComplete="email" placeholder="name@organisation.org" value={values.email} onChange={set('email')} onBlur={blur('email')} className={control} {...aria('email')} />
-        </Field>
+      <Field id={id('phone')} label="Contact Number" required error={shown('phone')}>
+        <div className="flex gap-2">
+          <select aria-label="Country code" name="countryCode" value={values.countryCode} onChange={set('countryCode')} className={`${control} !w-[6.5rem] shrink-0`}>
+            {countryCodes.map((c) => (
+              <option key={c.code} value={c.code}>
+                {c.code}
+              </option>
+            ))}
+          </select>
+          <input id={id('phone')} name="phone" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="Enter number" value={values.phone} onChange={set('phone')} onBlur={blur('phone')} className={control} {...aria('phone')} />
+        </div>
+      </Field>
 
-        <Field id={id('phone')} label="Contact Number" required error={shown('phone')}>
-          <div className="flex gap-2">
-            <select aria-label="Country code" name="countryCode" value={values.countryCode} onChange={set('countryCode')} className={`${control} !w-[7.5rem] shrink-0`}>
-              {countryCodes.map((c) => (
-                <option key={c.code} value={c.code}>
-                  {c.code}
-                </option>
-              ))}
-            </select>
-            <input id={id('phone')} name="phone" type="tel" inputMode="tel" autoComplete="tel-national" placeholder="Phone" value={values.phone} onChange={set('phone')} onBlur={blur('phone')} className={control} {...aria('phone')} />
-          </div>
-        </Field>
-      </div>
-
-      <div className="grid gap-5 sm:grid-cols-2">
       <Field id={id('website')} label="Website" error={shown('website')}>
-        <input id={id('website')} name="website" type="url" inputMode="url" autoComplete="url" placeholder="www.organisation.org" value={values.website} onChange={set('website')} onBlur={blur('website')} className={control} {...aria('website')} />
+        <input id={id('website')} name="website" type="url" inputMode="url" autoComplete="url" placeholder="https://yourorganisation.com" value={values.website} onChange={set('website')} onBlur={blur('website')} className={control} {...aria('website')} />
       </Field>
-
-      <Field id={id('location')} label="Location">
-        <select id={id('location')} name="location" value={values.location} onChange={set('location')} className={control}>
-          <option value="">Select state or region</option>
-          {locations.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
-      </Field>
-
-      </div>
 
       <Field id={id('interest')} label="Collaboration Interest" required error={shown('interest')}>
         <select id={id('interest')} name="interest" value={interest} onChange={(e) => onInterestChange(e.target.value)} onBlur={blur('interest')} className={control} {...aria('interest')}>
-          <option value="">Select an area</option>
+          <option value="">Select an interest</option>
           {collaborationInterests.map((t) => (
             <option key={t} value={t}>
               {t}
@@ -232,42 +213,55 @@ export function OrganisationForm({
         </select>
       </Field>
 
-      <div className="grid gap-5 sm:grid-cols-2">
-      <Field id={id('activities')} label="Proposed Activities" required error={shown('activities')}>
-        <textarea id={id('activities')} name="activities" rows={3} placeholder="How would you like to contribute or collaborate?" value={values.activities} onChange={set('activities')} onBlur={blur('activities')} className={area} {...aria('activities')} />
+      <div className="sm:col-span-2">
+        <Field id={id('activities')} label="Proposed Activities" required error={shown('activities')}>
+          <textarea id={id('activities')} name="activities" rows={2} placeholder="Tell us what you can contribute…" value={values.activities} onChange={set('activities')} onBlur={blur('activities')} className={area} {...aria('activities')} />
+        </Field>
+      </div>
+
+      <Field id={id('location')} label="Location">
+        <select id={id('location')} name="location" value={values.location} onChange={set('location')} className={control}>
+          <option value="">Select location</option>
+          {locations.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
       </Field>
 
       <Field id={id('details')} label="Additional Details" required error={shown('details')}>
-        <textarea id={id('details')} name="details" rows={3} placeholder="Anything else we should know about your organisation" value={values.details} onChange={set('details')} onBlur={blur('details')} className={area} {...aria('details')} />
+        <textarea id={id('details')} name="details" rows={2} placeholder="Share more about your organisation…" value={values.details} onChange={set('details')} onBlur={blur('details')} className={area} {...aria('details')} />
       </Field>
-      </div>
 
       {status === 'error' && (
-        <p role="alert" className="t-small flex items-start gap-2 rounded-control bg-[#fef3f2] p-3 text-[#b42318]">
+        <p role="alert" className="t-small flex items-start gap-2 rounded-control bg-[#fef3f2] p-3 text-[#b42318] sm:col-span-2">
           <WarningCircle size={18} weight="fill" className="mt-0.5 shrink-0" aria-hidden="true" />
           We could not send your registration. Please try again, or write to us at {contact.email}.
         </p>
       )}
 
-      <button type="submit" disabled={status === 'sending'} aria-busy={status === 'sending'} className="btn btn-primary w-full">
-        {status === 'sending' ? (
-          <>
-            <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
-            Submitting…
-          </>
-        ) : (
-          <>
-            Submit Registration
-            <PaperPlaneRight size={18} aria-hidden="true" />
-          </>
-        )}
-      </button>
-      <p className="t-small text-center text-ink/60">
-        Already a partner?{' '}
-        <Link to="/partner/signin" className="text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep">
-          Sign in
-        </Link>
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-4 sm:col-span-2">
+        <p className="t-small text-ink/60">
+          Already a partner?{' '}
+          <Link to="/partner/signin" className="text-deep underline decoration-tint decoration-2 underline-offset-4 hover:decoration-deep">
+            Sign in
+          </Link>
+        </p>
+        <button type="submit" disabled={status === 'sending'} aria-busy={status === 'sending'} className="btn btn-primary !rounded-full !px-8">
+          {status === 'sending' ? (
+            <>
+              <span className="size-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+              Submitting…
+            </>
+          ) : (
+            <>
+              Submit Registration
+              <ArrowRight size={18} aria-hidden="true" />
+            </>
+          )}
+        </button>
+      </div>
     </form>
   )
 }

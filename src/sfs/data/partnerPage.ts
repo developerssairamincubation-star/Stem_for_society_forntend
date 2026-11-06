@@ -3,12 +3,14 @@ import { Buildings, GraduationCap, Rocket, Flask, type Icon } from '@phosphor-ic
 /** Content for the public Partner With Us page. Partner logos are the ones already published on the existing STEM for Society site. */
 
 export const partnerHero = {
+  label: 'Collaboration • Partnership',
   description: 'Together, we can create more opportunities, build bigger impact and empower the next generation.',
   image: '/images/partner.jpg',
   alt: 'Students and professionals working together at a laptop',
 } as const
 
 export const partnerCategoriesIntro = {
+  label: 'Who Can Collaborate?',
   title: 'Partner Categories',
   description:
     'We welcome collaborations from educational institutions, startups, companies and innovation centres that share our commitment to creating meaningful learning opportunities and empowering the next generation.',
@@ -77,6 +79,7 @@ export const partnerCategories: readonly PartnerCategory[] = [
 ]
 
 export const registerIntro = {
+  label: 'Join the Collaboration',
   title: 'Register Your Organisation',
   lead: "Let's build a stronger ecosystem together.",
   description: 'Tell us about your organisation and how you would like to collaborate with STEM for Society.',

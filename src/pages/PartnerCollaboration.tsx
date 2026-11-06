@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { GridLines } from '@/sfs/components/partner/GridLines'
 import { PartnerCategories } from '@/sfs/components/partner/PartnerCategories'
 import { PartnerHero } from '@/sfs/components/partner/PartnerHero'
+import { RegisterSection } from '@/sfs/components/partner/RegisterSection'
 import { TrustedPartners } from '@/sfs/components/partner/TrustedPartners'
 import { SfsPage } from '@/sfs/components/SfsPage'
 import { usePageMeta } from '@/sfs/lib/usePageMeta'
 
-/** /partner-with-us: the public collaboration page. The organisation registration form sits in the opener. */
+/** /partner-with-us: the public collaboration page and organisation registration. */
 export default function PartnerCollaboration() {
   const [type, setType] = useState('')
   const [interest, setInterest] = useState('')
@@ -18,10 +18,10 @@ export default function PartnerCollaboration() {
 
   return (
     <SfsPage>
-      <div className="relative isolate bg-surface">
-        <GridLines />
-        <PartnerHero type={type} onTypeChange={setType} interest={interest} onInterestChange={setInterest} />
+      <div className="relative isolate bg-gradient-to-b from-surface via-white to-surface">
+        <PartnerHero />
         <PartnerCategories onChoose={setType} />
+        <RegisterSection type={type} onTypeChange={setType} interest={interest} onInterestChange={setInterest} />
         <TrustedPartners />
       </div>
     </SfsPage>
