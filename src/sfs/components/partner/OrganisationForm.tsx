@@ -16,7 +16,7 @@ type Status = 'idle' | 'sending' | 'sent' | 'mailed' | 'error'
 
 const control =
   'field !h-12 !border-[var(--sfs-edge)] hover:!border-deep focus-visible:!outline-2 focus-visible:!outline-offset-[-3px] focus-visible:!outline-brand aria-[invalid=true]:!border-[#b42318]'
-const area = `${control} !h-auto min-h-28 py-3 leading-relaxed`
+const area = `${control} !h-auto min-h-24 py-3 leading-relaxed`
 
 function Field({ id, label, required, error, hint, children }: { id: string; label: string; required?: boolean; error?: string; hint?: string; children: ReactNode }) {
   return (
@@ -166,6 +166,7 @@ export function OrganisationForm({
 
   return (
     <form ref={formRef} onSubmit={submit} noValidate className="grid gap-5" aria-label="Organisation registration">
+      <div className="grid gap-5 sm:grid-cols-2">
       <Field id={id('organisation')} label="Organisation Name" required error={shown('organisation')}>
         <input id={id('organisation')} name="organisation" autoComplete="organization" placeholder="Name of your organisation" value={values.organisation} onChange={set('organisation')} onBlur={blur('organisation')} className={control} {...aria('organisation')} />
       </Field>
@@ -180,6 +181,8 @@ export function OrganisationForm({
           ))}
         </select>
       </Field>
+
+      </div>
 
       <div className="grid gap-5 sm:grid-cols-2">
         <Field id={id('email')} label="Email Address" required error={shown('email')}>
@@ -200,23 +203,9 @@ export function OrganisationForm({
         </Field>
       </div>
 
+      <div className="grid gap-5 sm:grid-cols-2">
       <Field id={id('website')} label="Website" error={shown('website')}>
         <input id={id('website')} name="website" type="url" inputMode="url" autoComplete="url" placeholder="www.organisation.org" value={values.website} onChange={set('website')} onBlur={blur('website')} className={control} {...aria('website')} />
-      </Field>
-
-      <Field id={id('interest')} label="Collaboration Interest" required error={shown('interest')}>
-        <select id={id('interest')} name="interest" value={interest} onChange={(e) => onInterestChange(e.target.value)} onBlur={blur('interest')} className={control} {...aria('interest')}>
-          <option value="">Select an area</option>
-          {collaborationInterests.map((t) => (
-            <option key={t} value={t}>
-              {t}
-            </option>
-          ))}
-        </select>
-      </Field>
-
-      <Field id={id('activities')} label="Proposed Activities" required error={shown('activities')}>
-        <textarea id={id('activities')} name="activities" rows={3} placeholder="How would you like to contribute or collaborate?" value={values.activities} onChange={set('activities')} onBlur={blur('activities')} className={area} {...aria('activities')} />
       </Field>
 
       <Field id={id('location')} label="Location">
@@ -230,9 +219,28 @@ export function OrganisationForm({
         </select>
       </Field>
 
+      </div>
+
+      <Field id={id('interest')} label="Collaboration Interest" required error={shown('interest')}>
+        <select id={id('interest')} name="interest" value={interest} onChange={(e) => onInterestChange(e.target.value)} onBlur={blur('interest')} className={control} {...aria('interest')}>
+          <option value="">Select an area</option>
+          {collaborationInterests.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      <div className="grid gap-5 sm:grid-cols-2">
+      <Field id={id('activities')} label="Proposed Activities" required error={shown('activities')}>
+        <textarea id={id('activities')} name="activities" rows={3} placeholder="How would you like to contribute or collaborate?" value={values.activities} onChange={set('activities')} onBlur={blur('activities')} className={area} {...aria('activities')} />
+      </Field>
+
       <Field id={id('details')} label="Additional Details" required error={shown('details')}>
         <textarea id={id('details')} name="details" rows={3} placeholder="Anything else we should know about your organisation" value={values.details} onChange={set('details')} onBlur={blur('details')} className={area} {...aria('details')} />
       </Field>
+      </div>
 
       {status === 'error' && (
         <p role="alert" className="t-small flex items-start gap-2 rounded-control bg-[#fef3f2] p-3 text-[#b42318]">

@@ -6,14 +6,11 @@ import { Reveal } from '../ui/Reveal'
 /** Unboxed editorial blocks: a photograph, the title, the description and a text link. */
 export function PartnerCategories({ onChoose }: { onChoose: (type: string) => void }) {
   return (
-    <section id="categories" aria-labelledby="categories-title" className="scroll-mt-24 py-20 sm:py-28 lg:py-32">
+    <section id="categories" aria-labelledby="categories-title" className="scroll-mt-24 py-16 sm:py-24">
       <div className="container-x">
         <div className="max-w-2xl">
           <Reveal x={-16}>
-            <p className="t-label text-deep">{partnerCategoriesIntro.label}</p>
-          </Reveal>
-          <Reveal x={-16} delay={0.06}>
-            <h2 id="categories-title" className="!mt-4 text-[2rem] leading-[1.15] !font-medium tracking-[-0.02em] text-[#0b2545] sm:text-[2.375rem]">
+            <h2 id="categories-title" className="text-[2rem] leading-[1.15] !font-medium tracking-[-0.02em] text-[#0b2545] sm:text-[2.375rem]">
               {partnerCategoriesIntro.title}
             </h2>
           </Reveal>
@@ -27,16 +24,8 @@ export function PartnerCategories({ onChoose }: { onChoose: (type: string) => vo
             const Icon = c.icon
             return (
               <Reveal as="li" key={c.title} x={i % 2 ? 20 : -20} delay={(i % 2) * 0.08} className="list-none">
-                <button
-                  type="button"
-                  onClick={() => {
-                    onChoose(c.type)
-                    scrollToId('register')
-                  }}
-                  aria-label={`${c.title}: register as ${c.type}`}
-                  className="group grid w-full gap-6 text-left sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] sm:items-center"
-                >
-                  <span className="relative block overflow-hidden rounded-card shadow-raised">
+                <article className="group relative grid gap-6 sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1fr)] sm:items-center">
+                  <div className="relative overflow-hidden rounded-card shadow-raised">
                     <img
                       src={c.image}
                       alt=""
@@ -50,16 +39,24 @@ export function PartnerCategories({ onChoose }: { onChoose: (type: string) => vo
                     <span aria-hidden="true" className="absolute top-3 left-3 grid size-10 place-items-center rounded-full bg-white text-deep shadow-raised">
                       <Icon size={20} weight="fill" />
                     </span>
-                  </span>
-                  <span className="grid gap-3">
-                    <span className="text-[1.375rem] leading-tight font-medium tracking-[-0.01em] text-[#0b2545]">{c.title}</span>
-                    <span className="t-small text-ink/70">{c.description}</span>
-                    <span className="t-label inline-flex items-center gap-1 text-deep">
-                      Register as {c.type.toLowerCase()}
+                  </div>
+                  <div className="grid gap-3">
+                    <h3 className="text-balance text-[1.375rem] leading-tight !font-medium tracking-[-0.01em] text-[#0b2545]">{c.title}</h3>
+                    <p className="t-small text-ink/70">{c.description}</p>
+                    {/* The whole block is the click target: this button stretches over it. */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onChoose(c.type)
+                        scrollToId('register')
+                      }}
+                      className="t-label inline-flex min-h-11 items-center gap-1 whitespace-nowrap justify-self-start text-deep after:absolute after:inset-0 after:content-['']"
+                    >
+                      {c.cta}
                       <CaretRight size={16} aria-hidden="true" className="transition-transform duration-200 group-hover:translate-x-1 motion-reduce:transition-none" />
-                    </span>
-                  </span>
-                </button>
+                    </button>
+                  </div>
+                </article>
               </Reveal>
             )
           })}

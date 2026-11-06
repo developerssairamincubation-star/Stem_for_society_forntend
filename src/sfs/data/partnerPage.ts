@@ -3,14 +3,12 @@ import { Buildings, GraduationCap, Rocket, Flask, type Icon } from '@phosphor-ic
 /** Content for the public Partner With Us page. Partner logos are the ones already published on the existing STEM for Society site. */
 
 export const partnerHero = {
-  label: 'Collaboration • Partnership',
   description: 'Together, we can create more opportunities, build bigger impact and empower the next generation.',
   image: '/images/partner.jpg',
   alt: 'Students and professionals working together at a laptop',
 } as const
 
 export const partnerCategoriesIntro = {
-  label: 'Who Can Collaborate?',
   title: 'Partner Categories',
   description:
     'We welcome collaborations from educational institutions, startups, companies and innovation centres that share our commitment to creating meaningful learning opportunities and empowering the next generation.',
@@ -19,7 +17,7 @@ export const partnerCategoriesIntro = {
 export const organisationTypes = [
   'Educational Institution',
   'Startup',
-  'Company',
+  'Corporate',
   'Incubator / Innovation Centre',
   'Research Organisation',
   'Non-profit / NGO',
@@ -35,17 +33,11 @@ export interface PartnerCategory {
   alt: string
   /** Organisation type chosen in the form when this card is used. */
   type: (typeof organisationTypes)[number]
+  /** The text link on the card. */
+  cta: string
 }
 
 export const partnerCategories: readonly PartnerCategory[] = [
-  {
-    title: 'Educational Institutions',
-    description: 'Universities, colleges and schools interested in developing students through practical learning, professional skills and industry-oriented training.',
-    icon: GraduationCap,
-    image: '/images/institutions/wellbeing.jpg',
-    alt: 'Students sitting together on a campus lawn',
-    type: 'Educational Institution',
-  },
   {
     title: 'Startups',
     description: 'Innovative startups and early-stage teams interested in mentorship, innovation, entrepreneurship and ecosystem collaboration.',
@@ -53,14 +45,16 @@ export const partnerCategories: readonly PartnerCategory[] = [
     image: '/images/program-industry.jpg',
     alt: 'Hands sketching a hardware prototype on technical drawings',
     type: 'Startup',
+    cta: 'Register as a startup',
   },
   {
-    title: 'Companies',
+    title: 'Corporate',
     description: 'Technology, biotechnology and industry leaders interested in connecting with students, sharing expertise and developing future-ready talent.',
     icon: Buildings,
     image: '/images/network.jpg',
     alt: 'A professional with a tablet beside a glass-walled server room',
-    type: 'Company',
+    type: 'Corporate',
+    cta: 'Register as corporate',
   },
   {
     title: 'Incubators & Innovation Centres',
@@ -69,11 +63,20 @@ export const partnerCategories: readonly PartnerCategory[] = [
     image: '/images/hero-v2.jpg',
     alt: 'A young person looking up, with science labs and a city skyline layered over them',
     type: 'Incubator / Innovation Centre',
+    cta: 'Register as an incubator',
+  },
+  {
+    title: 'Educational Institutions',
+    description: 'Universities, colleges and schools interested in developing students through practical learning, professional skills and industry-oriented training.',
+    icon: GraduationCap,
+    image: '/images/institutions/wellbeing.jpg',
+    alt: 'Students sitting together on a campus lawn',
+    type: 'Educational Institution',
+    cta: 'Register as an institution',
   },
 ]
 
 export const registerIntro = {
-  label: 'Join the Collaboration',
   title: 'Register Your Organisation',
   lead: "Let's build a stronger ecosystem together.",
   description: 'Tell us about your organisation and how you would like to collaborate with STEM for Society.',
