@@ -12,6 +12,9 @@ interface ImportMetaEnv {
 	readonly VITE_SENTRY_TRACES_SAMPLE_RATE?: string;
 	readonly VITE_SENTRY_REPLAY?: string;
 	readonly VITE_APP_VERSION?: string;
+	/* Join browser and API traces. Requires the API to allow the
+	   sentry-trace and baggage headers in CORS first. */
+	readonly VITE_SENTRY_TRACE_API?: string;
 
 	/* Send X-Correlation-Id on API requests. Requires the API to whitelist
 	   that header in its CORS allowedHeaders first. */

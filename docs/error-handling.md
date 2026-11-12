@@ -86,10 +86,26 @@ user - comfortably enough for this app.
    VITE_SENTRY_DSN=https://<key>@o<org>.ingest.sentry.io/<project>
    VITE_SENTRY_ENVIRONMENT=production
    VITE_SENTRY_TRACES_SAMPLE_RATE=0.1
-   VITE_APP_VERSION=<git sha>
    ```
 
-4. Redeploy.
+   On Vercel the release (`VITE_APP_VERSION`) is taken from the commit SHA
+   automatically; set it yourself only on other hosts.
+
+4. For readable stack traces, also set these **build-time** variables (no
+   `VITE_` prefix, so they never reach the browser):
+
+   ```
+   SENTRY_AUTH_TOKEN=<org auth token, Settings -> Auth Tokens>
+   SENTRY_ORG=<org slug>
+   SENTRY_PROJECT=<project slug>
+   ```
+
+   With all three set, `pnpm build` generates hidden source maps, uploads them
+   to Sentry under the same release, then deletes the `.map` files from `dist/`
+   so they are never served publicly. Without them the build is unchanged and
+   stack traces show minified code.
+
+5. Redeploy.
 
 Two things to remember about Vite: env vars must start with `VITE_`, and they
 are **baked in at build time** - setting the DSN after a build does nothing, you
