@@ -7,11 +7,9 @@
 export const institutionHero = {
   lead: 'Partnering with Institutions for',
   rest: 'Real World Readiness',
-  /** Desktop: full campus scene (baked-in nav and text removed). */
-  image: '/images/institutions/campus-hero.jpg',
-  /** Phones: the lower part of the same scene. */
-  imageSmall: '/images/institutions/campus.jpg',
-  alt: 'A modern university campus of glass buildings around a lake, with students studying on the lawn',
+  /** Campus scene with a clear blue sky and INNOVATE lettered across it; the headline and button sit live on the sky. */
+  image: '/images/institutions/campus-innovate.jpg',
+  alt: 'The word INNOVATE in large letters across the sky above a modern glass campus, with students on the lawn by a lake',
 } as const
 
 export const faqIntro = {
