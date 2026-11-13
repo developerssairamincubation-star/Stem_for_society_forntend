@@ -8,6 +8,7 @@ const rise = (delay: number) => ({
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6, delay, ease },
 })
+const fade = { initial: { opacity: 0 }, animate: { opacity: 1 }, transition: { duration: 0.8, ease } }
 
 const ART = {
   src: '/images/home-stem-hero.jpg',
@@ -25,75 +26,84 @@ const Rule = ({ side }: { side: 'left' | 'right' }) => (
 )
 
 /**
- * The STEM artwork is the hero. "FOR SOCIETY", the tagline and the button are live text set on the reflective floor below
- * the letters (the picture carries only the letters and their scenes).
+ * The STEM artwork is the hero, always shown whole: never cropped at the sides and never enlarged past the screen.
+ * "FOR SOCIETY", the tagline and the button are live text (the picture carries only the letters and their scenes).
  *
- * From 1024px the section keeps the artwork's proportions and the text sits where the floor leaves room for it.
- * Below that the artwork is cropped to the four letters so they fill the width, and the text follows underneath on the
- * floor colour.
+ * From 1024px the artwork sits in a frame that is as large as fits both the screen's width and its height, so on a short
+ * laptop screen the whole picture, text and button are visible without scrolling. Any space left at the sides is filled
+ * with a soft, blurred copy of the same picture. The text is sized from the frame's width (container units), so it keeps
+ * its place on the floor below the letters at every size.
+ *
+ * Below 1024px the full width of the artwork is shown (only the empty sky above and floor below are trimmed) and the
+ * text follows underneath on the floor colour.
  */
 export function Hero() {
   return (
-    <section
-      id="home"
-      aria-labelledby="hero-title"
-      className="relative isolate overflow-hidden bg-[#ebf3fd] pt-24 pb-14 sm:pt-28 sm:pb-16 lg:aspect-[1672/941] lg:p-0"
-    >
-      {/* Phones and tablets: the four letters, filling the width */}
-      <div className="relative aspect-[1372/530] overflow-hidden lg:hidden">
+    <section id="home" aria-labelledby="hero-title" className="relative isolate overflow-hidden bg-[#ebf3fd]">
+      {/* Laptop and up: a blurred copy fills any space beside the frame */}
+      <img
+        src={ART.src}
+        alt=""
+        aria-hidden="true"
+        decoding="async"
+        className="absolute inset-0 -z-10 hidden size-full scale-110 object-cover opacity-80 blur-2xl lg:block"
+      />
+
+      {/* Phones and tablets: all four letters, edge to edge */}
+      <div className="pt-24 sm:pt-28 lg:hidden">
+        <motion.div {...fade} className="relative aspect-[1672/560] overflow-hidden">
+          <img
+            src={ART.src}
+            alt={ART.alt}
+            width={ART.width}
+            height={ART.height}
+            {...({ fetchpriority: 'high' } as object)}
+            decoding="async"
+            className="absolute top-[-16.07%] left-0 w-full max-w-none"
+          />
+        </motion.div>
+      </div>
+
+      {/* Laptop and up: the whole artwork, as big as the screen allows */}
+      <div className="relative mx-auto hidden aspect-[1672/941] w-[min(100%,calc(100svh*1672/941))] [container-type:inline-size] lg:block">
         <motion.img
+          {...fade}
           src={ART.src}
           alt={ART.alt}
           width={ART.width}
           height={ART.height}
-          {...({ fetchpriority: 'high' } as object)}
           decoding="async"
-          initial={{ scale: 1.04 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.6, ease }}
-          className="absolute top-[-20.75%] left-[-10.94%] w-[121.87%] max-w-none"
+          className="absolute inset-0 size-full"
         />
       </div>
 
-      {/* Desktop: the whole artwork behind the section */}
-      <motion.img
-        src={ART.src}
-        alt=""
-        aria-hidden="true"
-        width={ART.width}
-        height={ART.height}
-        decoding="async"
-        initial={{ scale: 1.03 }}
-        animate={{ scale: 1 }}
-        transition={{ duration: 1.8, ease }}
-        className="absolute inset-0 -z-10 hidden size-full object-cover lg:block"
-      />
+      <div className="container-x flex flex-col items-center pt-6 pb-14 text-center sm:pt-8 sm:pb-16 lg:pointer-events-none lg:absolute lg:inset-x-0 lg:top-0 lg:mx-auto lg:h-full lg:w-[min(100%,calc(100svh*1672/941))] lg:max-w-none lg:p-0 lg:[container-type:inline-size]">
+        <div className="flex w-full flex-col items-center lg:absolute lg:inset-x-0 lg:top-[68.6%] lg:px-[4cqw]">
+          <motion.h1
+            id="hero-title"
+            {...rise(0.1)}
+            className="!m-0 !text-[2.25rem] !leading-none tracking-[0.08em] text-[#0f2a5c] uppercase min-[400px]:!text-[2.5rem] sm:!text-[3.5rem] lg:!text-[5.2cqw]"
+          >
+            <span className="sr-only">STEM </span>
+            <span className="!font-normal">For</span> <span className="ml-[0.18em] !font-bold">Society</span>
+          </motion.h1>
 
-      <div className="container-x mt-6 flex flex-col items-center text-center sm:mt-8 lg:absolute lg:inset-x-0 lg:top-[68.6%] lg:mt-0">
-        <motion.h1
-          id="hero-title"
-          {...rise(0.1)}
-          className="!m-0 !text-[2.5rem] !leading-none tracking-[0.08em] text-[#0f2a5c] uppercase sm:!text-[3.5rem] lg:!text-[clamp(3rem,5.2vw,6.25rem)]"
-        >
-          <span className="sr-only">STEM </span>
-          <span className="!font-normal">For</span> <span className="ml-[0.18em] !font-bold">Society</span>
-        </motion.h1>
+          <motion.div {...rise(0.22)} className="mt-4 flex w-full max-w-5xl items-center justify-center gap-6 lg:mt-[2.2cqw] lg:max-w-[80cqw]">
+            <Rule side="left" />
+            <p className="!m-0 text-[0.8125rem] tracking-[0.02em] whitespace-nowrap text-ink/80 min-[400px]:text-[0.9375rem] sm:text-lg sm:tracking-[0.06em] lg:text-[1.8cqw]">
+              Learn <span aria-hidden="true" className="mx-1.5 sm:mx-3">•</span> Innovate{' '}
+              <span aria-hidden="true" className="mx-1.5 sm:mx-3">•</span> Build a Better Tomorrow
+            </p>
+            <Rule side="right" />
+          </motion.div>
 
-        <motion.div {...rise(0.22)} className="mt-4 flex w-full max-w-5xl items-center gap-6 lg:mt-[2.4vw]">
-          <Rule side="left" />
-          <p className="!m-0 text-base tracking-[0.06em] text-ink/80 sm:text-lg lg:text-[clamp(1.125rem,1.8vw,2.125rem)]">
-            Learn <span aria-hidden="true" className="mx-2 sm:mx-3">•</span> Innovate{' '}
-            <span aria-hidden="true" className="mx-2 sm:mx-3">•</span> Build a Better Tomorrow
-          </p>
-          <Rule side="right" />
-        </motion.div>
-
-        <motion.div {...rise(0.34)} className="mt-8 lg:mt-[2.2vw]">
-          <Button href="#academy">
-            Explore Our Academy
-            <ArrowRight size={18} aria-hidden="true" />
-          </Button>
-        </motion.div>
+          <motion.div {...rise(0.34)} className="pointer-events-auto mt-8 lg:mt-[1.9cqw]">
+            <Button href="#academy">
+              Explore Our Academy
+              <ArrowRight size={18} aria-hidden="true" />
+            </Button>
+          </motion.div>
+        </div>
       </div>
     </section>
   )
