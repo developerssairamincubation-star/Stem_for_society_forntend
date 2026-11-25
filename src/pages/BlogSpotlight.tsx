@@ -11,6 +11,7 @@ import { AxiosError } from "axios";
 import { useQuery } from "@tanstack/react-query";
 import Errorbox from "../components/Errorbox";
 import { formatDate } from "../lib/utils";
+import { Reveal } from "@/sfs/components/ui/Reveal";
 
 function useBlog(slug: string) {
   return useQuery<GenericResponse<Blog>, AxiosError<GenericError>>({
@@ -86,12 +87,12 @@ function BlogSpotlight() {
 
       <article className="section">
         <div className="container-x grid gap-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:gap-16">
-          <div className="content prose-sfs">
+          <Reveal className="content prose-sfs">
             <BlogContent markdownContent={blog.content}></BlogContent>
-          </div>
+          </Reveal>
 
           <aside className="lg:sticky lg:top-28 lg:self-start" aria-label="About the author">
-            <div className="card grid gap-4 p-6">
+            <Reveal className="card grid gap-4 p-6" delay={0.1}>
               <span aria-hidden="true" className="grid size-12 place-items-center rounded-full bg-deep text-base font-semibold text-white">
                 {initials}
               </span>
@@ -106,7 +107,7 @@ function BlogSpotlight() {
                 </a>
               )}
               <p className="t-small text-ink/60">Published {formatDate(blog.createdAt)}</p>
-            </div>
+            </Reveal>
           </aside>
         </div>
       </article>

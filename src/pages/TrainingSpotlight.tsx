@@ -32,6 +32,7 @@ import {
 } from "../lib/utils";
 import { StudentTraining } from "./Training";
 import ReactPlayer from "react-player";
+import { Reveal } from "@/sfs/components/ui/Reveal";
 
 function useTraining(id?: string) {
   return useQuery<GenericResponse<StudentTraining>, AxiosError<GenericError>>({
@@ -273,6 +274,7 @@ function TrainingSpotlight() {
 
       {/* The key facts sit on the edge of the opener, like a ticket. */}
       <div className="container-x relative z-10 -mt-8 sm:-mt-10">
+        <Reveal>
         <dl className="card grid gap-px overflow-hidden bg-tint/60 shadow-raised sm:grid-cols-2 lg:grid-cols-4">
           {facts.map((f) => (
             <div key={f.label} className="flex items-center gap-4 bg-white p-5">
@@ -286,21 +288,22 @@ function TrainingSpotlight() {
             </div>
           ))}
         </dl>
+        </Reveal>
       </div>
 
       <section className="section !pt-12 sm:!pt-14" aria-label="Session details">
         <div className="container-x grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:gap-14">
           <div className="grid content-start gap-8">
-            <div className="card p-6 sm:p-8">
+            <Reveal className="card p-6 sm:p-8">
               <h2 className="t-heading">About this session</h2>
               <p className="t-body mt-3 whitespace-pre-line text-ink/80">{event.description}</p>
-            </div>
+            </Reveal>
 
             {event.lessons && event.lessons.length > 0 && (
               <div className="grid gap-4">
                 <h2 className="t-title">Course content</h2>
                 {event.lessons.map((l, i) => (
-                  <div className="card p-5 sm:p-6" key={l.id}>
+                  <Reveal className="card p-5 sm:p-6" key={l.id} delay={Math.min(i, 3) * 0.06}>
                     <div className="mb-3 flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3">
                         <span aria-hidden="true" className="grid size-8 shrink-0 place-items-center rounded-full bg-surface text-sm font-semibold text-deep">
@@ -338,13 +341,13 @@ function TrainingSpotlight() {
                         {l.location}
                       </div>
                     )}
-                  </div>
+                  </Reveal>
                 ))}
               </div>
             )}
           </div>
 
-          <div className="grid content-start gap-6 max-lg:order-first lg:sticky lg:top-28 lg:self-start">
+          <Reveal className="grid content-start gap-6 max-lg:order-first lg:sticky lg:top-28 lg:self-start" delay={0.1}>
             <div className="card overflow-hidden shadow-raised">
               <div className="on-dark bg-deep px-6 py-5 text-white">
                 <h2 className="t-heading text-white">Register for this session</h2>
@@ -451,14 +454,14 @@ function TrainingSpotlight() {
                 </div>
               </Alert>
             )}
-          </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Who hosts it, where it happens and who to ask. */}
       <section className="pb-16 sm:pb-20" aria-label="Hosting and contact">
         <div className="container-x">
-          <div className="card grid gap-px overflow-hidden bg-tint/60 md:grid-cols-3">
+          <Reveal className="card grid gap-px overflow-hidden bg-tint/60 md:grid-cols-3">
             <div className="flex items-start gap-4 bg-white p-6">
               <Buildings size={24} className="mt-0.5 shrink-0 text-deep" aria-hidden="true" />
               <div>
@@ -485,7 +488,7 @@ function TrainingSpotlight() {
                 </p>
               </div>
             </div>
-          </div>
+          </Reveal>
         </div>
       </section>
       <SharePopup isVisible={isShowing} />

@@ -11,6 +11,7 @@ import { formatDate } from "@/lib/utils";
 import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
 import { PageLoading } from "@/sfs/components/page/PageStatus";
 import Errorbox from "@/components/Errorbox";
+import { Reveal } from "@/sfs/components/ui/Reveal";
 
 // Student training data structure
 export type StudentTraining = {
@@ -207,26 +208,30 @@ const Courses = () => {
             {Object.keys(filteredTrainings).length > 0 ? (
               Object.entries(filteredTrainings).map(([monthKey, monthTrainings]) => (
                 <section key={monthKey} aria-label={monthKey} className="grid gap-6">
-                  <h2 className="t-title border-b-2 border-brand pb-4">{monthKey}</h2>
+                  <Reveal>
+                    <h2 className="t-title border-b-2 border-brand pb-4">{monthKey}</h2>
+                  </Reveal>
 
                   <div className="grid grid-cols-1 gap-5 md:gap-6">
-                    {(monthTrainings as StudentTraining[]).map((training) => (
-                      <CourseCard
-                        key={training.id}
-                        image={training.coverImg}
-                        category={training.category || 'Course'}
-                        tags={[training.category || 'Course', 'For Individuals']}
-                        title={training.title}
-                        description={training.description}
-                        startDate={formatDate(training.startDate)}
-                        mode={training.type}
-                        instructor={`${training.instructor?.firstName || ''} ${training.instructor?.lastName || ''}`.trim() || 'Instructor'}
-                        instructorImage={undefined}
-                        trainingId={training.id}
-                        isEnrolled={isUserEnrolled(training)}
-                        onRegister={() => navigate(`/course-detail/${training.id}`)}
-                        onMoreDetails={() => navigate(`/course-detail/${training.id}`)}
-                      />
+                    {(monthTrainings as StudentTraining[]).map((training, i) => (
+                      <Reveal key={training.id} delay={Math.min(i, 3) * 0.06}>
+                        <CourseCard
+                          key={training.id}
+                          image={training.coverImg}
+                          category={training.category || 'Course'}
+                          tags={[training.category || 'Course', 'For Individuals']}
+                          title={training.title}
+                          description={training.description}
+                          startDate={formatDate(training.startDate)}
+                          mode={training.type}
+                          instructor={`${training.instructor?.firstName || ''} ${training.instructor?.lastName || ''}`.trim() || 'Instructor'}
+                          instructorImage={undefined}
+                          trainingId={training.id}
+                          isEnrolled={isUserEnrolled(training)}
+                          onRegister={() => navigate(`/course-detail/${training.id}`)}
+                          onMoreDetails={() => navigate(`/course-detail/${training.id}`)}
+                        />
+                      </Reveal>
                     ))}
                   </div>
                 </section>

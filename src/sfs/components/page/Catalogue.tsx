@@ -1,5 +1,6 @@
 import { MagnifyingGlass, SlidersHorizontal, ArrowCounterClockwise } from '@phosphor-icons/react'
 import type { ReactNode } from 'react'
+import { Reveal } from '../ui/Reveal'
 
 /** White filter bar that holds the page's own selects, the search box and the reset button. */
 export function CatalogueFilters({
@@ -14,7 +15,7 @@ export function CatalogueFilters({
   onReset: () => void
 }) {
   return (
-    <div className="card mb-8 p-4 sm:p-5">
+    <Reveal className="card mb-8 p-4 sm:p-5">
       <div className="flex flex-wrap items-center gap-3 sm:gap-4">
         <div className="t-label inline-flex items-center gap-2 rounded-control bg-surface px-4 py-2.5 text-deep">
           <SlidersHorizontal size={18} aria-hidden="true" />
@@ -33,13 +34,13 @@ export function CatalogueFilters({
           Reset
         </button>
       </div>
-    </div>
+    </Reveal>
   )
 }
 
 export function CatalogueEmpty({ onReset }: { onReset: () => void }) {
   return (
-    <div className="card px-6 py-16 text-center">
+    <Reveal className="card px-6 py-16 text-center">
       <div className="mx-auto mb-5 grid size-16 place-items-center rounded-full bg-surface text-brand">
         <MagnifyingGlass size={30} aria-hidden="true" />
       </div>
@@ -48,6 +49,6 @@ export function CatalogueEmpty({ onReset }: { onReset: () => void }) {
       <button type="button" onClick={onReset} className="btn btn-primary mt-6">
         Clear Filters
       </button>
-    </div>
+    </Reveal>
   )
 }

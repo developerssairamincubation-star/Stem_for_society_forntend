@@ -13,6 +13,7 @@ import { GenericError, GenericResponse } from "../lib/types";
 import { formatDate } from "../lib/utils";
 import { PageFrame, PageHero } from "@/sfs/components/page/PageFrame";
 import { PageLoading } from "@/sfs/components/page/PageStatus";
+import { Reveal } from "@/sfs/components/ui/Reveal";
 
 export type StudentTraining = {
   id: string;
@@ -252,36 +253,38 @@ const Training: React.FC = () => {
             ) : (
               Object.keys(filteredTrainings).map((month) => (
                 <section key={month} aria-label={month} className="grid gap-6">
-                  <div className="flex items-center gap-5">
+                  <Reveal className="flex items-center gap-5">
                     <h2 className="t-title shrink-0">{month}</h2>
                     <span aria-hidden="true" className="h-px flex-1 bg-tint" />
                     <span className="t-small shrink-0 text-ink/60">
                       {(filteredTrainings[month as keyof typeof filteredTrainings] as StudentTraining[]).length} session
                       {(filteredTrainings[month as keyof typeof filteredTrainings] as StudentTraining[]).length === 1 ? "" : "s"}
                     </span>
-                  </div>
+                  </Reveal>
 
                   <div className="grid gap-5">
-                    {(filteredTrainings[month as keyof typeof filteredTrainings] as StudentTraining[]).map((event) => (
-                      <EventCard
-                        key={event.id}
-                        id={event.id}
-                        title={event.title}
-                        date={formatDate(event.startDate)}
-                        startIso={event.startDate}
-                        endIso={event.endDate}
-                        mode={event.type}
-                        description={event.description}
-                        location={event.location}
-                        posterUrl={event.coverImg}
-                        price={event.cost}
-                        category={event.category}
-                        isEnrolled={event.enrolments.some(
-                          (enr) =>
-                            enr.transactions &&
-                            enr.transactions.filter((tr) => tr.status === "success").length > 0,
-                        )}
-                      />
+                    {(filteredTrainings[month as keyof typeof filteredTrainings] as StudentTraining[]).map((event, i) => (
+                      <Reveal key={event.id} delay={Math.min(i, 3) * 0.06}>
+                        <EventCard
+                          key={event.id}
+                          id={event.id}
+                          title={event.title}
+                          date={formatDate(event.startDate)}
+                          startIso={event.startDate}
+                          endIso={event.endDate}
+                          mode={event.type}
+                          description={event.description}
+                          location={event.location}
+                          posterUrl={event.coverImg}
+                          price={event.cost}
+                          category={event.category}
+                          isEnrolled={event.enrolments.some(
+                            (enr) =>
+                              enr.transactions &&
+                              enr.transactions.filter((tr) => tr.status === "success").length > 0,
+                          )}
+                        />
+                      </Reveal>
                     ))}
                   </div>
                 </section>

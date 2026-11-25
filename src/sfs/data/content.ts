@@ -69,7 +69,7 @@ export const programs: readonly Program[] = [
       'Communication and presentation',
       'Leadership and teamwork',
       'Critical thinking',
-      'Workplace collaboration',
+      'Emotional intelligence',
     ],
   },
   {

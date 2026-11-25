@@ -31,7 +31,7 @@ export const trainingPlans: readonly TrainingPlan[] = [
   {
     id: 'foundation',
     category: 'Plan 1',
-    title: 'Emotional Intelligence',
+    title: 'Foundation',
     subtitle: 'Workplace basics',
     description: 'Build essential personal and professional skills for a strong start to your academic and career journey.',
     skills: [

@@ -56,11 +56,13 @@ export function NetworkBeyondCampus() {
             transition={{ duration: 0.8 }}
           >
             <motion.img
-              src="/images/network.jpg"
-              alt="A professional working on a laptop beside a glass wall reflecting blue-lit server racks"
+              src="/images/network-nbc.jpg"
+              alt="A group of Networking Beyond Campus members standing together in an outdoor cafe garden"
               loading="lazy"
+              width={1600}
+              height={776}
               style={{ y: imageY }}
-              className="absolute inset-x-0 -top-[5%] h-[110%] w-full object-cover object-[62%_center]"
+              className="absolute inset-x-0 -top-[5%] h-[110%] w-full object-cover object-[50%_35%]"
             />
           </motion.div>
         </div>

@@ -4,7 +4,7 @@ import { trainingPlans } from './trainingPlans'
 describe('training plans', () => {
   it('has the four plans in order with the agreed skill counts, durations and levels', () => {
     expect(trainingPlans.map((p) => [p.category, p.title, p.skills.length, p.duration, p.level])).toEqual([
-      ['Plan 1', 'Emotional Intelligence', 6, '3 Months', 'Basic to Beginner'],
+      ['Plan 1', 'Foundation', 6, '3 Months', 'Basic to Beginner'],
       ['Plan 2', 'Career Launch', 7, '4 Months', 'Beginner to Intermediate'],
       ['Plan 3', 'Leadership & Thinking', 6, '4 Months', 'Intermediate'],
       ['Plan 4', 'Innovator & Entrepreneur', 5, '4 Months', 'Advanced'],

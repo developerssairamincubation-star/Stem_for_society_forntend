@@ -18,6 +18,7 @@ import { withDevPreview } from "@/preview/devPreview";
 import { GenericError, GenericResponse } from "@/lib/types";
 import { calculateDuration, formatDate } from "@/lib/utils";
 import Errorbox from "@/components/Errorbox";
+import { Reveal } from "@/sfs/components/ui/Reveal";
 
 // Student training data structure (imported from Courses.tsx pattern)
 export type StudentTraining = {
@@ -217,8 +218,8 @@ const FinishingSchool = () => {
           {/* Course Grid */}
           {filteredCourses.length > 0 ? (
             <ul className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              {filteredCourses.map((course) => (
-                <li key={course.id}>
+              {filteredCourses.map((course, i) => (
+                <Reveal as="li" key={course.id} delay={(i % 2) * 0.08}>
                   <FinishingSchoolCard
                     courseId={course.id}
                     image={course.coverImg}
@@ -232,7 +233,7 @@ const FinishingSchool = () => {
                     modeDescription={course.type === "ONLINE" ? "Live Online Sessions" : course.type === "HYBRID" ? "Online + Offline" : "In-Person"}
                     startDate={formatDate(course.startDate)}
                   />
-                </li>
+                </Reveal>
               ))}
             </ul>
           ) : (
